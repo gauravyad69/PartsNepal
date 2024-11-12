@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="offwhite">#A6A6A6</color>
+    <color name="gradient_midpoint">#8000FF80</color>
+    <color name="gradient_endpoint">#C040FF40</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="my_light_primary">#1F1F1F</color>
+    <color name="my_dark_primary">#DBDBDB</color>
+
+
+    <color name="mainBackground">#0D0D0D</color>
+    <color name="containerBackground">#181818</color>
+    <color name="mainColor">#DBDBDB</color>
+    <!--    <color name="status_waiting">#CDDC39</color>-->
+    <!--    <color name="status_confirming">#00FFF7</color>-->
+    <!--    <color name="status_confirmed">#00FF73</color>-->
+    <!--    <color name="status_sending">#0073FF</color>-->
+    <!--    <color name="status_failed">#FA0000</color>-->
+
+    <color name="status_waiting">#FFA500</color>  <!-- Orange -->
+    <color name="status_confirming">#1E90FF</color>  <!-- DodgerBlue -->
+    <color name="status_confirmed">#32CD32</color>  <!-- LimeGreen -->
+    <color name="status_sending">#4169E1</color>  <!-- RoyalBlue -->
+    <color name="status_partially_paid">#FFD700</color>  <!-- Gold -->
+    <color name="status_finished">#008000</color>  <!-- Green -->
+    <color name="status_failed">#FF0000</color>  <!-- Red -->
+    <color name="status_refunded">#8B0000</color>  <!-- DarkRed -->
+    <color name="status_unknown">#808080</color>  <!-- Gray -->
+</resources>

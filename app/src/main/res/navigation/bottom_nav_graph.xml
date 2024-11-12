@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="xyz.illuminate.tradersarena.Screens.BottomNavigationScreens.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_otherFragment"
+            app:destination="@id/otherFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/action_homeFragment_to_verifyEmailFragment"
+            app:destination="@id/verifyEmailFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+    </fragment>
+
+<!--    leave this fragment alone nigga, its independent from others -->
+    <fragment
+        android:id="@+id/verifyEmailFragment"
+        android:name="np.com.parts.Screens.OtherScreens.VerifyEmailFragment"
+        android:label="VerifyEmailFragment"
+        tools:layout="@layout/fragment_verify_email"/>
+
+
+
+
+    <fragment
+        android:id="@+id/otherFragment"
+        android:name="xyz.illuminate.tradersarena.Screens.BottomNavigationScreens.OtherFragment"
+        android:label="OtherFragment"
+        tools:layout="@layout/fragment_other">
+        <action
+            android:id="@+id/action_otherFragment_to_profileFragment"
+            app:destination="@id/profileFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="xyz.illuminate.tradersarena.Screens.BottomNavigationScreens.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/fragment_profile"/>
+</navigation>

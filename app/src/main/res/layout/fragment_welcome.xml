@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/themeMainBackground"
+    tools:context=".Screens.NewUserScreens.WelcomeFragment">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center"
+            style="@style/logoImgOnScreen"
+            android:keepScreenOn="true"
+            android:src="@drawable/ic_falcon_bird_shape" />
+
+       <TextView
+           android:layout_height="wrap_content"
+           android:layout_width="wrap_content"
+           android:fontFamily="@font/inter_bold"
+           android:textSize="48sp"
+           android:layout_gravity="center"
+           android:text="Welcome To" />
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:translationY="-15dp"
+            android:fontFamily="@font/inter_bold"
+            android:textSize="40sp"
+            android:layout_gravity="center"
+            android:text="Traders Arena" />
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:fontFamily="@font/inter_medium"
+            android:textSize="18sp"
+
+            android:text="@string/welcome_description" />
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+        android:gravity="center"
+            android:layout_gravity="bottom|center_horizontal"
+            android:orientation="horizontal"
+        android:layout_marginBottom="80dp"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/btnContinue"
+                style="@style/Button"
+                android:layout_width="300dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:text="Continue with Google" />
+
+        </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/copyright_text"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:textColor="@color/offwhite"
+        android:fontFamily="@font/poppins_medium"
+        android:textSize="13sp"/>
+
+</FrameLayout>
