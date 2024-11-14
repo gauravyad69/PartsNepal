@@ -1,1 +1,1 @@
-rootProject.name = "xyz.auracoin.api"
+rootProject.name = "np.com.parts.api"

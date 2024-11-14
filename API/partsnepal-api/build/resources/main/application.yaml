@@ -1,13 +1,13 @@
 ktor:
     application:
         modules:
-            - com.example.ApplicationKt.module
+            - np.com.parts.ApplicationKt.module
     deployment:
-        port: 8080
+        port: 9090
 jwt:
-  secret: "TheGayNigga69"
-  issuer: "api.auracoin.tech"
-  audience: "tap-swap-three.vercel.app"
+  secret: "SKAVIN^69"
+  issuer: "parts.com.np"
+  audience: "*"
   realm: "Access to 'hello'"
 
 db:
@@ -18,5 +18,5 @@ db:
     port: "27017"
     maxPoolSize: 20
     database:
-      name: "auracoin"
+      name: "partsnepal"
 #the db here is not being used, the uri is directly set in the Databases.kt
