@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/themeMainBackground"
+    tools:context=".Screens.OtherScreens.ProductFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:padding="16dp">
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:useDefaultMargins="true"
+            android:alignmentMode="alignBounds">
+
+            <!-- Product Image -->
+            <ImageView
+                android:id="@+id/productImage"
+                android:layout_width="400dp"
+                android:layout_height="400dp"
+                android:layout_gravity="fill_horizontal"
+                android:layout_columnSpan="2"
+                android:scaleType="centerCrop"
+                android:src="@color/status_confirming" />
+
+            <!-- Product Name -->
+            <TextView
+                android:id="@+id/productName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="fill_horizontal"
+                android:layout_marginTop="16dp"
+                style="@style/product_main_heading_text_style"
+                android:text="Pro Wireless Headphones" />
+
+            <!-- Product Price -->
+            <TextView
+                android:id="@+id/productPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="fill_horizontal"
+                android:layout_marginTop="8dp"
+                style="@style/product_main_subheading_text_style"
+                android:text="$299.99"/>
+
+            <!-- Product Description -->
+            <TextView
+                android:id="@+id/productDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="fill_horizontal"
+                android:layout_marginTop="8dp"
+                style="@style/product_main_description_text_style"
+                android:text="Experience unparalleled audio quality with our Pro Wireless Headphones..."
+                android:textColor="#757575" />
+
+            <!-- Buttons Grid -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_marginTop="16dp"
+                android:columnCount="2">
+
+                <Button
+                    android:id="@+id/addToCartButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginEnd="8dp"
+                    android:layout_gravity="fill_horizontal"
+                    android:text="Add to Cart"
+                    style="@style/Button"
+                    android:drawableLeft="@drawable/shopping_cart" />
+
+                <Button
+                    android:id="@+id/addToWishlistButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="fill_horizontal"
+                    android:text="Add to Wishlist"
+                    android:drawableLeft="@drawable/heart"
+                    style="@style/Button"
+                    android:backgroundTint="#E0E0E0" />
+            </GridLayout>
+
+            <!-- Features Content -->
+            <LinearLayout
+                android:id="@+id/featuresContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="fill_horizontal"
+                android:orientation="vertical"
+                android:visibility="visible"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="• Active Noise Cancellation"
+                    android:textColor="#757575" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="• 40-hour battery life"
+                    android:textColor="#757575" />
+            </LinearLayout>
+
+
+
+        </GridLayout>
+    </ScrollView>
+</FrameLayout>

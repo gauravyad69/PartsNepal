@@ -1,0 +1,22 @@
+ktor:
+    application:
+        modules:
+            - com.example.ApplicationKt.module
+    deployment:
+        port: 8080
+jwt:
+  secret: "TheGayNigga69"
+  issuer: "api.auracoin.tech"
+  audience: "tap-swap-three.vercel.app"
+  realm: "Access to 'hello'"
+
+db:
+  mongo:
+    user: "gauravmongo"
+    password: "gaurav"
+    host: "cluster0.t9kf18u.mongodb.net"
+    port: "27017"
+    maxPoolSize: 20
+    database:
+      name: "auracoin"
+#the db here is not being used, the uri is directly set in the Databases.kt

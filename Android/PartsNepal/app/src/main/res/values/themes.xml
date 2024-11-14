@@ -1,0 +1,95 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.PartsNepal" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.PartsNepal" parent="Base.Theme.PartsNepal" />
+
+    <style name="ThemeOverlay.PartsNepal.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
+        <item name="fullscreenTextColor">@color/light_blue_A200</item>
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+    <!-- In res/values/styles.xml -->
+    <style name="MyToolbarStyle" parent="Widget.AppCompat.Toolbar">
+
+        <item name="android:background">@color/mainBackground</item>
+        <item name="android:titleTextAppearance">@style/ToolbarTitleTextAppearance</item>
+
+        <!-- Subtitle text appearance -->
+        <item name="android:subtitleTextAppearance">@style/ToolbarSubtitleTextAppearance</item>
+    </style>
+
+
+    <!-- Title text appearance style -->
+    <style name="ToolbarTitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:fontFamily">@font/inter_bold</item><!-- Set your custom font -->
+        <item name="android:textSize">26sp</item> <!-- Customize text size -->
+        <item name="android:textColor">@color/mainColor</item> <!-- Customize text color -->
+    </style>
+
+    <!-- Subtitle text appearance style -->
+    <style name="ToolbarSubtitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/mainColor</item>
+    </style>
+
+
+    <style name="Button" parent="">
+        <item name="android:textColor">@color/mainBackground</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="cornerRadius">10dp</item>
+    </style>
+
+
+
+    <style name="logoImgOnScreen" parent="Base.Theme.PartsNepal">
+        <item name="tint">@color/mainColor</item>
+    </style>
+
+    <style name="themeMainBackground" parent="">
+        <item name="fullscreenBackgroundColor">@color/mainBackground</item>
+        <item name="fullscreenTextColor">@color/mainColor</item>
+    </style>
+
+    <style name="themeCards" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardBackgroundColor">@color/containerBackground</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="textColor">@color/mainColor</item>
+    </style>
+
+    <style name="ThemeOverlay.TradersArea.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
+        <item name="fullscreenTextColor">@color/light_blue_A400</item>
+    </style>
+
+    <style name="ThemeOverlay.TradersArena.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
+        <item name="fullscreenTextColor">@color/light_blue_A400</item>
+    </style>
+
+    <style name="Theme.TradersArena.Fullscreen" parent="Base.Theme.PartsNepal">
+        <item name="android:actionBarStyle">@style/Widget.Theme.TradersArena.ActionBar.Fullscreen
+        </item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+
+
+
+</resources>
