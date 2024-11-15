@@ -1,123 +1,247 @@
+// AdminOrderRoutes.kt
 package np.com.parts.system.Routes.Orders
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import np.com.parts.system.Models.DeliveryDetails
-import np.com.parts.system.Models.OrderModel
+import np.com.parts.system.Models.*
 import np.com.parts.system.Services.OrderService
+import kotlinx.serialization.Serializable
+
+// Data classes for requests
+@Serializable
+data class UpdateOrderStatusRequest(
+    val status: OrderStatus,
+    val location: String? = null,
+    val description: String? = null,
+    val updatedBy: String
+)
+
+@Serializable
+data class UpdatePaymentRequest(
+    val status: PaymentStatus,
+    val transactionId: String? = null
+)
+
+@Serializable
+data class UpdateTrackingRequest(
+    val trackingNumber: String,
+    val carrier: String
+)
+
+@Serializable
+data class CreateOrderRequest(
+    val items: List<OrderItem>,
+    val shipping: ShippingDetails,
+    val payment: PaymentDetails
+) {
+    fun toOrderModel(customerId: String): OrderModel {
+        // Implementation to convert request to OrderModel
+        // You'll need to add the actual implementation based on your needs
+        TODO("Implement conversion logic")
+    }
+}
 
 fun Route.adminOrderRoutes(orderService: OrderService) {
+    route("/admin/orders") {
+        // GET - Get all orders (with pagination and sorting)
+        get {
+            try {
+                val skip = call.parameters["skip"]?.toIntOrNull() ?: 0
+                val limit = call.parameters["limit"]?.toIntOrNull() ?: 50
+                val sortBy = call.parameters["sortBy"] ?: "orderDate"
+                val descending = call.parameters["descending"]?.toBoolean() ?: true
 
-        route("/orders") {
-            // GET - Get all orders (with pagination)
-            get {
-                try {
-                    val skip = call.parameters["skip"]?.toIntOrNull() ?: 0
-                    val limit = call.parameters["limit"]?.toIntOrNull() ?: 50
-                    val orders = orderService.getAllOrders(skip, limit)
-                    call.respond(HttpStatusCode.OK, orders)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error fetching orders")
-                }
-            }
-
-            // GET - Get order by ID
-            get("/{orderId}") {
-                try {
-                    val orderId = call.parameters["orderId"]
-                        ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid order ID")
-                    val order = orderService.getOrderById(orderId)
-                    if (order != null) {
-                        call.respond(HttpStatusCode.OK, order)
-                    } else {
-                        call.respond(HttpStatusCode.NotFound, "Order not found")
-                    }
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error fetching order")
-                }
-            }
-
-            // PUT - Update order status
-            put("/{orderId}/status") {
-                try {
-                    val orderId = call.parameters["orderId"]
-                        ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid order ID")
-                    val newStatus = call.receive<String>()
-                    val updated = orderService.updateOrderStatus(orderId, newStatus)
-                    if (updated) {
-                        call.respond(HttpStatusCode.OK, "Order status updated successfully")
-                    } else {
-                        call.respond(HttpStatusCode.NotFound, "Order not found")
-                    }
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error updating order status")
-                }
-            }
-
-            // PUT - Update delivery details
-            put("/{orderId}/delivery") {
-                try {
-                    val orderId = call.parameters["orderId"]
-                        ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid order ID")
-                    val deliveryDetails = call.receive<DeliveryDetails>()
-                    val updated = orderService.updateDeliveryDetails(orderId, deliveryDetails)
-                    if (updated) {
-                        call.respond(HttpStatusCode.OK, "Delivery details updated successfully")
-                    } else {
-                        call.respond(HttpStatusCode.NotFound, "Order not found")
-                    }
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error updating delivery details")
-                }
-            }
-
-            // DELETE - Delete an order
-            delete("/{orderId}") {
-                try {
-                    val orderId = call.parameters["orderId"]
-                        ?: return@delete call.respond(HttpStatusCode.BadRequest, "Invalid order ID")
-                    val deleted = orderService.deleteOrder(orderId)
-                    if (deleted) {
-                        call.respond(HttpStatusCode.OK, "Order deleted successfully")
-                    } else {
-                        call.respond(HttpStatusCode.NotFound, "Order not found")
-                    }
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error deleting order")
-                }
-            }
-
-            // GET - Get orders by status
-            get("/status/{status}") {
-                try {
-                    val status = call.parameters["status"]
-                        ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid order status")
-                    val orders = orderService.getOrdersByStatus(status)
-                    call.respond(HttpStatusCode.OK, orders)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error fetching orders by status")
-                }
-            }
-
-            // GET - Get orders by date range
-            get("/date-range") {
-                try {
-                    val startDate = call.parameters["startDate"]?.toLongOrNull()
-                    val endDate = call.parameters["endDate"]?.toLongOrNull()
-                    if (startDate == null || endDate == null) {
-                        return@get call.respond(HttpStatusCode.BadRequest, "Invalid date range")
-                    }
-                    val orders = orderService.getOrdersByDateRange(startDate, endDate)
-                    call.respond(HttpStatusCode.OK, orders)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error fetching orders by date range")
-                }
+                val orders = orderService.getAllOrders(skip, limit, sortBy, descending)
+                call.respond(HttpStatusCode.OK, orders)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error fetching orders: ${e.message}")
             }
         }
 
+        // GET - Get order by number
+        get("/{orderNumber}") {
+            try {
+                val orderNumber = call.parameters["orderNumber"]
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid order number")
+                val order = orderService.getOrderByNumber(orderNumber)
+                if (order != null) {
+                    call.respond(HttpStatusCode.OK, order)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Order not found")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error fetching order: ${e.message}")
+            }
+        }
+
+        // PUT - Update order status
+        put("/{orderNumber}/status") {
+            try {
+                val orderNumber = call.parameters["orderNumber"]
+                    ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid order number")
+                val request = call.receive<UpdateOrderStatusRequest>()
+
+                val updated = orderService.updateOrderStatus(
+                    orderNumber = orderNumber,
+                    newStatus = request.status,
+                    location = request.location,
+                    description = request.description,
+                    updatedBy = request.updatedBy
+                )
+
+                if (updated) {
+                    call.respond(HttpStatusCode.OK, "Order status updated successfully")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Order not found")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error updating order status: ${e.message}")
+            }
+        }
+
+        // PUT - Update payment status
+        put("/{orderNumber}/payment") {
+            try {
+                val orderNumber = call.parameters["orderNumber"]
+                    ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid order number")
+                val request = call.receive<UpdatePaymentRequest>()
+
+                val updated = orderService.updatePaymentStatus(
+                    orderNumber = orderNumber,
+                    paymentStatus = request.status,
+                    transactionId = request.transactionId
+                )
+
+                if (updated) {
+                    call.respond(HttpStatusCode.OK, "Payment status updated successfully")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Order not found")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error updating payment status: ${e.message}")
+            }
+        }
+
+        // PUT - Update shipping details
+        put("/{orderNumber}/shipping") {
+            try {
+                val orderNumber = call.parameters["orderNumber"]
+                    ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid order number")
+                val shippingDetails = call.receive<ShippingDetails>()
+                val updated = orderService.updateShippingDetails(orderNumber, shippingDetails)
+                if (updated) {
+                    call.respond(HttpStatusCode.OK, "Shipping details updated successfully")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Order not found")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error updating shipping details: ${e.message}")
+            }
+        }
+
+        // POST - Add order note
+        post("/{orderNumber}/notes") {
+            try {
+                val orderNumber = call.parameters["orderNumber"]
+                    ?: return@post call.respond(HttpStatusCode.BadRequest, "Invalid order number")
+                val note = call.receive<OrderNote>()
+                val updated = orderService.addOrderNote(orderNumber, note)
+                if (updated) {
+                    call.respond(HttpStatusCode.Created, "Note added successfully")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Order not found")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error adding note: ${e.message}")
+            }
+        }
+
+        // PUT - Update tracking information
+        put("/{orderNumber}/tracking") {
+            try {
+                val orderNumber = call.parameters["orderNumber"]
+                    ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid order number")
+                val request = call.receive<UpdateTrackingRequest>()
+
+                val updated = orderService.updateTracking(
+                    orderNumber = orderNumber,
+                    trackingNumber = request.trackingNumber,
+                    carrier = request.carrier
+                )
+
+                if (updated) {
+                    call.respond(HttpStatusCode.OK, "Tracking information updated successfully")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Order not found")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error updating tracking: ${e.message}")
+            }
+        }
+
+        // GET - Search orders
+        get("/search") {
+            try {
+                val customerName = call.parameters["customerName"]
+                val customerEmail = call.parameters["customerEmail"]
+                val orderStatus = call.parameters["orderStatus"]?.let { OrderStatus.valueOf(it) }
+                val paymentStatus = call.parameters["paymentStatus"]?.let { PaymentStatus.valueOf(it) }
+                val startDate = call.parameters["startDate"]?.toLongOrNull()
+                val endDate = call.parameters["endDate"]?.toLongOrNull()
+                val skip = call.parameters["skip"]?.toIntOrNull() ?: 0
+                val limit = call.parameters["limit"]?.toIntOrNull() ?: 50
+
+                val orders = orderService.searchOrders(
+                    customerName = customerName,
+                    customerEmail = customerEmail,
+                    orderStatus = orderStatus,
+                    paymentStatus = paymentStatus,
+                    startDate = startDate,
+                    endDate = endDate,
+                    skip = skip,
+                    limit = limit
+                )
+
+                call.respond(HttpStatusCode.OK, orders)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error searching orders: ${e.message}")
+            }
+        }
+
+        // GET - Get orders by status
+        get("/status/{status}") {
+            try {
+                val status = call.parameters["status"]?.let {
+                    OrderStatus.valueOf(it)
+                } ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid order status")
+
+                val orders = orderService.getOrdersByStatus(status)
+                call.respond(HttpStatusCode.OK, orders)
+            } catch (e:IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid order status value")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error fetching orders by status: ${e.message}")
+            }
+        }
+
+        // GET - Get orders by customer type
+        get("/customer-type/{type}") {
+            try {
+                val customerType = call.parameters["type"]?.let {
+                    CustomerType.valueOf(it)
+                } ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid customer type")
+
+                val orders = orderService.getOrdersByCustomerType(customerType)
+                call.respond(HttpStatusCode.OK, orders)
+            } catch (e:IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid customer type value")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error fetching orders by customer type: ${e.message}")
+            }
+        }
+    }
 }
+
