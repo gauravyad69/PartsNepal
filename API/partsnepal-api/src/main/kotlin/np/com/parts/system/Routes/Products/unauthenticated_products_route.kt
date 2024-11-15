@@ -1,4 +1,3 @@
-// Response Models
 package np.com.parts.system.Routes.Products
 
 import io.ktor.http.*
@@ -8,10 +7,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import np.com.parts.system.Services.ProductService
 import np.com.parts.system.Models.*
 
+// Response Models
 @Serializable
 data class ProductResponse<T>(
     val data: T,
@@ -36,7 +37,9 @@ data class ReviewRequest(
 @Serializable
 data class ErrorResponse(
     val message: String,
-    val code: String? = null
+    val code: String? = null,
+    val debug: String? = null
+
 )
 
 // Unauthenticated Routes
@@ -45,58 +48,57 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
         // GET - Retrieve all products with pagination
         get {
             try {
-                val page = call.parameters["page"]?.toIntOrNull() ?: 1
+                val page = call.parameters["page"]?.toIntOrNull() ?: 0
                 val pageSize = call.parameters["pageSize"]?.toIntOrNull() ?: 20
-                val sortBy = call.parameters["sortBy"] ?: "productId"
-                val sortOrder = call.parameters["sortOrder"]?.lowercase() ?: "asc"
+                val productsFlow = productService.getAllProductsFlow(pageSize)
+                val products = productsFlow.toList()
 
-                productService.getAllProductsFlow(pageSize)
-                    .collect { products ->
-                        call.respond(
-                            HttpStatusCode.OK,
-                            ProductResponse(
-                                data = products,
-                                metadata = ResponseMetadata(
-                                    page = page,
-                                    itemsPerPage = pageSize
-                                )
-                            )
+                call.respond(
+                    HttpStatusCode.OK,
+                    ProductResponse(
+                        data = products,
+                        metadata = ResponseMetadata(
+                            page = page,
+                            itemsPerPage = pageSize,
+                            totalItems = products.size
                         )
-                    }
+                    )
+                )
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    ErrorResponse("Error retrieving products", "PRODUCTS_RETRIEVAL_ERROR")
+                    ErrorResponse("Error retrieving products", "PRODUCTS_RETRIEVAL_ERROR", e.toString())
                 )
             }
         }
 
-        // Route to retrieve all main product details with pagination
-        get("/main-product-details") {
+        // GET - Retrieve basic product details with pagination
+        get("/basic") {
             try {
-                val page = call.parameters["page"]?.toIntOrNull() ?: 1
+                val page = call.parameters["page"]?.toIntOrNull() ?: 0
                 val pageSize = call.parameters["pageSize"]?.toIntOrNull() ?: 20
-                val skip = (page - 1) * pageSize
+                val productsFlow = productService.getAllBasicProductsFlow(pageSize)
+                val products = productsFlow.toList()
 
-                // Fetch only main product details in batches
-                val mainProducts = withContext(Dispatchers.IO) {
-                    mainDetailsCollection.find()
-                        .skip(skip)
-                        .limit(pageSize)
-                        .toList()
-                }
-
-                // Respond with the list of main product details
-                call.respond(HttpStatusCode.OK, mainProducts)
+                call.respond(
+                    HttpStatusCode.OK,
+                    ProductResponse(
+                        data = products,
+                        metadata = ResponseMetadata(
+                            page = page,
+                            itemsPerPage = pageSize,
+                            totalItems = products.size
+                        )
+                    )
+                )
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    ErrorResponse("Error retrieving main product details", "MAIN_PRODUCT_DETAILS_RETRIEVAL_ERROR")
+                    ErrorResponse("Error retrieving basic product details", "BASIC_PRODUCTS_RETRIEVAL_ERROR", e.toString()
+                    )
                 )
             }
         }
-
-
 
         // GET - Retrieve a specific product by ID
         get("/{productId}") {
@@ -134,28 +136,27 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
 
                 // Add optional filters
                 call.parameters["minPrice"]?.toLongOrNull()?.let {
-                    filters["mainDetails.productSPPrice"] = it
+                    filters["basic.pricing.regularPrice.amount"] = it
                 }
                 call.parameters["productType"]?.let {
-                    filters["mainDetails.productType"] = it
+                    filters["basic.productType"] = it
                 }
                 call.parameters["onSale"]?.toBoolean()?.let {
-                    filters["mainDetails.isProductOnSale"] = it
+                    filters["basic.pricing.isOnSale"] = it
                 }
 
-                productService.searchProducts(query, page, pageSize, filters)
-                    .collect { products ->
-                        call.respond(
-                            HttpStatusCode.OK,
-                            ProductResponse(
-                                data = products,
-                                metadata = ResponseMetadata(
-                                    page = page,
-                                    itemsPerPage = pageSize
-                                )
-                            )
+                val products = productService.searchProducts(query, page, pageSize, filters).toList()
+                call.respond(
+                    HttpStatusCode.OK,
+                    ProductResponse(
+                        data = products,
+                        metadata = ResponseMetadata(
+                            page = page,
+                            itemsPerPage = pageSize,
+                            totalItems = products.size
                         )
-                    }
+                    )
+                )
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
@@ -164,6 +165,31 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
             }
         }
 
-        // Additional routes with improved response handling...
+        // GET - Retrieve products on sale
+        get("/on-sale") {
+            try {
+                val page = call.parameters["page"]?.toIntOrNull() ?: 0
+                val pageSize = call.parameters["pageSize"]?.toIntOrNull() ?: 20
+                val products = productService.getProductsOnSale(page, pageSize).toList()
+
+                call.respond(
+                    HttpStatusCode.OK,
+                    ProductResponse(
+                        data = products,
+                        metadata = ResponseMetadata(
+                            page = page,
+                            itemsPerPage = pageSize,
+                            totalItems = products.size
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    ErrorResponse("Error retrieving products on sale", "SALE_PRODUCTS_RETRIEVAL_ERROR")
+                )
+            }
+        }
     }
 }
+

@@ -16,12 +16,9 @@ import kotlin.time.Duration.Companion.minutes
 
 class ProductService(private val database: MongoDatabase) {
     private lateinit var productCollection: MongoCollection<ProductModel>
-    private lateinit var mainDetailsCollection: MongoCollection<MainProductDetailsModel>
-    private lateinit var fullDetailsCollection: MongoCollection<FullProductDetailsModel>
 
-    // In-memory cache for frequently accessed data
-    private val mainDetailsCache = ConcurrentHashMap<Int, CachedItem<MainProductDetailsModel>>()
-    private val fullDetailsCache = ConcurrentHashMap<Int, CachedItem<FullProductDetailsModel>>()
+    // In-memory cache for frequently accessed products
+    private val productCache = ConcurrentHashMap<Int, CachedItem<ProductModel>>()
 
     private data class CachedItem<T>(
         val data: T,
@@ -32,72 +29,54 @@ class ProductService(private val database: MongoDatabase) {
     init {
         try {
             database.createCollection("products")
-            database.createCollection("main_details")
-            database.createCollection("full_details")
         } catch (e: MongoCommandException) {
-            // Collections already exist, ignore the error
+            // Collection already exists, ignore the error
         }
 
         productCollection = database.getCollection<ProductModel>("products")
-        mainDetailsCollection = database.getCollection<MainProductDetailsModel>("main_details")
-        fullDetailsCollection = database.getCollection<FullProductDetailsModel>("full_details")
-
-        // Create indexes
         createIndexes()
     }
 
     private fun createIndexes() {
-        // Main details indexes
-        mainDetailsCollection.createIndexes(
+        productCollection.createIndexes(
             listOf(
-                IndexModel(Indexes.ascending("productId"), IndexOptions().unique(true)),
-                IndexModel(Indexes.ascending("productSKU"), IndexOptions().unique(true)),
-                IndexModel(Indexes.text("productName")),
-                IndexModel(Indexes.ascending("productType")),
-                IndexModel(Indexes.ascending("productStock")),
-                IndexModel(Indexes.ascending("isProductOnSale")),
-                IndexModel(Indexes.ascending("productSPPrice"))
-            )
-        )
+                // Basic info indexes
+                IndexModel(Indexes.ascending("basic.productId"), IndexOptions().unique(true)),
+                IndexModel(Indexes.ascending("basic.productSKU"), IndexOptions().unique(true)),
+                IndexModel(Indexes.text("basic.productName")),
+                IndexModel(Indexes.ascending("basic.productType")),
 
-        // Full details indexes
-        fullDetailsCollection.createIndexes(
-            listOf(
-                IndexModel(Indexes.ascending("productId"), IndexOptions().unique(true)),
-                IndexModel(Indexes.text("productDescription")),
-                IndexModel(Indexes.ascending("pricing.productManufacturer")),
-                IndexModel(Indexes.ascending("pricing.isProductAuthentic"))
+                // Inventory indexes
+                IndexModel(Indexes.ascending("basic.inventory.stock")),
+                IndexModel(Indexes.ascending("basic.inventory.isAvailable")),
+
+                // Pricing indexes
+                IndexModel(Indexes.ascending("basic.pricing.regularPrice.amount")),
+                IndexModel(Indexes.ascending("basic.pricing.salePrice.amount")),
+
+                // Details indexes
+//                IndexModel(Indexes.text("details.description")),
+                IndexModel(Indexes.ascending("details.addDate")),
+
+                // Review indexes
+                IndexModel(Indexes.ascending("details.features.reviews.summary.averageRating")),
+                IndexModel(Indexes.ascending("details.features.reviews.summary.totalCount"))
             )
         )
     }
 
     // Cache management
-    private suspend fun getMainDetailsWithCache(productId: Int): MainProductDetailsModel? {
-        val cached = mainDetailsCache[productId]
+    private suspend fun getProductWithCache(productId: Int): ProductModel? {
+        val cached = productCache[productId]
         if (cached != null && System.currentTimeMillis() - cached.timestamp < 5.minutes.inWholeMilliseconds) {
             return cached.data
         }
 
         return withContext(Dispatchers.IO) {
-            mainDetailsCollection.find(Filters.eq("productId", productId))
+            productCollection.find(Filters.eq("basic.productId", productId))
                 .firstOrNull()
-                ?.also { mainDetails ->
-                    mainDetailsCache[productId] = CachedItem(mainDetails, version = mainDetails.version)
-                }
-        }
-    }
-
-    private suspend fun getFullDetailsWithCache(productId: Int): FullProductDetailsModel? {
-        val cached = fullDetailsCache[productId]
-        if (cached != null && System.currentTimeMillis() - cached.timestamp < 5.minutes.inWholeMilliseconds) {
-            return cached.data
-        }
-
-        return withContext(Dispatchers.IO) {
-            fullDetailsCollection.find(Filters.eq("productId", productId))
-                .firstOrNull()
-                ?.also { fullDetails ->
-                    fullDetailsCache[productId] = CachedItem(fullDetails, version = fullDetails.version)
+                ?.also { product ->
+                    productCache[productId] = CachedItem(product, version = product.version)
                 }
         }
     }
@@ -105,9 +84,6 @@ class ProductService(private val database: MongoDatabase) {
     // Create operations
     suspend fun createProduct(product: ProductModel): Boolean = withContext(Dispatchers.IO) {
         try {
-            // Insert into separate collections
-            mainDetailsCollection.insertOne(product.mainDetails)
-            fullDetailsCollection.insertOne(product.fullDetails)
             productCollection.insertOne(product)
             true
         } catch (e: MongoWriteException) {
@@ -120,75 +96,40 @@ class ProductService(private val database: MongoDatabase) {
     }
 
     // Read operations
-    suspend fun getProductById(productId: Int): ProductModel? = withContext(Dispatchers.IO) {
-        val mainDetails = getMainDetailsWithCache(productId) ?: return@withContext null
-        val fullDetails = getFullDetailsWithCache(productId) ?: return@withContext null
-        ProductModel(
-            id = productId.toString(),
-            mainDetails = mainDetails,
-            fullDetails = fullDetails
-        )
-    }
+    suspend fun getProductById(productId: Int): ProductModel? =
+        getProductWithCache(productId)
+
+    suspend fun getBasicProductById(productId: Int): BasicProductView? =
+        getProductWithCache(productId)?.toBasicView()
 
     // Efficient batch operations using Kotlin Flow
     fun getAllProductsFlow(batchSize: Int = 100): Flow<ProductModel> = flow {
         var skip = 0
         while (true) {
             val batch = withContext(Dispatchers.IO) {
-                mainDetailsCollection.find()
+                productCollection.find()
                     .skip(skip)
                     .limit(batchSize)
                     .toList()
             }
             if (batch.isEmpty()) break
 
-            batch.forEach { mainDetails ->
-                getFullDetailsWithCache(mainDetails.productId)?.let { fullDetails ->
-                    emit(
-                        ProductModel(
-                            id = mainDetails.productId.toString(),
-                            mainDetails = mainDetails,
-                            fullDetails = fullDetails
-                        )
-                    )
-                }
+            batch.forEach { product ->
+                emit(product)
             }
             skip += batchSize
         }
     }
 
-    fun getAllMainProductsFlow(batchSize: Int = 100): Flow<Main> = flow {
-        var skip = 0
-        while (true) {
-            val batch = withContext(Dispatchers.IO) {
-                mainDetailsCollection.find()
-                    .skip(skip)
-                    .limit(batchSize)
-                    .toList()
-            }
-            if (batch.isEmpty()) break
-
-            batch.forEach { mainDetails ->
-                getFullDetailsWithCache(mainDetails.productId)?.let { fullDetails ->
-                    emit(
-                        ProductModel(
-                            id = mainDetails.productId.toString(),
-                            mainDetails = mainDetails,
-                            fullDetails = fullDetails
-                        )
-                    )
-                }
-            }
-            skip += batchSize
-        }
-    }
+    fun getAllBasicProductsFlow(batchSize: Int = 100): Flow<BasicProductView> =
+        getAllProductsFlow(batchSize).map { it.toBasicView() }
 
     // Update operations
-    suspend fun updateMainDetails(productId: Int, updates: Map<String, Any>): Boolean = withContext(Dispatchers.IO) {
-        val updateResult = mainDetailsCollection.updateOne(
-            Filters.eq("productId", productId),
+    suspend fun updateBasicInfo(productId: Int, updates: Map<String, Any>): Boolean = withContext(Dispatchers.IO) {
+        val updateResult = productCollection.updateOne(
+            Filters.eq("basic.productId", productId),
             Updates.combine(
-                updates.map { (field, value) -> Updates.set(field, value) } +
+                updates.map { (field, value) -> Updates.set("basic.$field", value) } +
                         listOf(
                             Updates.set("lastUpdated", System.currentTimeMillis()),
                             Updates.inc("version", 1)
@@ -196,16 +137,16 @@ class ProductService(private val database: MongoDatabase) {
             )
         )
         if (updateResult.modifiedCount > 0) {
-            mainDetailsCache.remove(productId)
+            productCache.remove(productId)
             true
         } else false
     }
 
-    suspend fun updateFullDetails(productId: Int, updates: Map<String, Any>): Boolean = withContext(Dispatchers.IO) {
-        val updateResult = fullDetailsCollection.updateOne(
-            Filters.eq("productId", productId),
+    suspend fun updateDetailedInfo(productId: Int, updates: Map<String, Any>): Boolean = withContext(Dispatchers.IO) {
+        val updateResult = productCollection.updateOne(
+            Filters.eq("basic.productId", productId),
             Updates.combine(
-                updates.map { (field, value) -> Updates.set(field, value) } +
+                updates.map { (field, value) -> Updates.set("details.$field", value) } +
                         listOf(
                             Updates.set("lastUpdated", System.currentTimeMillis()),
                             Updates.inc("version", 1)
@@ -213,39 +154,74 @@ class ProductService(private val database: MongoDatabase) {
             )
         )
         if (updateResult.modifiedCount > 0) {
-            fullDetailsCache.remove(productId)
+            productCache.remove(productId)
             true
         } else false
     }
 
-    // Add review with rating update
-    suspend fun addProductReview(productId: Int, review: ProductReview): Boolean = withContext(Dispatchers.IO) {
-        val fullDetails = getFullDetailsWithCache(productId) ?: return@withContext false
+    // Inventory operations
+    suspend fun updateStock(productId: Int, newStock: Int): Boolean = withContext(Dispatchers.IO) {
+        val updateResult = productCollection.updateOne(
+            Filters.eq("basic.productId", productId),
+            Updates.combine(
+                Updates.set("basic.inventory.stock", newStock),
+                Updates.set("basic.inventory.isAvailable", newStock > 0),
+                Updates.set("lastUpdated", System.currentTimeMillis()),
+                Updates.inc("version", 1)
+            )
+        )
+        if (updateResult.modifiedCount > 0) {
+            productCache.remove(productId)
+            true
+        } else false
+    }
 
-        // Calculate new rating
-        val currentRating = fullDetails.features.productRating
-        val newTotalRatings = currentRating.totalRatings + 1
-        val newDistribution = currentRating.ratingDistribution.toMutableMap()
+    // Pricing operations
+    suspend fun updatePricing(productId: Int, pricing: PricingInfo): Boolean = withContext(Dispatchers.IO) {
+        val updateResult = productCollection.updateOne(
+            Filters.eq("basic.productId", productId),
+            Updates.combine(
+                Updates.set("basic.pricing", pricing),
+                Updates.set("lastUpdated", System.currentTimeMillis()),
+                Updates.inc("version", 1)
+            )
+        )
+        if (updateResult.modifiedCount > 0) {
+            productCache.remove(productId)
+            true
+        } else false
+    }
+
+    // Review operations
+    suspend fun addReview(productId: Int, review: Review): Boolean = withContext(Dispatchers.IO) {
+        val product = getProductWithCache(productId) ?: return@withContext false
+
+        // Calculate new review summary
+        val currentReviews = product.details.features.reviews
+        val newTotalCount = currentReviews.summary.totalCount + 1
+        val newDistribution = currentReviews.summary.distribution.toMutableMap()
         newDistribution[review.rating] = (newDistribution[review.rating] ?: 0) + 1
 
-        val newAverageRating = (currentRating.averageRating * currentRating.totalRatings + review.rating) / newTotalRatings
+        val newAverageRating = (currentReviews.summary.averageRating * currentReviews.summary.totalCount + review.rating) / newTotalCount
 
-        val updateResult = fullDetailsCollection.updateOne(
-            Filters.eq("productId", productId),
+        val newSummary = ReviewSummary(
+            averageRating = newAverageRating,
+            totalCount = newTotalCount,
+            distribution = newDistribution
+        )
+
+        val updateResult = productCollection.updateOne(
+            Filters.eq("basic.productId", productId),
             Updates.combine(
-                Updates.push("features.productReviews", review),
-                Updates.set("features.productRating", ProductRating(
-                    averageRating = newAverageRating,
-                    totalRatings = newTotalRatings,
-                    ratingDistribution = newDistribution
-                )),
+                Updates.push("details.features.reviews.items", review),
+                Updates.set("details.features.reviews.summary", newSummary),
                 Updates.set("lastUpdated", System.currentTimeMillis()),
                 Updates.inc("version", 1)
             )
         )
 
         if (updateResult.modifiedCount > 0) {
-            fullDetailsCache.remove(productId)
+            productCache.remove(productId)
             true
         } else false
     }
@@ -265,30 +241,55 @@ class ProductService(private val database: MongoDatabase) {
             Filters.and(textFilter, *additionalFilters.toTypedArray())
         }
 
-        val mainDetailsList = withContext(Dispatchers.IO) {
-            mainDetailsCollection.find(combinedFilters)
+        val products = withContext(Dispatchers.IO) {
+            productCollection.find(combinedFilters)
                 .skip(page * pageSize)
                 .limit(pageSize)
                 .toList()
         }
 
-        mainDetailsList.forEach { mainDetails ->
-            getFullDetailsWithCache(mainDetails.productId)?.let { fullDetails ->
-                emit(
-                    ProductModel(
-                        id = mainDetails.productId.toString(),
-                        mainDetails = mainDetails,
-                        fullDetails = fullDetails
-                    )
-                )
-            }
+        products.forEach { emit(it) }
+    }
+
+    // Get products by type
+    suspend fun getProductsByType(
+        productType: String,
+        page: Int = 0,
+        pageSize: Int = 20
+    ): Flow<ProductModel> = flow {
+        val products = withContext(Dispatchers.IO) {
+            productCollection.find(Filters.eq("basic.productType", productType))
+                .skip(page * pageSize)
+                .limit(pageSize)
+                .toList()
         }
+
+        products.forEach { emit(it) }
+    }
+
+    // Get products on sale
+    suspend fun getProductsOnSale(
+        page: Int = 0,
+        pageSize: Int = 20
+    ): Flow<ProductModel> = flow {
+        val products = withContext(Dispatchers.IO) {
+            productCollection.find(
+                Filters.and(
+                    Filters.exists("basic.pricing.salePrice"),
+                    Filters.exists("basic.pricing.discount")
+                )
+            )
+                .skip(page * pageSize)
+                .limit(pageSize)
+                .toList()
+        }
+
+        products.forEach { emit(it) }
     }
 
     // Cleanup expired cache entries
     private suspend fun cleanupCache() = withContext(Dispatchers.IO) {
         val expiryTime = System.currentTimeMillis() - 5.minutes.inWholeMilliseconds
-        mainDetailsCache.entries.removeIf { it.value.timestamp < expiryTime }
-        fullDetailsCache.entries.removeIf { it.value.timestamp < expiryTime }
+        productCache.entries.removeIf { it.value.timestamp < expiryTime }
     }
 }

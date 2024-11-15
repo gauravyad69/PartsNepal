@@ -5,19 +5,22 @@ import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 
 // Base interface for all models with common fields
-interface BaseModel {
+@Serializable
+sealed interface BaseModel {
     val id: String
     val lastUpdated: Long  // Unix timestamp in milliseconds
     val version: Int
 }
 
 // Sealed interface for product-related models
+@Serializable
 sealed interface ProductRelated {
     val productId: Int
 }
 
 // Core product information interface
-interface IProductInfo : ProductRelated {
+@Serializable
+sealed interface IProductInfo : ProductRelated {
     val productSKU: String
     val productName: String
     val productType: String
@@ -56,6 +59,7 @@ data class DetailedProductInfo(
     val warranty: WarrantyInfo
 ) : ProductRelated
 
+// Rest of your data classes remain the same, just add @Serializable to each
 @Serializable
 data class InventoryInfo(
     val stock: Int,
@@ -72,6 +76,7 @@ data class PricingInfo(
     val isOnSale: Boolean
         get() = salePrice != null && discount != null
 }
+
 
 @Serializable
 data class Money(

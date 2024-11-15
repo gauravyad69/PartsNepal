@@ -7,8 +7,8 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import np.com.parts.system.Models.PricingInfo
 import np.com.parts.system.Models.ProductModel
-
 
 // Admin Routes
 fun Route.adminProductRoutes(productService: ProductService) {
@@ -33,13 +33,13 @@ fun Route.adminProductRoutes(productService: ProductService) {
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    ErrorResponse("Error creating product", "PRODUCT_CREATION_ERROR")
+                    ErrorResponse("Error creating product", "PRODUCT_CREATION_ERROR", e.toString())
                 )
             }
         }
 
-        // PATCH - Update main product details
-        patch("/{productId}/main") {
+        // PATCH - Update basic product info
+        patch("/{productId}/basic") {
             try {
                 val productId = call.parameters["productId"]?.toIntOrNull()
                     ?: return@patch call.respond(
@@ -48,12 +48,12 @@ fun Route.adminProductRoutes(productService: ProductService) {
                     )
 
                 val updates = call.receive<Map<String, Any>>()
-                val updated = productService.updateMainDetails(productId, updates)
+                val updated = productService.updateBasicInfo(productId, updates)
 
                 if (updated) {
                     call.respond(
                         HttpStatusCode.OK,
-                        ProductResponse(data = true, message = "Product main details updated successfully")
+                        ProductResponse(data = true, message = "Basic product info updated successfully")
                     )
                 } else {
                     call.respond(
@@ -69,8 +69,8 @@ fun Route.adminProductRoutes(productService: ProductService) {
             }
         }
 
-        // PATCH - Update full product details
-        patch("/{productId}/full") {
+        // PATCH - Update detailed product info
+        patch("/{productId}/details") {
             try {
                 val productId = call.parameters["productId"]?.toIntOrNull()
                     ?: return@patch call.respond(
@@ -79,12 +79,12 @@ fun Route.adminProductRoutes(productService: ProductService) {
                     )
 
                 val updates = call.receive<Map<String, Any>>()
-                val updated = productService.updateFullDetails(productId, updates)
+                val updated = productService.updateDetailedInfo(productId, updates)
 
                 if (updated) {
                     call.respond(
                         HttpStatusCode.OK,
-                        ProductResponse(data = true, message = "Product full details updated successfully")
+                        ProductResponse(data = true, message = "Detailed product info updated successfully")
                     )
                 } else {
                     call.respond(
@@ -100,6 +100,71 @@ fun Route.adminProductRoutes(productService: ProductService) {
             }
         }
 
-        // Additional admin routes...
+        // PATCH - Update product inventory
+        patch("/{productId}/inventory") {
+            try {
+                val productId = call.parameters["productId"]?.toIntOrNull()
+                    ?: return@patch call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid product ID", "INVALID_PRODUCT_ID")
+                    )
+
+                val stock = call.receive<Map<String, Int>>()["stock"]
+                    ?: return@patch call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid stock value", "INVALID_STOCK")
+                    )
+
+                val updated = productService.updateStock(productId, stock)
+
+                if (updated) {
+                    call.respond(
+                        HttpStatusCode.OK,
+                        ProductResponse(data = true, message = "Product inventory updated successfully")
+                    )
+                } else {
+                    call.respond(
+                        HttpStatusCode.NotFound,
+                        ErrorResponse("Product not found", "PRODUCT_NOT_FOUND")
+                    )
+                }
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    ErrorResponse("Error updating inventory", "INVENTORY_UPDATE_ERROR")
+                )
+            }
+        }
+
+        // PATCH - Update product pricing
+        patch("/{productId}/pricing") {
+            try {
+                val productId = call.parameters["productId"]?.toIntOrNull()
+                    ?: return@patch call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid product ID", "INVALID_PRODUCT_ID")
+                    )
+
+                val pricing = call.receive<PricingInfo>()
+                val updated = productService.updatePricing(productId, pricing)
+
+                if (updated) {
+                    call.respond(
+                        HttpStatusCode.OK,
+                        ProductResponse(data = true, message = "Product pricing updated successfully")
+                    )
+                } else {
+                    call.respond(
+                        HttpStatusCode.NotFound,
+                        ErrorResponse("Product not found", "PRODUCT_NOT_FOUND")
+                    )
+                }
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    ErrorResponse("Error updating pricing", "PRICING_UPDATE_ERROR")
+                )
+            }
+        }
     }
 }

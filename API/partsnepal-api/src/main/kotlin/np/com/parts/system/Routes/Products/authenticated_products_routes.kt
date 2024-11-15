@@ -8,7 +8,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import np.com.parts.system.Models.ProductReview
+import np.com.parts.system.Models.Review
 
 // Authenticated Routes
 fun Route.authenticatedProductRoutes(productService: ProductService) {
@@ -34,13 +34,13 @@ fun Route.authenticatedProductRoutes(productService: ProductService) {
                     )
                 }
 
-                val review = ProductReview(
+                val review = Review(
                     userId = userId,
                     rating = reviewRequest.rating,
                     comment = reviewRequest.comment
                 )
 
-                val added = productService.addProductReview(productId, review)
+                val added = productService.addReview(productId, review)
 
                 if (added) {
                     call.respond(
