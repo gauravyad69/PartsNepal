@@ -4,6 +4,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+API\partsnepal-api\.idea\
+API\partsnepal-api\.gradle\
+API\partsnepal-api\gradle\
 
 ### STS ###
 .apt_generated
