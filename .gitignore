@@ -6,7 +6,16 @@ build/
 !**/src/test/**/build/
 API\partsnepal-api\.idea\
 API\partsnepal-api\.gradle\
-API\partsnepal-api\gradle\
+API\partsnepal-api\build\
+API\partsnepal-api\.kotlin\
+API\partsnepal-api\.vscode\
+
+
+API/partsnepal-api/.idea/
+API/partsnepal-api/.gradle/
+API/partsnepal-api/build/
+API/partsnepal-api/.kotlin/
+API/partsnepal-api/.vscode/
 
 ### STS ###
 .apt_generated
