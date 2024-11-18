@@ -16,7 +16,7 @@
 
     <color name="mainBackground">#0D0D0D</color>
     <color name="containerBackground">#181818</color>
-    <color name="mainColor">#DBDBDB</color>
+    <color name="mainColor">#FFFFFF</color>
     <!--    <color name="status_waiting">#CDDC39</color>-->
     <!--    <color name="status_confirming">#00FFF7</color>-->
     <!--    <color name="status_confirmed">#00FF73</color>-->
@@ -32,4 +32,15 @@
     <color name="status_failed">#FF0000</color>  <!-- Red -->
     <color name="status_refunded">#8B0000</color>  <!-- DarkRed -->
     <color name="status_unknown">#808080</color>  <!-- Gray -->
+
+    <color name="shimmer_color">#8E8E93</color>
+
+
+    <color name="text_primary">#1C1C1E</color>
+    <color name="gray">#1C1C1E</color>
+    <color name="text_secondary">#8E8E93</color>
+    <color name="divider">#F2F2F7</color>
+    <color name="sale_red">#FF3B30</color>
+    <color name="primary_color">#007AFF</color>
+    <color name="blue">#007AFF</color>
 </resources>

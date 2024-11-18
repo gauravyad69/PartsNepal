@@ -1,7 +1,7 @@
 package np.com.parts.API.User
 
 import kotlinx.serialization.Serializable
-import np.com.parts.API.Product.MainProductDetailsModel
+import np.com.parts.system.models.BasicProductView
 
 @Serializable
 data class UserModel(
@@ -23,7 +23,7 @@ data class FullUserDetails(
 
 
 data class OrderModel(
-    val mainDetails: List<MainProductDetailsModel>,
+    val mainDetails: List<BasicProductView>,
     val quantity: Int,
     val contactNumber: String,
     val voucherUsed: String,
@@ -42,4 +42,35 @@ data class ShippingAddressModel(
     val landmark: String?,
     val recipientsName: String,
     val recipientsPhoneNumber: String,
+)
+
+
+// Response Models
+@Serializable
+data class ProductResponse<T>(
+    val data: T,
+    val message: String? = null,
+    val metadata: ResponseMetadata? = null
+)
+
+@Serializable
+data class ResponseMetadata(
+    val page: Int? = null,
+    val totalPages: Int? = null,
+    val totalItems: Int? = null,
+    val itemsPerPage: Int? = null
+)
+
+@Serializable
+data class ReviewRequest(
+    val rating: Int,
+    val comment: String
+)
+
+@Serializable
+data class ErrorResponse(
+    val message: String,
+    val code: String? = null,
+    val debug: String? = null
+
 )

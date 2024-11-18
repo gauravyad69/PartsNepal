@@ -1,23 +1,63 @@
 package np.com.parts.Screens.OtherScreens
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.renderscript.ScriptGroup.Binding
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
+import me.ibrahimsn.lib.SmoothBottomBar
+import np.com.parts.API.Product.ProductViewModel
+import np.com.parts.Adapter.DeliveryAdapter
+import np.com.parts.Adapter.FeatureAdapter
+import np.com.parts.Adapter.ReviewSectionAdapter
+import np.com.parts.Adapter.WarrantyAdapter
+import np.com.parts.R
+import np.com.parts.Screens.BottomNavigationScreens.GridSpacingItemDecoration
+import np.com.parts.Screens.BottomNavigationScreens.HomeFragment
 import np.com.parts.databinding.FragmentProductBinding
+import np.com.parts.system.models.ProductModel
+import np.com.parts.system.models.Reviews
+import org.imaginativeworld.whynotimagecarousel.ImageCarousel
+import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
+import java.text.NumberFormat
 
 
 class ProductFragment : Fragment() {
-    private val hideHandler = Handler(Looper.myLooper()!!)
+    private val hideHandler = Handler(Looper.myLooper()!!
+    )
+    private lateinit var deliveryAdapter: DeliveryAdapter
+    private lateinit var warrantyAdapter: WarrantyAdapter
+    private lateinit var reviewSectionAdapter: ReviewSectionAdapter
+    private var featureAdapter = FeatureAdapter()
+
+    private val list = mutableListOf<CarouselItem>()
 
 
     private var _binding: FragmentProductBinding? = null
+    private val viewModel: ProductViewModel by viewModels()
+    private val args: ProductFragmentArgs by navArgs()
+
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -36,7 +76,20 @@ class ProductFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bottomNavigationView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottomBar)
 
+        val productId = args.productId
+        val productTitle = args.productName
+        binding.carousel.registerLifecycle(lifecycle)
+        setupRecyclerView()
+        setupObservers()
+
+
+
+        bottomNavigationView.visibility = View.GONE // Hide the bottom navigation
+
+
+        viewModel.loadProductsById(productId)
 
     }
 
@@ -65,4 +118,137 @@ class ProductFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
+    private fun formatPrice(amount: Long, currency: String): String {
+        return "$currency ${NumberFormat.getNumberInstance().format(amount)}"
+    }
+
+    private fun setupRecyclerView() {
+        // Setup RecyclerView
+        deliveryAdapter = DeliveryAdapter()
+        binding.deliveryOptionsRecyclerView.apply {
+            adapter = deliveryAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        // Setup warranty adapter
+        warrantyAdapter = WarrantyAdapter()
+        binding.warrantyTermsRecyclerView.apply {
+            adapter = warrantyAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        reviewSectionAdapter = ReviewSectionAdapter(
+            onWriteReviewClick = {
+                // Handle write review button click
+                // e.g., navigate to review writing screen
+            }
+        )
+
+        binding.featuresRecyclerView.apply {
+            adapter = reviewSectionAdapter
+            layoutManager = LinearLayoutManager(context) }
+
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.productById.collect { product ->
+
+
+                    // Update UI with products
+                    with(binding) {
+                        if (product != null) {
+                            reviewSectionAdapter.submitData(product.details.features.reviews)
+                            featureAdapter.submitList(product.details.features.highlights)
+                            deliveryAdapter.submitDeliveryInfo(product.details.delivery)
+                            warrantyAdapter.submitWarrantyInfo(product.details.warranty)
+
+
+                            val listOfImages = product.details.features.images ?: emptyList()
+                            listOfImages.forEach { picture ->
+                                picture.url.let {
+                                    list.add(CarouselItem(it))
+                                }
+                            }
+
+                            carousel.setData(list)
+
+                            productName.text = product.basic.productName
+
+                            // Format and display regular price
+                            regularPrice.text = formatPrice(
+                                product.basic.pricing.regularPrice.amount,
+                                product.basic.pricing.regularPrice.currency
+                            )
+
+                            // Handle sale price if available
+                            if (product.basic.pricing.isOnSale) {
+                                salePrice.apply {
+                                    visibility = View.VISIBLE
+                                    text = formatPrice(
+                                        product.basic.pricing.salePrice?.amount ?: 0,
+                                        product.basic.pricing.salePrice?.currency ?: "NPR"
+                                    )
+                                }
+//                            saleChip.visibility = View.VISIBLE
+                                regularPrice.apply {
+                                    paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                                    setTextColor(
+                                        ContextCompat.getColor(
+                                            context,
+                                            android.R.color.darker_gray
+                                        )
+                                    )
+                                }
+                            } else {
+                                salePrice.visibility = View.GONE
+//                            saleChip.visibility = View.GONE
+                                regularPrice.apply {
+                                    paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                                    setTextColor(
+                                        ContextCompat.getColor(
+                                            context,
+                                            android.R.color.black
+                                        )
+                                    )
+                                }
+                            }
+
+
+
+
+                        }
+
+                    }
+
+
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loading.collect { isLoading ->
+                    binding.progressBar.isVisible = isLoading
+                    binding.scrollView3.isVisible = !isLoading
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.error.collect { error ->
+                    error?.let {
+                        Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+
 }
+

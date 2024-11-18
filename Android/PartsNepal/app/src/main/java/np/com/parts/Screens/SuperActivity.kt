@@ -1,5 +1,6 @@
 package np.com.parts.Screens
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -15,9 +16,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import me.ibrahimsn.lib.BuildConfig
 import np.com.parts.R
 import np.com.parts.databinding.ActivitySuperBinding
+import timber.log.Timber
 
+@SuppressLint("StaticFieldLeak")
 private lateinit var navController: NavController
 private lateinit var binding: ActivitySuperBinding
 
@@ -33,6 +37,12 @@ class SuperActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets }
+
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)

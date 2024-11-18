@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.navigation.safeargs)
+
 }
 
 android {
@@ -52,18 +55,27 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation (libs.media3.common)
-    implementation (libs.navigation.fragment)
-    implementation (libs.navigation.ui)
+//    implementation (libs.navigation.fragment)
+//    implementation (libs.navigation.ui)
     implementation(libs.smoothbottombar)
+
+    implementation(libs.coil)
+    implementation(libs.whynot.imagecarousel)
+    implementation(libs.facebook.shimmer)
 
 
     implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.websockets)
+    implementation(libs.timber)
+
     implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.androidx.lifecycle.viewmodel.android)
+    implementation(libs.firebase.dataconnect)
+    implementation(libs.androidx.swiperefreshlayout)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

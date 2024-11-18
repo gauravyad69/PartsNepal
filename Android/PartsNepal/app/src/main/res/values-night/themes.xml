@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.PartsNepal" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.PartsNepal" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
@@ -9,4 +9,10 @@
         <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
         <item name="fullscreenTextColor">@color/light_blue_A400</item>
     </style>
+
+    <style name="themeMainBackground" parent="">
+        <item name="fullscreenTextColor">@color/mainBackground</item>
+        <item name="fullscreenBackgroundColor">@color/mainColor</item>
+    </style>
+
 </resources>

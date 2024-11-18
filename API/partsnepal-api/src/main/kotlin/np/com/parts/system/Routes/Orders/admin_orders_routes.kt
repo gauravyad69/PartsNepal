@@ -38,10 +38,63 @@ data class CreateOrderRequest(
     val payment: PaymentDetails
 ) {
     fun toOrderModel(customerId: String): OrderModel {
-        // Implementation to convert request to OrderModel
-        // You'll need to add the actual implementation based on your needs
-        TODO("Implement conversion logic")
+        val now = System.currentTimeMillis()
+        
+        // Calculate order summary
+        val subtotal = items.sumOf { it.finalPrice.amount }.toBigDecimal().toLong()
+        val shippingCost = shipping.cost.amount.toBigDecimal().toLong()
+        val totalQuantity = items.sumOf { it.quantity }
+        
+        return OrderModel(
+            orderNumber = generateOrderNumber(), // You'll need to implement this
+            orderDate = now,
+            status = OrderStatus.PENDING_PAYMENT,
+            customer = CustomerInfo(
+                id = customerId,
+                email = shipping.address.recipient.email ?: "",
+                phone = shipping.address.recipient.phone,
+                name = shipping.address.recipient.name,
+                type = CustomerType.INDIVIDUAL // Default to INDIVIDUAL, can be updated later
+            ),
+            items = items,
+            payment = payment,
+            summary = OrderSummary(
+                subtotal = Money(subtotal.toLong()),
+                discount = Money(0.toBigDecimal().toLong()), // Initial discount is 0
+                tax = TaxInfo(
+                    amount = Money(0.toBigDecimal().toLong()), // You might want to calculate tax based on your business logic
+                    rate = 0.0
+                ),
+                shipping = shipping.cost,
+                total = Money(subtotal + shippingCost),
+                totalItems = items.size,
+                totalQuantity = totalQuantity
+            ),
+            shipping = shipping,
+            tracking = OrderTracking(
+                history = listOf(
+                    TrackingEvent(
+                        status = OrderStatus.PENDING_PAYMENT,
+                        timestamp = now,
+                        description = "Order created",
+                        updatedBy = "SYSTEM"
+                    )
+                )
+            ),
+            metadata = OrderMetadata(
+                source = OrderSource.WEB, // You might want to make this configurable
+                createdAt = now
+            )
+        )
     }
+}
+
+// Helper function to generate order number (you'll need to implement this)
+private fun generateOrderNumber(): String {
+    // Example implementation:
+    val timestamp = System.currentTimeMillis()
+    val random = (1000..9999).random()
+    return "ORD-${timestamp}-${random}"
 }
 
 fun Route.adminOrderRoutes(orderService: OrderService) {

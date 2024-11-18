@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="xyz.illuminate.tradersarena.Screens.BottomNavigationScreens.HomeFragment"
+        android:name="np.com.parts.Screens.BottomNavigationScreens.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <action
@@ -24,6 +24,13 @@
             app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/action_homeFragment_to_productFragment"
+            app:destination="@id/productFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
 <!--    leave this fragment alone nigga, its independent from others -->
@@ -38,7 +45,7 @@
 
     <fragment
         android:id="@+id/otherFragment"
-        android:name="xyz.illuminate.tradersarena.Screens.BottomNavigationScreens.OtherFragment"
+        android:name="np.com.parts.Screens.BottomNavigationScreens.OtherFragment"
         android:label="OtherFragment"
         tools:layout="@layout/fragment_other">
         <action
@@ -51,7 +58,27 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="xyz.illuminate.tradersarena.Screens.BottomNavigationScreens.ProfileFragment"
+        android:name="np.com.parts.Screens.BottomNavigationScreens.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile"/>
+
+
+
+
+    <fragment
+        android:id="@+id/productFragment"
+        android:name="np.com.parts.Screens.OtherScreens.ProductFragment"
+        android:label="ProductFragment"
+        tools:layout="@layout/fragment_product">
+        <argument
+            android:name="productId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="productName"
+            app:argType="string"
+            app:nullable="false"
+            android:defaultValue="" />
+    </fragment>
+
 </navigation>
