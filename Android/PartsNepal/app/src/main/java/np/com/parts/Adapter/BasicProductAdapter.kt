@@ -1,10 +1,13 @@
 package np.com.parts.Adapter
 
 import android.graphics.Paint
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -13,11 +16,22 @@ import np.com.parts.databinding.ItemProductBinding
 import np.com.parts.system.models.BasicProductView
 import java.text.NumberFormat
 
-class BasicProductAdapter : ListAdapter<BasicProduct, RecyclerView.ViewHolder>(ProductDiffCallback()) {
+// DiffCallback implementation that was missing in original
+class ProductDiffCallback : DiffUtil.ItemCallback<BasicProductView>() {
+    override fun areItemsTheSame(oldItem: BasicProductView, newItem: BasicProductView): Boolean {
+        // Assuming there's an ID in your BasicProductView - adjust accordingly
+        return oldItem.basic.productId == newItem.basic.productId
+    }
+
+    override fun areContentsTheSame(oldItem: BasicProductView, newItem: BasicProductView): Boolean {
+        return oldItem == newItem
+    }
+}
+
+class BasicProductAdapter : ListAdapter<BasicProductView, RecyclerView.ViewHolder>(ProductDiffCallback()) {
     init {
         setHasStableIds(true)
     }
-
 
     companion object {
         const val LOADING_ITEM_VIEW_TYPE = 1
@@ -25,16 +39,33 @@ class BasicProductAdapter : ListAdapter<BasicProduct, RecyclerView.ViewHolder>(P
     }
 
     private var isLoadingMore = false
+    private var products = listOf<BasicProductView>()
+    private var onItemClickListener: ((BasicProductView) -> Unit)? = null
 
+    // Improved loading state handling
     fun setLoadingMore(loading: Boolean) {
         if (isLoadingMore != loading) {
             isLoadingMore = loading
-            if (loading) {
-                notifyItemInserted(itemCount)
-            } else {
-                notifyItemRemoved(itemCount)
+            // Post the notification to the next frame
+            Handler(Looper.getMainLooper()).post {
+                if (loading) {
+                    notifyItemInserted(itemCount - 1)
+                } else {
+                    notifyItemRemoved(itemCount)
+                }
             }
         }
+    }
+
+
+    fun updateList(newProducts: List<BasicProductView>) {
+        super.submitList(newProducts) // Pass the list to ListAdapter for diffing
+        products = newProducts         // Update your custom list
+    }
+
+
+    fun setOnItemClickListener(listener: (BasicProductView) -> Unit) {
+        onItemClickListener = listener
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -45,22 +76,16 @@ class BasicProductAdapter : ListAdapter<BasicProduct, RecyclerView.ViewHolder>(P
         }
     }
 
-    private var products = listOf<BasicProductView>()
-    private var onItemClickListener: ((BasicProductView) -> Unit)? = null
-
-    fun setOnItemClickListener(listener: (BasicProductView) -> Unit) {
-        onItemClickListener = listener
-    }
-
-    fun submitList(newProducts: List<BasicProductView>) {
-        products = newProducts
-        notifyDataSetChanged() // Consider using DiffUtil for better performance
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             LOADING_ITEM_VIEW_TYPE -> LoadingViewHolder.create(parent)
-            else -> ProductViewHolder.create(parent)
+            else -> ProductViewHolder(
+                ItemProductBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
         }
     }
 
@@ -69,11 +94,13 @@ class BasicProductAdapter : ListAdapter<BasicProduct, RecyclerView.ViewHolder>(P
             is ProductViewHolder -> {
                 val product = getItem(position)
                 holder.bind(product)
+                holder.itemView.setOnClickListener {
+                    if (position != RecyclerView.NO_POSITION) {
+                        onItemClickListener?.invoke(product)
+                    }
+                }
             }
-
-            is LoadingViewHolder -> {
-                // Loading view doesn't need binding
-            }
+            is LoadingViewHolder -> { /* Loading view doesn't need binding */ }
         }
     }
 
@@ -81,22 +108,9 @@ class BasicProductAdapter : ListAdapter<BasicProduct, RecyclerView.ViewHolder>(P
         return super.getItemCount() + if (isLoadingMore) 1 else 0
     }
 
-
     inner class ProductViewHolder(
         private val binding: ItemProductBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-
-        init {
-            itemView.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    onItemClickListener?.invoke(products[position])
-                }
-            }
-
-
-
-        }
 
         fun bind(product: BasicProductView) {
             with(binding) {
@@ -109,7 +123,16 @@ class BasicProductAdapter : ListAdapter<BasicProduct, RecyclerView.ViewHolder>(P
                     product.basic.pricing.regularPrice.currency
                 )
 
-                // Handle sale price if available
+                // Handle sale price display
+                handleSalePrice(product)
+
+                // Load image using Coil with error handling
+                loadProductImage(product)
+            }
+        }
+
+        private fun handleSalePrice(product: BasicProductView) {
+            with(binding) {
                 if (product.basic.pricing.isOnSale) {
                     salePrice.apply {
                         visibility = View.VISIBLE
@@ -131,13 +154,14 @@ class BasicProductAdapter : ListAdapter<BasicProduct, RecyclerView.ViewHolder>(P
                         setTextColor(ContextCompat.getColor(context, android.R.color.black))
                     }
                 }
+            }
+        }
 
-                // Load image using Coil
-                productImage.load(product.basic.inventory.mainImage) {
-                    crossfade(true)
-                    placeholder(R.drawable.bgmi)
-                    error(R.drawable.plan_pro)
-                }
+        private fun loadProductImage(product: BasicProductView) {
+            binding.productImage.load(product.basic.inventory.mainImage) {
+                crossfade(true)
+                placeholder(R.drawable.bgmi)
+                error(R.drawable.plan_pro)
             }
         }
 

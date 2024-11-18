@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="np.com.parts.Screens.BottomNavigationScreens.HomeFragment"
+        android:name="np.com.parts.Screens.NavScreens.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <action
@@ -36,7 +36,7 @@
 <!--    leave this fragment alone nigga, its independent from others -->
     <fragment
         android:id="@+id/verifyEmailFragment"
-        android:name="np.com.parts.Screens.OtherScreens.VerifyEmailFragment"
+        android:name="np.com.parts.Screens.MainScreens.VerifyEmailFragment"
         android:label="VerifyEmailFragment"
         tools:layout="@layout/fragment_verify_email"/>
 
@@ -45,7 +45,7 @@
 
     <fragment
         android:id="@+id/otherFragment"
-        android:name="np.com.parts.Screens.BottomNavigationScreens.OtherFragment"
+        android:name="np.com.parts.Screens.NavScreens.OtherFragment"
         android:label="OtherFragment"
         tools:layout="@layout/fragment_other">
         <action
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="np.com.parts.Screens.BottomNavigationScreens.ProfileFragment"
+        android:name="np.com.parts.Screens.NavScreens.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile"/>
 
@@ -67,7 +67,7 @@
 
     <fragment
         android:id="@+id/productFragment"
-        android:name="np.com.parts.Screens.OtherScreens.ProductFragment"
+        android:name="np.com.parts.Screens.MainScreens.ProductFragment"
         android:label="ProductFragment"
         tools:layout="@layout/fragment_product">
         <argument

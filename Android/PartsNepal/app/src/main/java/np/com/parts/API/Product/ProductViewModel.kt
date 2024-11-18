@@ -3,11 +3,13 @@ package np.com.parts.API.Product
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import np.com.parts.system.models.BasicProductView
 import np.com.parts.system.models.ProductModel
 import np.com.parts.system.network.ProductApiClient
@@ -83,39 +85,41 @@ class ProductViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                if (_basicProducts.value.isEmpty()) {
-                    _loading.value = true  // Show shimmer for initial load
-                } else {
-                    _isLoadingMore.value = true  // Show loading indicator for pagination
+                withContext(Dispatchers.Main) {
+                    if (_basicProducts.value.isEmpty()) {
+                        _loading.value = true
+                    } else {
+                        _isLoadingMore.value = true
+                    }
                 }
 
-
-                _isLoadingMore.value = true
-                val response = apiClient.getBasicProducts(currentPage, pageSize)
-                // Assuming your API returns a list or some wrapper object
-                // Adjust this according to your actual API response type
-                   val newProducts = when {
-                        // If API returns a list directly
-                        response.isSuccess && response is List<*>  -> response as List<BasicProductView>
-
-                        // If API returns a wrapper object with a data field
-                        response.isSuccess && response != null   -> response as List<BasicProductView>
-
-                        // If no data
-                        else -> emptyList()
+                // Make API call on IO dispatcher
+                withContext(Dispatchers.IO) {
+                    apiClient.getBasicProducts(currentPage, pageSize)
+                        .onSuccess { response ->
+                            withContext(Dispatchers.Main) {
+                                val newProducts = response.data
+                                if (newProducts.isEmpty()) {
+                                    isLastPage = true
+                                } else {
+                                    val currentList = _basicProducts.value.toMutableList()
+                                    currentList.addAll(newProducts)
+                                    _basicProducts.value = currentList
+                                    currentPage++
+                                }
+                            }
+                        }
+                        .onFailure { exception ->
+                            withContext(Dispatchers.Main) {
+                                _error.value = exception.message
+                            }
+                        }
                 }
-                if (newProducts.isEmpty()) {
-                    isLastPage = true
-                } else {
-                    val currentList = _basicProducts.value.toMutableList()
-                    currentList.addAll(newProducts)
-                    _basicProducts.value = currentList
-                    currentPage++
-                }
-            } catch (e: Exception) {
-                _error.value = e.message
             } finally {
-                _isLoadingMore.value = false
+                withContext(Dispatchers.Main) {
+                    _loading.value = false
+                    _isLoadingMore.value = false
+                }
             }
         }
     }

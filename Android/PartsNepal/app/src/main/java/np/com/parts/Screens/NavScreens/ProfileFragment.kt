@@ -1,4 +1,4 @@
-package np.com.parts.Screens.BottomNavigationScreens
+package np.com.parts.Screens.NavScreens
 
 import android.os.Bundle
 import android.view.LayoutInflater

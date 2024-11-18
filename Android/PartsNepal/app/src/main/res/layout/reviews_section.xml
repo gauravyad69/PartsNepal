@@ -142,8 +142,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:nestedScrollingEnabled="false"
-        tools:itemCount="3"
-        tools:listitem="@layout/item_review" />
+        tools:itemCount="3"/>
 
     <!-- Write Review Button -->
     <com.google.android.material.button.MaterialButton

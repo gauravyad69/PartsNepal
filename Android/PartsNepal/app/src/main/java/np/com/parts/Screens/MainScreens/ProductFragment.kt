@@ -1,17 +1,13 @@
-package np.com.parts.Screens.OtherScreens
+package np.com.parts.Screens.MainScreens
 
 import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.renderscript.ScriptGroup.Binding
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -20,27 +16,22 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import coil.load
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
 import np.com.parts.API.Product.ProductViewModel
 import np.com.parts.Adapter.DeliveryAdapter
 import np.com.parts.Adapter.FeatureAdapter
+import np.com.parts.Adapter.ReviewAdapter
 import np.com.parts.Adapter.ReviewSectionAdapter
 import np.com.parts.Adapter.WarrantyAdapter
 import np.com.parts.R
-import np.com.parts.Screens.BottomNavigationScreens.GridSpacingItemDecoration
-import np.com.parts.Screens.BottomNavigationScreens.HomeFragment
 import np.com.parts.databinding.FragmentProductBinding
-import np.com.parts.system.models.ProductModel
 import np.com.parts.system.models.Reviews
-import org.imaginativeworld.whynotimagecarousel.ImageCarousel
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 import java.text.NumberFormat
+import kotlin.math.roundToInt
 
 
 class ProductFragment : Fragment() {
@@ -48,8 +39,9 @@ class ProductFragment : Fragment() {
     )
     private lateinit var deliveryAdapter: DeliveryAdapter
     private lateinit var warrantyAdapter: WarrantyAdapter
-    private lateinit var reviewSectionAdapter: ReviewSectionAdapter
     private var featureAdapter = FeatureAdapter()
+    private lateinit var reviewAdapter: ReviewAdapter
+
 
     private val list = mutableListOf<CarouselItem>()
 
@@ -139,17 +131,17 @@ class ProductFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        reviewSectionAdapter = ReviewSectionAdapter(
-            onWriteReviewClick = {
-                // Handle write review button click
-                // e.g., navigate to review writing screen
-            }
-        )
+        // Setup review adapter
+        reviewAdapter = ReviewAdapter()
+        binding.reviewsSection.reviewsRecyclerView.apply {
+            adapter = reviewAdapter
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+        }
 
-        binding.featuresRecyclerView.apply {
-            adapter = reviewSectionAdapter
-            layoutManager = LinearLayoutManager(context) }
-
+        binding.reviewsSection.writeReviewButton.setOnClickListener {
+            // Handle write review click
+        }
     }
 
     private fun setupObservers() {
@@ -161,11 +153,11 @@ class ProductFragment : Fragment() {
                     // Update UI with products
                     with(binding) {
                         if (product != null) {
-                            reviewSectionAdapter.submitData(product.details.features.reviews)
+//                            reviewSectionAdapter.submitData(product.details.features.reviews)
                             featureAdapter.submitList(product.details.features.highlights)
                             deliveryAdapter.submitDeliveryInfo(product.details.delivery)
                             warrantyAdapter.submitWarrantyInfo(product.details.warranty)
-
+                            updateReviewSection(product.details.features.reviews)
 
                             val listOfImages = product.details.features.images ?: emptyList()
                             listOfImages.forEach { picture ->
@@ -249,6 +241,30 @@ class ProductFragment : Fragment() {
         }
     }
 
+    private fun updateReviewSection(reviews: Reviews) {
+        with(binding.reviewsSection) {
+            // Update average rating
+            averageRatingText.text = String.format("%.1f", reviews.summary.averageRating)
+            averageRatingBar.rating = reviews.summary.averageRating.toFloat()
+            totalReviewsText.text = "${reviews.summary.totalCount} reviews"
 
+            // Update rating distribution
+            val maxCount = reviews.summary.distribution.values.maxOrNull() ?: 0
+            if (maxCount > 0) {
+                reviews.summary.distribution[5]?.let { count ->
+                    fiveStarProgress.progress = (count * 100 / maxCount).toDouble().roundToInt()
+                    fiveStarCount.text = count.toString()
+                }
+                reviews.summary.distribution[4]?.let { count ->
+                    fourStarProgress.progress = (count * 100 / maxCount).toDouble().roundToInt()
+                    fourStarCount.text = count.toString()
+                }
+                // Add similar blocks for 3,2,1 stars
+            }
+
+            // Update review items
+            reviewAdapter.submitList(reviews.items)
+        }
+    }
 }
 

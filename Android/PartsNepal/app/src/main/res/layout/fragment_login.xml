@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/themeMainBackground"
-    tools:context=".Screens.NewUserScreens.LoginFragment">
+    tools:context=".Screens.StartingScreens.LoginFragment">
 
     <LinearLayout
         android:layout_width="300dp"

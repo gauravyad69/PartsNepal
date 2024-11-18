@@ -11,9 +11,14 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
+const val BASE_URL = "http://192.168.0.8:9090"
+const val PRODUCTS_PATH = "$BASE_URL/products"
+
+
 object NetworkModule {
 
     fun provideHttpClient(): HttpClient = HttpClient(CIO) {
+
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -30,7 +35,7 @@ object NetworkModule {
                     Timber.tag("Ktor").d(message)
                 }
             }
-            level=LogLevel.ALL
+            level=LogLevel.INFO
         }
 //
 //        install(io.ktor.client.plugins.defaultRequest.DefaultRequest) {

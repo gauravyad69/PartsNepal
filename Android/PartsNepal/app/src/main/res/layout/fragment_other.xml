@@ -6,7 +6,7 @@
     android:theme="@style/themeMainBackground"
     android:layout_height="match_parent"
     android:paddingBottom="100dp"
-    tools:context=".Screens.BottomNavigationScreens.OtherFragment">
+    tools:context=".Screens.NavScreens.OtherFragment">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,

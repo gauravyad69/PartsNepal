@@ -1,45 +1,36 @@
-package np.com.parts.Screens.BottomNavigationScreens
+package np.com.parts.Screens.StartingScreens
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import np.com.parts.databinding.FragmentOtherBinding
+import androidx.navigation.fragment.findNavController
+import np.com.parts.R
+import np.com.parts.databinding.FragmentRegisterBinding
 
+class RegisterFragment : Fragment() {
 
-class OtherFragment : Fragment() {
-
-    private var _binding: FragmentOtherBinding? = null
-
+    private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        _binding = FragmentOtherBinding.inflate(inflater, container, false)
+        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
-
-        binding.button2.setOnClickListener{
-
-
-
+        binding.btnRegister.setOnClickListener {
+            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
 
+
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

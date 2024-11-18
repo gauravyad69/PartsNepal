@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/themeMainBackground"
-    tools:context=".Screens.BottomNavigationScreens.HomeFragment">
+    tools:context=".Screens.NavScreens.HomeFragment">
 
 
     <LinearLayout

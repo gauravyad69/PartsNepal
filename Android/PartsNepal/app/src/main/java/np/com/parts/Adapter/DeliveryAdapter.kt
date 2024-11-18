@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import np.com.parts.R
+import np.com.parts.databinding.ItemWarrantyBinding
 import np.com.parts.system.models.DeliveryInfo
 import np.com.parts.system.models.DeliveryOption
 import np.com.parts.system.models.WarrantyInfo
@@ -62,50 +63,6 @@ class DeliveryAdapter : ListAdapter<DeliveryOption, DeliveryAdapter.DeliveryView
 
         override fun areContentsTheSame(oldItem: DeliveryOption, newItem: DeliveryOption): Boolean {
             return oldItem == newItem
-        }
-    }
-}
-
-class WarrantyAdapter : RecyclerView.Adapter<WarrantyAdapter.WarrantyViewHolder>() {
-    private var warrantyInfo: WarrantyInfo? = null
-    private val termsAdapter = WarrantyTermsAdapter()
-
-    fun submitWarrantyInfo(info: WarrantyInfo) {
-        warrantyInfo = info
-        termsAdapter.submitList(info.terms)
-        notifyDataSetChanged()
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WarrantyViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_warranty, parent, false)
-        return WarrantyViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: WarrantyViewHolder, position: Int) {
-        warrantyInfo?.let { holder.bind(it) }
-    }
-
-    override fun getItemCount(): Int = if (warrantyInfo != null) 1 else 0
-
-    class WarrantyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val warrantyPeriod: TextView = itemView.findViewById(R.id.warrantyPeriod)
-        private val returnPeriod: TextView = itemView.findViewById(R.id.returnPolicy)
-        private val warrantyTermsRecyclerView: RecyclerView = itemView.findViewById(R.id.warrantyTermsRecyclerView)
-        private val termsAdapter = WarrantyTermsAdapter()
-
-        init {
-            warrantyTermsRecyclerView.adapter = termsAdapter
-        }
-
-        fun bind(info: WarrantyInfo) {
-            warrantyPeriod.text = "${info.warrantyMonths} Months Warranty"
-            returnPeriod.text = if (info.isReturnable) {
-                "${info.returnPeriodDays} Days Return"
-            } else {
-                "No Returns"
-            }
-            termsAdapter.submitList(info.terms)
         }
     }
 }

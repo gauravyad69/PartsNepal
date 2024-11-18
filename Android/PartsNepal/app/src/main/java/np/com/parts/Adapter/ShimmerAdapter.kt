@@ -10,7 +10,7 @@ class ShimmerAdapter : RecyclerView.Adapter<ShimmerAdapter.ShimmerViewHolder>() 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShimmerViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.layout_basic_shimmer, parent, false)
+            .inflate(R.layout.item_basic_product_shimmer, parent, false)
         return ShimmerViewHolder(view)
     }
 

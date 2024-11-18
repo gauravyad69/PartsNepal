@@ -13,16 +13,13 @@ import np.com.parts.system.models.ProductModel
 import np.com.parts.system.models.BasicProductView
 import kotlinx.serialization.Serializable
 import np.com.parts.API.NetworkModule
+import np.com.parts.API.PRODUCTS_PATH
 
 
 class ProductApiClient(
     private val client: HttpClient = NetworkModule.provideHttpClient()
 
 ) {
-    companion object {
-        private const val BASE_URL = "http://192.168.0.7:9090"
-        private const val PRODUCTS_PATH = "$BASE_URL/products"
-    }
 
     // Response wrapper classes matching the API
     @Serializable

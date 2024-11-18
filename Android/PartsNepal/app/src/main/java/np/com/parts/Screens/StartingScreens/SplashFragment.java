@@ -1,4 +1,4 @@
-package np.com.parts.Screens.NewUserScreens;
+package np.com.parts.Screens.StartingScreens;
 
 import android.os.Bundle;
 import android.os.Handler;

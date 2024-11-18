@@ -1,4 +1,4 @@
-package np.com.parts.Screens.BottomNavigationScreens
+package np.com.parts.Screens.NavScreens
 
 import android.graphics.Rect
 import android.os.Bundle
@@ -7,8 +7,6 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -26,6 +24,7 @@ import np.com.parts.Adapter.BasicProductAdapter.Companion.LOADING_ITEM_VIEW_TYPE
 import np.com.parts.Adapter.ShimmerAdapter
 import np.com.parts.R
 import np.com.parts.databinding.FragmentHomeBinding
+import timber.log.Timber
 
 
 class HomeFragment : Fragment() {
@@ -65,6 +64,7 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         setupListeners()
+        setupShimmer()
 
         viewModel.loadBasicProducts()
 
@@ -81,7 +81,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-
         basicProductAdapter = BasicProductAdapter()
         val gridLayoutManager = GridLayoutManager(context, 2)
 
@@ -103,7 +102,7 @@ class HomeFragment : Fragment() {
             addItemDecoration(GridSpacingItemDecoration(2, 16, true))
             setHasFixedSize(true)
 
-            // Add scroll listener for pagination
+            // Modified scroll listener
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -112,7 +111,10 @@ class HomeFragment : Fragment() {
                     val totalItemCount = gridLayoutManager.itemCount
 
                     if (lastVisibleItemPosition >= totalItemCount - 5) {
-                        viewModel.loadBasicProducts()
+                        // Post the load request to the next frame
+                        recyclerView.post {
+                            viewModel.loadBasicProducts()
+                        }
                     }
                 }
             })
@@ -126,8 +128,11 @@ class HomeFragment : Fragment() {
                 // Collect products
 
                 viewModel.basicProducts.collect { products ->
-                    basicProductAdapter.submitList(products)
+                    Timber.tag("SETUP_OBSERVERS, COLLECT PRODUCTS").d("HAPPEND")
+                    basicProductAdapter.updateList(products)
                     if (products.isNotEmpty()) {
+                        Timber.tag("SETUP_OBSERVERS, COLLECT PRODUCTS").d("CURRENTLY EMPTY")
+
                         binding.shimmerLayout.root.visibility = View.GONE
                         binding.recyclerView.visibility = View.VISIBLE
                     }

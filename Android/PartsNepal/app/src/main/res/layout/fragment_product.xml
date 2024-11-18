@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:theme="@style/themeMainBackground"
-    tools:context=".Screens.OtherScreens.ProductFragment">
+    tools:context=".Screens.MainScreens.ProductFragment">
 
     <ScrollView
         android:id="@+id/scrollView3"
@@ -14,6 +14,8 @@
         android:layout_height="match_parent"
         android:padding="16dp"
         android:scrollbars="none"
+        android:layout_marginBottom="60dp"
+
         app:layout_constraintBottom_toTopOf="@+id/gridLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -217,9 +219,6 @@
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
                 android:layout_marginTop="8dp" />
-
-
-
         </GridLayout>
     </ScrollView>
 

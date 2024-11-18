@@ -8,34 +8,39 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import np.com.parts.R
+import np.com.parts.databinding.ItemWarrantyBinding
+import np.com.parts.system.models.WarrantyInfo
 
-class WarrantyTermsAdapter : ListAdapter<String, WarrantyTermsAdapter.TermViewHolder>(TermDiffCallback()) {
+class WarrantyAdapter : RecyclerView.Adapter<WarrantyAdapter.WarrantyViewHolder>() {
+    private var warrantyTerms: List<String> = emptyList()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TermViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_warranty, parent, false)
-        return TermViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
-    class TermViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val termText: TextView = itemView.findViewById(R.id.termText)
+    class WarrantyViewHolder(private val binding: ItemWarrantyBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(term: String) {
-            termText.text = term
+            binding.termText.text = term
         }
     }
 
-    class TermDiffCallback : DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WarrantyViewHolder {
+        val binding = ItemWarrantyBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return WarrantyViewHolder(binding)
+    }
 
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
+    override fun onBindViewHolder(holder: WarrantyViewHolder, position: Int) {
+        holder.bind(warrantyTerms[position])
+    }
+
+    override fun getItemCount(): Int = warrantyTerms.size
+
+    fun submitWarrantyInfo(warrantyInfo: WarrantyInfo) {
+        warrantyTerms = warrantyInfo.terms
+        notifyDataSetChanged()
     }
 }
+
+
