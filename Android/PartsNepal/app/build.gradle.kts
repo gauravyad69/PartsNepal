@@ -62,7 +62,13 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.whynot.imagecarousel)
     implementation(libs.facebook.shimmer)
+    implementation(libs.airbnb.paris)
 
+
+    implementation(libs.mikepenz.fastadapter)
+    implementation(libs.mikepenz.fastadapter.binding)
+    implementation(libs.mikepenz.fastadapter.scroll)
+    implementation(libs.mikepenz.fastadapter.util)
 
     implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.client.core)

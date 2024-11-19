@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/fullscreenBackgroundColor"
-    android:theme="@style/themeMainBackground"
+    android:theme="@style/themebackground_main"
     tools:context=".Screens.NavScreens.HomeFragment">
 
 
@@ -23,12 +23,15 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -36,7 +39,9 @@
             android:id="@+id/shimmerLayout"
             layout="@layout/layout_basic_shimmer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ProgressBar
             android:id="@+id/progressBar"

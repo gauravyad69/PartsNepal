@@ -36,7 +36,7 @@
 <!--    leave this fragment alone nigga, its independent from others -->
     <fragment
         android:id="@+id/verifyEmailFragment"
-        android:name="np.com.parts.Screens.MainScreens.VerifyEmailFragment"
+        android:name="np.com.parts.Screens.StartingScreens.VerifyEmailFragment"
         android:label="VerifyEmailFragment"
         tools:layout="@layout/fragment_verify_email"/>
 

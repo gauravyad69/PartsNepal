@@ -19,16 +19,18 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
 import np.com.parts.API.Product.ProductViewModel
-import np.com.parts.Adapter.BasicProductAdapter
-import np.com.parts.Adapter.BasicProductAdapter.Companion.LOADING_ITEM_VIEW_TYPE
 import np.com.parts.Adapter.ShimmerAdapter
 import np.com.parts.R
 import np.com.parts.databinding.FragmentHomeBinding
-import timber.log.Timber
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import np.com.parts.Items.BasicProductItem
+import np.com.parts.Items.ProgressItem
 
 
 class HomeFragment : Fragment() {
-    private val hideHandler = Handler(Looper.myLooper()!!)
+
 
 
     private var _binding: FragmentHomeBinding? = null
@@ -39,8 +41,9 @@ class HomeFragment : Fragment() {
 
 
     private val viewModel: ProductViewModel by viewModels()
-    private lateinit var basicProductAdapter: BasicProductAdapter
-    private var gridLayoutManager: GridLayoutManager? = null
+    private lateinit var fastAdapter: FastAdapter<AbstractBindingItem<*>>
+    private lateinit var itemAdapter: ItemAdapter<BasicProductItem>
+    private lateinit var footerAdapter: ItemAdapter<ProgressItem>
     private lateinit var shimmerAdapter: ShimmerAdapter
 
 
@@ -81,43 +84,61 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        basicProductAdapter = BasicProductAdapter()
-        val gridLayoutManager = GridLayoutManager(context, 2)
+        // Initialize adapters
+        itemAdapter = ItemAdapter()
+        footerAdapter = ItemAdapter()
+        fastAdapter = FastAdapter.with(listOf(itemAdapter, footerAdapter))
 
-        // Handle the loading item span
-        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (basicProductAdapter.getItemViewType(position) == LOADING_ITEM_VIEW_TYPE) 2 else 1
+        val gridLayoutManager = GridLayoutManager(context, 2).apply {
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return when (fastAdapter.getItemViewType(position)) {
+                        R.id.fastadapter_progress_item_id -> 2 // Full width for progress
+                        else -> 1 // Normal items take 1 span
+                    }
+                }
             }
-        }
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.resetPagination()
-            viewModel.loadBasicProducts()
-            binding.swipeRefreshLayout.isRefreshing = false
         }
 
         binding.recyclerView.apply {
             layoutManager = gridLayoutManager
-            adapter = basicProductAdapter
+            adapter = fastAdapter
             addItemDecoration(GridSpacingItemDecoration(2, 16, true))
-            setHasFixedSize(true)
 
-            // Modified scroll listener
+            // Endless scrolling
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0) {
+                        val totalItemCount = gridLayoutManager.itemCount
+                        val lastVisible = gridLayoutManager.findLastVisibleItemPosition()
 
-                    val lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition()
-                    val totalItemCount = gridLayoutManager.itemCount
-
-                    if (lastVisibleItemPosition >= totalItemCount - 5) {
-                        // Post the load request to the next frame
-                        recyclerView.post {
+                        if (lastVisible >= totalItemCount - 5) {
                             viewModel.loadBasicProducts()
                         }
                     }
                 }
             })
+        }
+
+        // Handle item clicks
+        fastAdapter.onClickListener = { _, _, item, _ ->
+            when (item) {
+                is BasicProductItem -> {
+                    val action = HomeFragmentDirections.actionHomeFragmentToProductFragment(
+                        productId = item.product.basic.productId,
+                        productName = item.product.basic.productName
+                    )
+                    findNavController().navigate(action)
+                }
+            }
+            false
+        }
+
+        // Setup refresh
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.resetPagination()
+            viewModel.loadBasicProducts()
+            binding.swipeRefreshLayout.isRefreshing = false
         }
     }
 
@@ -125,14 +146,11 @@ class HomeFragment : Fragment() {
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Collect products
-
                 viewModel.basicProducts.collect { products ->
-                    Timber.tag("SETUP_OBSERVERS, COLLECT PRODUCTS").d("HAPPEND")
-                    basicProductAdapter.updateList(products)
+                    val items = products.map { BasicProductItem(it) }
+                    itemAdapter.set(items)
+                    
                     if (products.isNotEmpty()) {
-                        Timber.tag("SETUP_OBSERVERS, COLLECT PRODUCTS").d("CURRENTLY EMPTY")
-
                         binding.shimmerLayout.root.visibility = View.GONE
                         binding.recyclerView.visibility = View.VISIBLE
                     }
@@ -142,16 +160,18 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Collect loading state
-                viewModel.isLoadingMore.collect { isLoadingMore ->
-                    basicProductAdapter.setLoadingMore(isLoadingMore)
+                viewModel.isLoadingMore.collect { isLoading ->
+                    if (isLoading) {
+                        footerAdapter.add(ProgressItem())
+                    } else {
+                        footerAdapter.clear()
+                    }
                 }
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Collect loading state
                 viewModel.loading.collect { isLoading ->
                     if (isLoading && viewModel.basicProducts.value.isEmpty()) {
                         // Show shimmer only for initial load when no items are present
@@ -177,16 +197,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        basicProductAdapter.setOnItemClickListener { product ->
-            // Handle product click
-            val action = HomeFragmentDirections
-                .actionHomeFragmentToProductFragment(
-                    productId = product.basic.productId,
-                    productName = product.basic.productName
-                )
-            findNavController().navigate(action)
-
-        }
+        // Remove the old listener setup and use the one in setupRecyclerView()
     }
 
     override fun onDestroyView() {

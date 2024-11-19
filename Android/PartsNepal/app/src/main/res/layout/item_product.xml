@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    style="@style/product_list_card"
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,9 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="Sale"
-            android:textColor="@android:color/white"
-            app:chipBackgroundColor="@color/light_blue_A400"
-            app:chipCornerRadius="50dp"
+            style="@style/product_list_chip"
             app:layout_constraintStart_toStartOf="@id/productImage"
             app:layout_constraintTop_toTopOf="@id/productImage" />
 
@@ -42,7 +41,7 @@
             android:background="?attr/selectableItemBackground"
             android:padding="4dp"
             android:src="@drawable/heart"
-            app:tint="@color/black"
+            app:tint="@color/blue"
             app:layout_constraintEnd_toEndOf="@id/productImage"
             app:layout_constraintTop_toTopOf="@id/productImage" />
 
@@ -62,11 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Creta/Seltos Brake"
-                android:textColor="@color/black"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:fontFamily="@font/inter_medium"
-                android:textSize="12sp"/>
+                style="@style/product_list_heading"/>
 
             <!-- Product Type -->
             <TextView
@@ -74,9 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Brake"
-                android:textColor="@color/mainBackground"
-                android:textSize="10sp"
-                android:fontFamily="@font/inter_medium"
+                style="@style/product_list_subheading"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productName" />
@@ -86,37 +79,39 @@
                 android:id="@+id/stockStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:drawableStart="@drawable/shopping_cart"
+                android:drawableStart="@drawable/check"
+                android:drawableTint="@color/blue"
                 android:drawablePadding="4dp"
                 android:text="In stock"
-                android:textColor="@color/light_blue_A400"
+                android:textColor="@color/blue"
                 android:textSize="14sp" />
 
             <!-- Original Price -->
             <TextView
                 android:id="@+id/regularPrice"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:text="NPR 1,500"
-                android:textColor="@color/mainBackground"
+                android:textAlignment="textEnd"
+                android:textColor="@color/background_main"
                 android:textSize="14sp" />
 
             <!-- Sale Price -->
             <TextView
                 android:id="@+id/salePrice"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Rs 7,800.00"
-                android:textColor="@color/light_blue_A400"
+                android:textAlignment="textEnd"
+                android:textColor="@color/primary_color"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <!-- Add to Cart Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/addToCartButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:text="Add To Cart" />
 
         </LinearLayout>

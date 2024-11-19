@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/themeMainBackground"
-    tools:context=".Screens.MainScreens.VerifyEmailFragment">
+    android:theme="@style/themebackground_main"
+    tools:context=".Screens.StartingScreens.VerifyEmailFragment">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,

@@ -13,10 +13,31 @@
     <color name="my_light_primary">#1F1F1F</color>
     <color name="my_dark_primary">#DBDBDB</color>
 
+    <color name="light_primary">#725AC1</color>
+    <color name="light_on_primary">#FFFFFF</color>
+    <color name="light_primary_container">#8D86C9</color>
+    <color name="light_on_primary_container">#242038</color>
+    <color name="light_background">#F7ECE1</color>
+    <color name="light_on_background">#242038</color>
+    <color name="light_surface">#CAC4CE</color>
+    <color name="light_on_surface">#242038</color>
+    <color name="light_outline">#8D86C9</color>
 
-    <color name="mainBackground">#0D0D0D</color>
-    <color name="containerBackground">#181818</color>
-    <color name="mainColor">#FFFFFF</color>
+    <!-- Dark theme colors -->
+    <color name="dark_primary">#CAC4CE</color>
+    <color name="dark_on_primary">#242038</color>
+    <color name="dark_primary_container">#8D86C9</color>
+    <color name="dark_on_primary_container">#725AC1</color>
+    <color name="dark_background">#242038</color>
+    <color name="dark_on_background">#F7ECE1</color>
+    <color name="dark_surface">#242038</color>
+    <color name="dark_on_surface">#CAC4CE</color>
+    <color name="dark_outline">#725AC1</color>
+
+
+    <color name="background_main">#0D0D0D</color>
+    <color name="background_container">#181818</color>
+    <color name="color_main">#FFFFFF</color>
     <!--    <color name="status_waiting">#CDDC39</color>-->
     <!--    <color name="status_confirming">#00FFF7</color>-->
     <!--    <color name="status_confirmed">#00FF73</color>-->
@@ -43,4 +64,13 @@
     <color name="sale_red">#FF3B30</color>
     <color name="primary_color">#007AFF</color>
     <color name="blue">#007AFF</color>
+
+    <color name="card_background">#FFFFFF</color> <!-- Light background -->
+    <color name="card_stroke">#E0E0E0</color>     <!-- Subtle stroke -->
+    <color name="card_text">#333333</color>       <!-- Main text -->
+    <color name="card_text_secondary">#757575</color> <!-- Secondary text -->
+    <color name="card_action_background">#725AC1</color> <!-- Button background -->
+    <color name="card_action_text">#FFFFFF</color>  <!-- Button text -->
+
+
 </resources>

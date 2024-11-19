@@ -64,11 +64,11 @@ class SuperActivity : AppCompatActivity() {
         val window = window
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (isDarkMode) {
-                window.statusBarColor = ContextCompat.getColor(this, R.color.mainBackground)
-                window.navigationBarColor = ContextCompat.getColor(this, R.color.mainBackground)
+                window.statusBarColor = ContextCompat.getColor(this, R.color.background_main)
+                window.navigationBarColor = ContextCompat.getColor(this, R.color.background_main)
             } else {
-                window.statusBarColor = ContextCompat.getColor(this, R.color.mainColor)
-                window.navigationBarColor = ContextCompat.getColor(this, R.color.mainColor)
+                window.statusBarColor = ContextCompat.getColor(this, R.color.color_main)
+                window.navigationBarColor = ContextCompat.getColor(this, R.color.color_main)
             }
         }
 

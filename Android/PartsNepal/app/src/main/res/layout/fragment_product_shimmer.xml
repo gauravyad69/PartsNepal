@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Image carousel shimmer -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:background="@color/shimmer_color"/>
+
+            <!-- Product info section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Product name -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:background="@color/shimmer_color"/>
+
+                <!-- Product type -->
+                <View
+                    android:layout_width="200dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/shimmer_color"/>
+
+                <!-- Pricing section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="120dp"
+                        android:layout_height="20dp"
+                        android:background="@color/shimmer_color"/>
+
+                    <View
+                        android:layout_width="100dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="16dp"
+                        android:background="@color/shimmer_color"/>
+                </LinearLayout>
+
+                <!-- Features section -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/shimmer_color"/>
+
+                <!-- Reviews section -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/shimmer_color"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</com.facebook.shimmer.ShimmerFrameLayout> 
