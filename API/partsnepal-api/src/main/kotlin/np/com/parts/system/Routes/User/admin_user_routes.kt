@@ -8,6 +8,8 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import np.com.parts.system.Models.AccountStatus
+import np.com.parts.system.Models.UserId
 
 fun Route.adminUserRoutes(userService: UserService) {
 
@@ -28,8 +30,10 @@ fun Route.adminUserRoutes(userService: UserService) {
             // GET - Get user by ID
             get("/{userId}") {
                 try {
-                    val userId = call.parameters["userId"]?.toIntOrNull()
-                        ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid user ID")
+                    val userId = UserId(
+                        call.parameters["userId"]?.toIntOrNull() 
+                            ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid user ID")
+                    )
 
                     val user = userService.getUserById(userId)
                     if (user != null) {
@@ -45,9 +49,11 @@ fun Route.adminUserRoutes(userService: UserService) {
             // PUT - Update account status
             put("/{userId}/status") {
                 try {
-                    val userId = call.parameters["userId"]?.toIntOrNull()
-                        ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid user ID")
-                    val status = call.receive<String>()
+                    val userId = UserId(
+                        call.parameters["userId"]?.toIntOrNull()
+                            ?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid user ID")
+                    )
+                    val status = AccountStatus.valueOf(call.receive<String>())
 
                     val updated = userService.updateAccountStatus(userId, status)
                     if (updated) {
@@ -63,8 +69,10 @@ fun Route.adminUserRoutes(userService: UserService) {
             // DELETE - Delete user
             delete("/{userId}") {
                 try {
-                    val userId = call.parameters["userId"]?.toIntOrNull()
-                        ?: return@delete call.respond(HttpStatusCode.BadRequest, "Invalid user ID")
+                    val userId = UserId(
+                        call.parameters["userId"]?.toIntOrNull()
+                            ?: return@delete call.respond(HttpStatusCode.BadRequest, "Invalid user ID")
+                    )
 
                     val deleted = userService.deleteUser(userId)
                     if (deleted) {
@@ -78,13 +86,13 @@ fun Route.adminUserRoutes(userService: UserService) {
             }
 
             // GET - Get business accounts
-            get("/business") {
-                try {
-                    val businessUsers = userService.getBusinessAccounts()
-                    call.respond(HttpStatusCode.OK, businessUsers)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error fetching business accounts")
-                }
-            }
+//            get("/business") {
+//                try {
+//                    val businessUsers = userService.getBusinessAccounts()
+//                    call.respond(HttpStatusCode.OK, businessUsers)
+//                } catch (e: Exception) {
+//                    call.respond(HttpStatusCode.InternalServerError, "Error fetching business accounts")
+//                }
+//            }
 
 }

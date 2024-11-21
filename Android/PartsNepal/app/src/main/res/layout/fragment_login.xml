@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/fullscreenBackgroundColor"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/themebackground_main"
     tools:context=".Screens.StartingScreens.LoginFragment">
 
@@ -13,17 +13,91 @@
         android:gravity="center"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:padding="10dp"/>
+        android:padding="16dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="@string/copyright_text"
-        android:layout_gravity="bottom"
-        android:gravity="center_horizontal"
-        android:textColor="@color/offwhite"
-        android:fontFamily="@font/poppins_medium"
-        android:textSize="13sp"/>
+        <!-- App Logo/Title -->
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/plan_premium"
+            android:contentDescription="@string/app_name"/>
+
+        <!-- Email/Phone Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailPhoneInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email or Phone Number"
+                android:inputType="textEmailAddress"
+                android:fontFamily="@font/poppins_medium"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:fontFamily="@font/poppins_medium"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Login Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/loginButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:padding="12dp"
+            android:textAllCaps="false"
+            android:fontFamily="@font/poppins_medium"/>
+
+        <!-- Forgot Password Link -->
+        <TextView
+            android:id="@+id/forgotPasswordText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Forgot Password?"
+            android:textColor="@color/offwhite"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_medium"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/registerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register Instead?"
+            android:textAlignment="textEnd"
+            android:textColor="@color/offwhite"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_medium"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:text="@string/copyright_text"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        android:textColor="@color/offwhite"-->
+<!--        android:fontFamily="@font/poppins_medium"-->
+<!--        android:textSize="13sp"/>-->
 
 
 </FrameLayout>

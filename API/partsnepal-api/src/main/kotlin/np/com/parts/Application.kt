@@ -3,6 +3,7 @@ package np.com.parts
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import np.com.parts.plugins.*
+import np.com.parts.system.Routes.Auth.configureAuthRoutes
 import np.com.parts.system.Services.OrderService
 import np.com.parts.system.Services.ProductService
 import np.com.parts.system.Services.UserService
@@ -23,9 +24,11 @@ fun Application.module() {
     val productsService = ProductService(connection)
     val orderService = OrderService(connection)
     val userService = UserService(connection)
+    configureAuthRoutes(userService = userService)
 
     routing {
     applicationRoutes(productsService, orderService, userService)
+
     }
 }
 

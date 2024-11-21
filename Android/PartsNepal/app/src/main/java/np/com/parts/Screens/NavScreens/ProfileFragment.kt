@@ -1,10 +1,16 @@
 package np.com.parts.Screens.NavScreens
 
+import UserProfileViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import np.com.parts.API.Models.User
 import np.com.parts.databinding.FragmentProfileBinding
 
 
@@ -20,6 +26,8 @@ class ProfileFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private val viewModel: UserProfileViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,21 +42,39 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        //handle current_tier click
-        binding.currentTierCard.setOnClickListener{
-//            startActivity(Intent(requireContext(), UpgradeActivity::class.java))
+        // Observe user profile
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.userProfile.collect { user ->
+                user?.let { updateUI(it) }
+            }
         }
 
-//        val email = FirebaseAuth.getInstance().currentUser?.email!!
-        val email = "gauravyad2077@gmail.com"
-        //load user data such as name email, tier from API
+        // Observe errors
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.error.collect { error ->
+                error?.let { showError(it) }
+            }
+        }
+
+        // Load profile
+        viewModel.loadUserProfile()
+
 
 
 
 
     }
 
+    private fun updateUI(user: User) {
+        binding.apply {
+            userName.setText(user.firstName)
+            userEmail.text = user.email
+        }
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

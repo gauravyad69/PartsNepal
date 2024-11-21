@@ -2,8 +2,6 @@ package np.com.parts.Screens.NavScreens
 
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
-import np.com.parts.API.Product.ProductViewModel
+import np.com.parts.API.ViewModels.ProductViewModel
 import np.com.parts.Adapter.ShimmerAdapter
 import np.com.parts.R
 import np.com.parts.databinding.FragmentHomeBinding
@@ -62,6 +60,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val bottomNavigationView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottomBar)
         retainInstance = true
+
 
         bottomNavigationView.visibility=View.VISIBLE
         setupRecyclerView()

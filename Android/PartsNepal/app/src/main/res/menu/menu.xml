@@ -7,8 +7,8 @@
         android:icon="@drawable/lucide_home"/>
 
     <item
-        android:id="@+id/otherFragment"
-        android:title="Other"
+        android:id="@+id/searchFragment"
+        android:title="Search"
         android:icon="@drawable/oui_help"/>
 
     <item

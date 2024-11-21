@@ -1,24 +1,29 @@
 package np.com.parts.API
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.serialization.kotlinx.json.json
+import android.content.Context
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.plugins.observer.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
 const val BASE_URL = "http://192.168.0.8:9090"
 const val PRODUCTS_PATH = "$BASE_URL/products"
 
-
 object NetworkModule {
+    private var tokenManager: TokenManager? = null
+
+    fun initialize(context: Context) {
+        tokenManager = TokenManager.getInstance(context)
+    }
 
     fun provideHttpClient(): HttpClient = HttpClient(CIO) {
-
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -27,7 +32,15 @@ object NetworkModule {
             })
         }
 
-        install(WebSockets)
+        install(DefaultRequest) {
+            url(BASE_URL)
+            contentType(ContentType.Application.Json)
+            
+            // Add JWT token to all requests if available
+            tokenManager?.getToken()?.let { token ->
+                header("Authorization", "Bearer $token")
+            }
+        }
 
         install(Logging) {
             logger = object : Logger {
@@ -35,15 +48,18 @@ object NetworkModule {
                     Timber.tag("Ktor").d(message)
                 }
             }
-            level=LogLevel.INFO
+            level = LogLevel.INFO
         }
-//
-//        install(io.ktor.client.plugins.defaultRequest.DefaultRequest) {
-//            url(BASE_URL)
-//            headers {
-//                append("Accept", "application/json")
-//            }
-//        }
+
+        install(ResponseObserver) {
+            onResponse { response ->
+                // Handle 401 Unauthorized responses
+                if (response.status == HttpStatusCode.Unauthorized) {
+                    tokenManager?.clearToken()
+                    // You might want to emit an event to navigate to login screen
+                }
+            }
+        }
 
         engine {
             requestTimeout = 15_000

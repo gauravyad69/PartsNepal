@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.mikepenz.fastadapter.binding)
     implementation(libs.mikepenz.fastadapter.scroll)
     implementation(libs.mikepenz.fastadapter.util)
+    implementation(libs.androidx.security.crypto)
+
 
     implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.client.core)

@@ -4,6 +4,7 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,16 +16,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
-import np.com.parts.API.Product.ProductViewModel
+import np.com.parts.API.ViewModels.ProductViewModel
+import np.com.parts.API.TokenManager
 import np.com.parts.Adapter.DeliveryAdapter
 import np.com.parts.Adapter.FeatureAdapter
 import np.com.parts.Adapter.ReviewAdapter
-import np.com.parts.Adapter.ReviewSectionAdapter
 import np.com.parts.Adapter.WarrantyAdapter
 import np.com.parts.R
 import np.com.parts.databinding.FragmentProductBinding
@@ -82,6 +84,21 @@ class ProductFragment : Fragment() {
 
 
         viewModel.loadProductsById(productId)
+
+        binding.addToCartButton.setOnClickListener{
+        // Check if user is logged in
+        if (TokenManager.getInstance(requireContext()).hasToken()) {
+            // User is logged in
+            Log.i("auth", "user logged in")
+            //add to cart function here,
+        } else {
+            // User is not logged in
+            Log.i("auth", "user is not logged in :((((((")
+            // Set up Navigation
+            val action = ProductFragmentDirections.actionProductFragmentToLoginFragment()
+            findNavController().navigate(action)
+        }
+        }
 
     }
 

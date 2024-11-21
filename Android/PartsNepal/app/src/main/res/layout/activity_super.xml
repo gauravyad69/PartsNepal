@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Screens.SuperActivity">
 
 
@@ -14,32 +15,36 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_gravity="top"
         style="@style/MyToolbarStyle" />
 
-
+<LinearLayout
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment_of_super"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:navGraph="@navigation/bottom_nav_graph" />
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        app:navGraph="@navigation/nav_graph" />
+
 
     <me.ibrahimsn.lib.SmoothBottomBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-
-        app:backgroundColor="#181818"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:backgroundColor="@color/light_background"
+        app:textColor="@color/background_main"
+        app:indicatorColor="@color/blue"
+        app:itemFontFamily="@font/inter_bold"
+        android:layout_gravity="bottom"
+        app:iconTint="@color/background_main"
         app:menu="@menu/menu" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
+
+</LinearLayout>
