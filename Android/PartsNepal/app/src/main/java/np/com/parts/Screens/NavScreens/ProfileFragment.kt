@@ -10,11 +10,14 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.launch
+import me.ibrahimsn.lib.SmoothBottomBar
 import np.com.parts.API.Models.AccountType
 import np.com.parts.API.Models.UpdateProfileRequest
 import np.com.parts.API.Models.UserModel
 import np.com.parts.API.TokenManager
+import np.com.parts.R
 import np.com.parts.databinding.FragmentProfileBinding
 
 
@@ -46,6 +49,9 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val toolbar = requireActivity().findViewById<AppBarLayout>(R.id.appBarLayout)
+
 
 binding.logoutButton.setOnClickListener{
     TokenManager.getInstance(requireContext()).clearToken()
@@ -137,6 +143,12 @@ binding.logoutButton.setOnClickListener{
 
     private fun updateUI(profile: UserModel) {
         binding.apply {
+            userName.text = profile.fullName
+            if (profile.email!=null){
+                userEmail.visibility=View.VISIBLE
+                userEmail.text= profile.email.value
+            }
+            userPhoneNumber.text= profile.phoneNumber.value
             firstNameInput.setText(profile.firstName)
             lastNameInput.setText(profile.lastName)
 //            emailInput.setText(profile.email)

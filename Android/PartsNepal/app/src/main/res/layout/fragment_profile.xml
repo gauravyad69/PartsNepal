@@ -17,7 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Profile"
-            app:menu="@menu/profile_menu"
             app:titleTextColor="@color/white"/>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -73,8 +72,20 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="4dp"
                         android:textSize="14sp"
+                        android:visibility="gone"
                         android:fontFamily="@font/poppins_regular"
                         tools:text="john.doe@example.com"/>
+
+                    <TextView
+                        android:id="@+id/userPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="4dp"
+                        android:textAlignment="center"
+                        android:fontFamily="@font/poppins_regular"
+                        android:textSize="14sp"
+                        tools:text="+9779876543210" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/editProfileButton"
