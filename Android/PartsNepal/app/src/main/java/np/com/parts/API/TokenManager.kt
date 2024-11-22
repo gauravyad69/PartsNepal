@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import timber.log.Timber
 
 class TokenManager(context: Context) {
     private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
@@ -30,14 +31,18 @@ class TokenManager(context: Context) {
     }
 
     fun saveToken(token: String) {
+        Timber.tag("token").i("saved")
         sharedPreferences.edit().putString(KEY_JWT_TOKEN, token).apply()
     }
 
     fun getToken(): String? {
+        Timber.tag("token").i("fetched")
         return sharedPreferences.getString(KEY_JWT_TOKEN, null)
     }
 
     fun clearToken() {
+        Timber.tag("token").i("cleared")
+
         sharedPreferences.edit().remove(KEY_JWT_TOKEN).apply()
     }
 

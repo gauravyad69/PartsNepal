@@ -1,4 +1,4 @@
-package np.com.parts.system.Routes.Auth;
+package np.com.parts.system.Routes.Auth
 
 import io.ktor.http.*
 import io.ktor.server.application.*

@@ -11,10 +11,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
+import np.com.parts.API.Auth.AuthError
 import np.com.parts.API.Repository.AuthRepository
 import np.com.parts.API.NetworkModule
 import np.com.parts.R
 import np.com.parts.databinding.FragmentLoginBinding
+import timber.log.Timber
 
 class LoginFragment : Fragment() {
 
@@ -64,24 +66,38 @@ class LoginFragment : Fragment() {
         }
 
         // Determine if it's a phone login based on input format
-        val isPhoneLogin = identifier.all { it.isDigit() }
+        val isEmailLogin = identifier.all { it.isLetter() }
+        val isPhoneLogin=!isEmailLogin
 
         lifecycleScope.launch {
             try {
-                val result = authRepository.login(identifier, password, isPhoneLogin)
-                result.fold(
-                    onSuccess = { response ->
-                        // Save auth token
-                        // Navigate to main screen
+                when (val result = authRepository.login(identifier, password, isPhoneLogin)) {
+                    is AuthRepository.AuthResult.Success -> {
+                        // Login successful
                         NavHostFragment.findNavController(this@LoginFragment)
-                            .navigate(R.id.action_loginFragment_to_homeFragment);
-                    },
-                    onFailure = { exception ->
-                        showError(exception.message ?: "Login failed")
+                            .navigate(R.id.action_loginFragment_to_homeFragment)
                     }
-                )
+                    is AuthRepository.AuthResult.Error -> {
+                        // Handle specific error cases
+                        when (result.error) {
+                            AuthError.INVALID_CREDENTIALS -> {
+                                showError("Invalid email/phone or password")
+                            }
+                            AuthError.ACCOUNT_INACTIVE -> {
+                                showError("Your account is inactive. Please contact support.")
+                            }
+                            AuthError.NETWORK_ERROR -> {
+                                showError("Network error. Please check your connection.")
+                            }
+                            else -> {
+                                showError(result.message)
+                            }
+                        }
+                    }
+                }
             } catch (e: Exception) {
-                showError(e.message ?: "An error occurred")
+                showError("An unexpected error occurred")
+                Timber.e(e, "Login error $e")
             }
         }
     }

@@ -108,14 +108,6 @@ class SuperActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    private fun startFragment(fragment: Fragment) {
-        supportFragmentManager.commit {
-            // Replace the container with the new fragment
-            replace(R.id.container, fragment)
-
-            // Optional: Add to back stack if you want back navigation
-             addToBackStack(null)
-        }}
 
 
 

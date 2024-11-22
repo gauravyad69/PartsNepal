@@ -9,37 +9,94 @@ import com.mongodb.client.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import np.com.parts.system.Models.*
+import org.bson.conversions.Bson
 import org.litote.kmongo.getCollection
 import java.security.MessageDigest
 import java.util.*
 
 class UserService(private val database: MongoDatabase) {
-    private lateinit var collection: MongoCollection<FullUserDetails>
+    private val collection: MongoCollection<FullUserDetails>
 
     init {
-        try {
-            database.createCollection("users")
-        } catch (e: MongoCommandException) {
-            // Collection already exists, ignore the error
-        }
         collection = database.getCollection<FullUserDetails>("users")
+        recreateIndexes()
+    }
 
-        // Create indexes for better query performance
+    private fun recreateIndexes() {
         try {
+            // First, drop all existing indexes
+            collection.dropIndexes()
+            // Create fresh indexes with correct paths
             collection.createIndexes(
                 listOf(
-                    IndexModel(Indexes.ascending("user.userId"), IndexOptions().unique(true)),
-                    IndexModel(Indexes.ascending("user.email.value"), IndexOptions().unique(true)),
-                    IndexModel(Indexes.ascending("user.phoneNumber.value"), IndexOptions().unique(true)),
-                    IndexModel(Indexes.text("user.username")),
-                    IndexModel(Indexes.ascending("accountStatus")),
-                    IndexModel(Indexes.ascending("user.accountType")),
-                    IndexModel(Indexes.ascending("lastModifiedAt")),
-                    IndexModel(Indexes.ascending("engagement.lastActive"))
+                    IndexModel(
+                        Indexes.ascending("user.userId"),
+                        IndexOptions().unique(true).name("userId_unique")
+                    ),
+                    IndexModel(
+                        Indexes.ascending("user.phoneNumber"),
+                        IndexOptions().unique(true).name("phone_unique")
+                    ),
+                    IndexModel(
+                        Indexes.ascending("user.username"),
+                        IndexOptions().unique(true).name("username_unique")
+                    )
                 )
             )
-        } catch (e: MongoCommandException) {
-            // Indexes might already exist
+            println("Successfully recreated all indexes")
+        } catch (e: Exception) {
+            println("Error recreating indexes: ${e.message}")
+            throw e
+        }
+    }
+
+    suspend fun getUserByUsername(username: String): FullUserDetails? = withContext(Dispatchers.IO) {
+        collection.find(Filters.eq("user.username", username)).firstOrNull()
+    }
+
+    suspend fun createUser(user: FullUserDetails): Boolean = withContext(Dispatchers.IO) {
+        try {
+            // Find the highest userId
+            val lastUser = collection.find()
+                .sort(Sorts.descending("user.userId"))
+                .limit(1)
+                .firstOrNull()
+
+            val newId = (lastUser?.user?.userId?.value ?: 0) + 1
+            println("Generated new user ID: $newId")
+
+            // Create updated user with new ID BEFORE checking duplicates
+            val updatedUser = user.copy(
+                user = user.user.copy(
+                    userId = UserId(newId)
+                )
+            )
+
+            // Check for duplicates after setting the ID
+            val duplicateChecks = mutableListOf<Bson>(
+                Filters.eq("user.phoneNumber", updatedUser.user.phoneNumber),
+                Filters.eq("user.username", updatedUser.user.username)
+            )
+            
+            updatedUser.user.email?.let { email ->
+                duplicateChecks.add(Filters.eq("user.email", email))
+            }
+
+            val existingUser = collection.find(Filters.or(duplicateChecks)).firstOrNull()
+            if (existingUser != null) {
+                println("Duplicate user found with username: ${existingUser.user.username}")
+                return@withContext false
+            }
+
+            collection.insertOne(updatedUser)
+            println("User inserted successfully with ID: $newId")
+            true
+        } catch (e: MongoWriteException) {
+            println("MongoDB Write Error: ${e.message}")
+            false
+        } catch (e: Exception) {
+            println("Unexpected error during user creation: ${e.message}")
+            throw e
         }
     }
 
@@ -80,30 +137,24 @@ class UserService(private val database: MongoDatabase) {
         return Base64.getEncoder().encodeToString(digest)
     }
 
-    // Create operations
-    suspend fun createUser(user: FullUserDetails): Boolean = withContext(Dispatchers.IO) {
-        try {
-            collection.insertOne(user)
-            true
-        } catch (e: MongoWriteException) {
-            when (e.error.category) {
-                ErrorCategory.DUPLICATE_KEY -> false
-                else -> throw e
-            }
+    // Read operations
+    suspend fun getUserById(userId: UserId): UserModel? = withContext(Dispatchers.IO) {
+        println("Searching for user with ID: ${userId.value}")  // Debug log
+        val result = collection.find(Filters.eq("user.userId", userId.value)).firstOrNull()
+        println("Database result: $result")  // Debug log
+        result?.user  // Return just the UserModel part
+    }
+
+    suspend fun getUserByEmail(email: Email?): FullUserDetails? = withContext(Dispatchers.IO) {
+        email?.let {
+            collection.find(Filters.eq("user.email", email)).firstOrNull()
         }
     }
 
-    // Read operations
-    suspend fun getUserById(userId: UserId): FullUserDetails? = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("user.userId", userId)).firstOrNull()
-    }
-
-    suspend fun getUserByEmail(email: Email): FullUserDetails? = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("user.email.value", email.value)).firstOrNull()
-    }
-
-    suspend fun getUserByPhone(phoneNumber: PhoneNumber): FullUserDetails? = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("user.phoneNumber.value", phoneNumber.value)).firstOrNull()
+    suspend fun getUserByPhone(phoneNumber: PhoneNumber?): FullUserDetails? = withContext(Dispatchers.IO) {
+        phoneNumber?.let {
+            collection.find(Filters.eq("user.phoneNumber", phoneNumber)).firstOrNull()
+        }
     }
 
     suspend fun getAllUsers(
@@ -215,5 +266,60 @@ class UserService(private val database: MongoDatabase) {
     suspend fun deleteUser(userId: UserId): Boolean = withContext(Dispatchers.IO) {
         val result = collection.deleteOne(Filters.eq("user.userId", userId))
         result.deletedCount > 0
+    }
+
+    suspend fun updateProfile(userId: UserId, update: UpdateProfileRequest): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val updates = mutableListOf<Bson>()
+            
+            // Add non-null fields to updates
+            update.firstName?.let { updates.add(Updates.set("user.firstName", it)) }
+            update.lastName?.let { updates.add(Updates.set("user.lastName", it)) }
+            update.username?.let {
+                // Check if username is already taken by another user
+                val existingUser = getUserByUsername(it)
+                if (existingUser != null && existingUser.user.userId != userId) {
+                    return@withContext false
+                }
+                updates.add(Updates.set("user.username", it))
+            }
+            
+            // Handle email update with validation
+            update.email?.let { emailStr ->
+                val email = Email(emailStr)
+                val existingUser = getUserByEmail(email)
+                if (existingUser != null && existingUser.user.userId != userId) {
+                    return@withContext false
+                }
+                updates.add(Updates.set("user.email", email))
+            }
+            
+            // Handle phone update with validation
+            update.phoneNumber?.let { phoneStr ->
+                val phone = PhoneNumber(phoneStr)
+                val existingUser = getUserByPhone(phone)
+                if (existingUser != null && existingUser.user.userId != userId) {
+                    return@withContext false
+                }
+                updates.add(Updates.set("user.phoneNumber", phone))
+            }
+            
+            // Add last modified timestamp
+            updates.add(Updates.set("lastModifiedAt", System.currentTimeMillis()))
+            
+            if (updates.isEmpty()) {
+                return@withContext true
+            }
+
+            val result = collection.updateOne(
+                Filters.eq("user.userId", userId),
+                Updates.combine(updates)
+            )
+            
+            result.modifiedCount > 0
+        } catch (e: Exception) {
+            println("Error updating profile: ${e.message}")
+            false
+        }
     }
 }

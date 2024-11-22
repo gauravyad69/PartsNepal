@@ -2,42 +2,55 @@ package np.com.parts.plugins
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import org.slf4j.event.*
+import ch.qos.logback.classic.LoggerContext
+import org.slf4j.LoggerFactory
+import kotlinx.coroutines.runBlocking
 
 fun Application.configureMonitoring() {
     install(CallLogging) {
         level = Level.INFO
         format { call ->
+            val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
             val path = call.request.path()
-            val status = call.response.status()?.value ?: "unknown"
-
-            // Add color for different HTTP methods (ANSI color codes)
-            val methodColor = when (httpMethod) {
-                "GET" -> "\u001B[32m"   // Green for GET
-                "POST" -> "\u001B[34m"  // Blue for POST
-                "PUT" -> "\u001B[33m"   // Yellow for PUT
-                "DELETE" -> "\u001B[31m" // Red for DELETE
-                else -> "\u001B[0m"     // Reset color
+            
+            // Get request body
+            val requestBody = runBlocking {
+                try {
+                    if (call.request.contentType().match(ContentType.Application.Json)) {
+                        call.receiveText()
+                    } else {
+                        "<binary-content>"
+                    }
+                } catch (e: Exception) {
+                    "<no-body>"
+                }
             }
 
-            // Reset color after the method
-            val reset = "\u001B[0m"
-
-            // Log format: HTTP Method (with color), Path, and Response Status
-            "$methodColor$httpMethod$reset $path - Status: $status"
+            buildString {
+                appendLine("$httpMethod $path")
+                appendLine("Status: $status")
+                appendLine("Request Body: $requestBody")
+                appendLine("Response: ${status?.description}")
+            }
         }
-        filter { call -> call.request.path().startsWith("/") }
+        
+        // Skip health checks and static content
+        filter { call -> 
+            !call.request.path().startsWith("/health") &&
+            !call.request.path().startsWith("/static")
+        }
     }
-    install(CallId) {
-        header(HttpHeaders.XRequestId)
-        verify { callId: String ->
-            callId.isNotEmpty()
-        }
+
+    // Configure MongoDB logging
+    (LoggerFactory.getILoggerFactory() as LoggerContext).apply {
+        getLogger("org.mongodb.driver").level = ch.qos.logback.classic.Level.INFO
+        getLogger("org.mongodb.driver.connection").level = ch.qos.logback.classic.Level.WARN
+        getLogger("org.mongodb.driver.management").level = ch.qos.logback.classic.Level.WARN
+        getLogger("org.mongodb.driver.cluster").level = ch.qos.logback.classic.Level.WARN
+        getLogger("org.mongodb.driver.protocol.command").level = ch.qos.logback.classic.Level.INFO
     }
 }

@@ -16,15 +16,21 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             get("/profile") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = UserId(principal!!.payload.getClaim("userId").asString().toInt())
+                    if (principal == null) {
+                        call.respond(HttpStatusCode.Unauthorized, "Not authenticated")
+                        return@get
+                    }
 
+                    val userId = UserId(principal.payload.getClaim("userId").asInt())
                     val user = userService.getUserById(userId)
+                    
                     if (user != null) {
                         call.respond(HttpStatusCode.OK, user)
                     } else {
                         call.respond(HttpStatusCode.NotFound, "User not found")
                     }
                 } catch (e: Exception) {
+                    application.log.error("Error in /users/profile", e)
                     call.respond(HttpStatusCode.InternalServerError, "Error fetching user profile")
                 }
             }
@@ -33,17 +39,42 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             put("/profile") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = UserId(principal!!.payload.getClaim("userId").asString().toInt())
-                    val updates = call.receive<Map<String, Any>>()
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
+                    val updateRequest = call.receive<UpdateProfileRequest>()
+                    
+                    if (!updateRequest.isValid()) {
+                        call.respond(
+                            HttpStatusCode.BadRequest,
+                            ErrorResponse(
+                                message = "Invalid update data",
+                                code = "INVALID_DATA"
+                            )
+                        )
+                        return@put
+                    }
 
-                    val updated = userService.updateUser(userId, updates)
+                    val updated = userService.updateProfile(userId, updateRequest)
                     if (updated) {
-                        call.respond(HttpStatusCode.OK, "Profile updated successfully")
+                        // Get updated user profile
+                        val updatedUser = userService.getUserById(userId)
+                        call.respond(HttpStatusCode.OK, updatedUser!!)
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "User not found")
+                        call.respond(
+                            HttpStatusCode.NotFound,
+                            ErrorResponse(
+                                message = "User not found",
+                                code = "USER_NOT_FOUND"
+                            )
+                        )
                     }
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error updating profile")
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        ErrorResponse(
+                            message = "Error updating profile",
+                            code = "UPDATE_ERROR"
+                        )
+                    )
                 }
             }
 

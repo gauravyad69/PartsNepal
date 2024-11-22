@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
-import np.com.parts.API.ViewModels.ProductViewModel
+import np.com.parts.ViewModels.ProductViewModel
 import np.com.parts.API.TokenManager
 import np.com.parts.Adapter.DeliveryAdapter
 import np.com.parts.Adapter.FeatureAdapter

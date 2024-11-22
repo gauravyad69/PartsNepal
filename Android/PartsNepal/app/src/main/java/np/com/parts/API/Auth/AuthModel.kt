@@ -3,11 +3,19 @@ package np.com.parts.API.Auth
 import kotlinx.serialization.Serializable
 import np.com.parts.API.Models.AccountType
 
+
+@Serializable
+data class LoginRequest(
+    val identifier: String,
+    val password: String,
+    val isPhoneLogin: Boolean
+)
+
 @Serializable
 data class RegisterRequest(
-    val email: String?,
-    val phoneNumber: String?,
-    val password: String?,
+    val email: String? = null,
+    val phoneNumber: String,
+    val password: String,
     val firstName: String,
     val lastName: String,
     val username: String,
@@ -15,17 +23,10 @@ data class RegisterRequest(
 )
 
 @Serializable
-data class LoginRequest(
-    val identifier: String, // email or phone
-    val password: String,
-    val isPhoneLogin: Boolean // true for phone login, false for email login
-)
-
-@Serializable
 data class AuthResponse(
     val token: String,
     val user: Int,
-    val expiresIn: Long = 3600 // Token expiration in seconds
+    val expiresIn: Long = 3600
 )
 
 @Serializable
@@ -33,3 +34,13 @@ data class ErrorResponse(
     val message: String,
     val code: String
 )
+
+enum class AuthError {
+    INVALID_CREDENTIALS,
+    ACCOUNT_INACTIVE,
+    DUPLICATE_USER,
+    NETWORK_ERROR,
+    INVALID_REQUEST,
+    UNKNOWN_ERROR,
+    USER_NOT_FOUND
+}

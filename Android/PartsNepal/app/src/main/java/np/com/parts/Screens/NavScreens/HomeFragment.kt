@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
-import np.com.parts.API.ViewModels.ProductViewModel
+import np.com.parts.ViewModels.ProductViewModel
 import np.com.parts.Adapter.ShimmerAdapter
 import np.com.parts.R
 import np.com.parts.databinding.FragmentHomeBinding

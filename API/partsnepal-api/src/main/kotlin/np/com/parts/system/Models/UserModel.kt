@@ -12,9 +12,9 @@ value class UserId(val value: Int)
 
 @JvmInline
 @Serializable
-value class Email(val value: String) {
+value class Email(val value: String?) {
     init {
-        require(value.matches(Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))) { "Invalid email format" }
+        value?.let { require(it.matches(Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))) { "Invalid email format" } }
     }
 }
 
@@ -76,14 +76,20 @@ data class UserEngagement(
 data class UserModel(
     val userId: UserId,
     val username: String,
-    val email: Email,
+    val email: Email? = null,
     val firstName: String,
     val lastName: String,
-    val phoneNumber: PhoneNumber?,
+    val phoneNumber: PhoneNumber,
     val accountType: AccountType = AccountType.PERSONAL,
-    val createdAt: Long = System.currentTimeMillis(), // Unix timestamp in milliseconds
-    val updatedAt: Long = System.currentTimeMillis()  // Unix timestamp in milliseconds
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 ) {
+    init {
+        require(username.isNotBlank()) { "Username cannot be blank" }
+        require(firstName.isNotBlank()) { "First name cannot be blank" }
+        require(lastName.isNotBlank()) { "Last name cannot be blank" }
+    }
+    
     val fullName: String
         get() = "$firstName $lastName"
 }
@@ -132,3 +138,37 @@ data class OrderRef(
     val createdAt: Long // Unix timestamp in milliseconds
 )
 
+
+//indipendent of the user model
+
+@Serializable
+data class UpdateProfileRequest(
+    val firstName: String? = null,
+    val lastName: String? = null,
+    val email: String? = null,
+    val phoneNumber: String? = null,
+    val username: String? = null
+) {
+    fun isValid(): Boolean {
+        // Validate email if provided
+        email?.let {
+            if (!it.matches(Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))) {
+                return false
+            }
+        }
+        
+        // Validate phone if provided
+        phoneNumber?.let {
+            if (!it.matches(Regex("^\\+?[1-9]\\d{1,14}$"))) {
+                return false
+            }
+        }
+        
+        // Validate username if provided
+        username?.let {
+            if (it.length < 3) return false
+        }
+        
+        return true
+    }
+}

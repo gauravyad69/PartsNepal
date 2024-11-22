@@ -1,20 +1,31 @@
 package np.com.parts.Screens.NavScreens
 
+import android.net.http.HttpException
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.annotation.RequiresExtension
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import io.ktor.utils.io.errors.IOException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import np.com.parts.API.Auth.AuthError
 import np.com.parts.API.NetworkModule
 import np.com.parts.API.Models.AccountType
+import np.com.parts.API.Models.UpdateProfileRequest
+import np.com.parts.API.Repository.AuthRepository
 import np.com.parts.API.Repository.UserRepository
 import np.com.parts.R
 import np.com.parts.databinding.FragmentOtherBinding
+import timber.log.Timber
 
 class OtherFragment : Fragment() {
     private var _binding: FragmentOtherBinding? = null
@@ -94,41 +105,102 @@ class OtherFragment : Fragment() {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+
+
     private fun updateUserProfile() {
-        val updates = mapOf(
-            "firstName" to binding.firstNameInput.text.toString(),
-            "lastName" to binding.lastNameInput.text.toString(),
-            "email" to binding.emailInput.text.toString(),
-            "accountType" to AccountType.valueOf(
-                binding.accountTypeDropdown.text.toString().uppercase()
-            )
+        binding.progressBar.isVisible = true
+        binding.loginButton.isEnabled = false
+
+        val request = UpdateProfileRequest(
+            firstName = binding.firstNameInput.text?.toString()?.takeIf { it.isNotBlank() },
+            lastName = binding.lastNameInput.text?.toString()?.takeIf { it.isNotBlank() },
+            email = binding.emailInput.text?.toString()?.takeIf { it.isNotBlank() },
+            accountType = try {
+                binding.accountTypeDropdown.text?.toString()?.uppercase()?.let {
+                    AccountType.valueOf(it)
+                }
+            } catch (e: IllegalArgumentException) {
+                Timber.e(e, "Invalid account type")
+                null
+            }
         )
 
-//        binding.progressBar.visibility = View.VISIBLE
-        binding.loginButton.isEnabled = false
+        // Validate inputs
+        if (request.firstName.isNullOrBlank() || request.lastName.isNullOrBlank()) {
+            showError("First name and last name are required")
+            binding.loginButton.isEnabled = true
+            return
+        }
 
         lifecycleScope.launch {
             try {
-                userRepository.updateProfile(updates)
-                    .onSuccess {
-                        // Update successful
-                        findNavController().navigate(R.id.action_otherFragment_to_homeFragment2)
+                userRepository.updateProfile(request)
+                    .onSuccess { success ->
+                        if (success) {
+                            // Show success message before navigation
+                            Snackbar.make(
+                                binding.root,
+                                "Profile updated successfully",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+
+                            // Short delay to show the success message
+                            delay(500)
+
+                            // Navigate to home
+                            findNavController().navigate(
+                                R.id.action_otherFragment_to_homeFragment
+                            )
+                        } else {
+                            showError("Failed to update profile")
+                        }
                     }
                     .onFailure { exception ->
-                        showError(exception.message ?: "Failed to update profile")
+                        val errorMessage = when (exception) {
+                            is IOException -> "Network error. Please check your connection."
+                            else -> exception.message ?: "An unexpected error occurred"
+                        }
+                        showError(errorMessage)
                     }
             } catch (e: Exception) {
-                showError("An error occurred: ${e.message}")
+                Timber.e(e, "Profile update error")
+                showError("An unexpected error occurred")
             } finally {
-//                binding.progressBar.visibility = View.GONE
+                binding.progressBar.isVisible = false
                 binding.loginButton.isEnabled = true
             }
         }
     }
 
     private fun showError(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        binding.errorText.apply {
+            text = message
+            isVisible = true
+
+            // Auto-hide error after delay
+            lifecycleScope.launch {
+                delay(3000)
+                isVisible = false
+            }
+        }
     }
+
+
+//    private fun showError(message: String) {
+//        binding.errorText.apply {
+//            text = message
+//            isVisible = true
+//            // Optional: Hide error after delay
+//            lifecycleScope.launch {
+//                delay(3000)
+//                isVisible = false
+//            }
+//        }
+//    }
+
+//    private fun showError(message: String) {
+//        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

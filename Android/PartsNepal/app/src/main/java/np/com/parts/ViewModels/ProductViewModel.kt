@@ -1,4 +1,4 @@
-package np.com.parts.API.ViewModels
+package np.com.parts.ViewModels
 
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import np.com.parts.API.Repository.ProductRepository
 import np.com.parts.system.models.BasicProductView
 import np.com.parts.system.models.ProductModel
-import np.com.parts.system.network.ProductApiClient
 
 class ProductViewModel : ViewModel() {
-    private val apiClient = ProductApiClient()
+    private val productRepository=ProductRepository()
     private var recyclerViewState: Parcelable? = null
     private var currentPage = 1
     private var isLastPage = false
@@ -56,7 +56,7 @@ class ProductViewModel : ViewModel() {
             _loading.value = true
             _error.value = null
 
-            apiClient.getAllProducts(page = page)
+            productRepository.getAllProducts(page = page)
                 .onSuccess { response ->
                     _products.value = response.data
                 }
@@ -73,7 +73,7 @@ class ProductViewModel : ViewModel() {
             _loading.value = true
             _error.value = null
 
-            apiClient.getProductById(id)
+            productRepository.getProductById(id)
                 .onSuccess { response ->
                     _productById.value = response.data
                 }
@@ -100,7 +100,7 @@ class ProductViewModel : ViewModel() {
 
                 // Make API call on IO dispatcher
                 withContext(Dispatchers.IO) {
-                    apiClient.getBasicProducts(currentPage, pageSize)
+                    productRepository.getBasicProducts(currentPage, pageSize)
                         .onSuccess { response ->
                             withContext(Dispatchers.Main) {
                                 val newProducts = response.data
@@ -143,7 +143,7 @@ class ProductViewModel : ViewModel() {
                 _isSearching.value = true
                 _error.value = null
 
-                apiClient.searchProducts(
+                productRepository.searchProducts(
                     query = query,
                     page = page - 1,
                     pageSize = pageSize,

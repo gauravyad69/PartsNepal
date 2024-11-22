@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import np.com.parts.API.ViewModels.ProductViewModel
+import np.com.parts.ViewModels.ProductViewModel
 import np.com.parts.R
 import np.com.parts.databinding.FragmentSearchBinding
 

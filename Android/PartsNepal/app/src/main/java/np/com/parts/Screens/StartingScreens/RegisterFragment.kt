@@ -5,15 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
+import np.com.parts.API.Auth.AuthError
 import np.com.parts.API.Repository.AuthRepository
 import np.com.parts.API.NetworkModule
 import np.com.parts.API.Models.AccountType
 import np.com.parts.R
+import np.com.parts.Utils.RandomTextGenerator
 import np.com.parts.databinding.FragmentRegisterBinding
+import timber.log.Timber
+import java.util.UUID
+import kotlin.random.Random
 
 class RegisterFragment : Fragment() {
 
@@ -53,29 +59,53 @@ class RegisterFragment : Fragment() {
             return
         }
 
+
+
         lifecycleScope.launch {
             try {
-                val result = authRepository.register(
+                // Show loading
+//                showLoading(true)
+
+                when (val result = authRepository.register(
                     email = null, // Since this is phone-based registration
                     phoneNumber = phoneNumber,
                     password = password,
-                    firstName = "", // These will be set in the next step
-                    lastName = "",
-                    username = phoneNumber, // Using phone number as initial username
+                    firstName = "PleaseChange ${RandomTextGenerator.generate(3)}",
+                    lastName = "PleaseChange",
+                    username = "PleaseChange${RandomTextGenerator.generate(5)}",
                     accountType = AccountType.PERSONAL
-                )
-
-                result.fold(
-                    onSuccess = { response ->
+                )) {
+                    is AuthRepository.AuthResult.Success -> {
+//                        showLoading(false)
                         // Navigate to additional info fragment
-                        findNavController().navigate(R.id.action_registerFragment_to_otherFragment)
-                    },
-                    onFailure = { exception ->
-                        showError(exception.message ?: "Registration failed $exception")
+                        findNavController().navigate(
+                            R.id.action_registerFragment_to_otherFragment
+                        )
                     }
-                )
+
+                    is AuthRepository.AuthResult.Error -> {
+//                        showLoading(false)
+                        when (result.error) {
+                            AuthError.DUPLICATE_USER -> {
+                                showError("Phone number is already registered")
+                            }
+                            AuthError.NETWORK_ERROR -> {
+                                showError("Network error. Please check your connection")
+                            }
+                            AuthError.INVALID_REQUEST -> {
+                                showError("Invalid registration details")
+                            }
+                            else -> {
+                                showError(result.message)
+                                Timber.e("Registration error: ${result.message}")
+                            }
+                        }
+                    }
+                }
             } catch (e: Exception) {
-                showError(e.message ?: "An error occurred")
+//                showLoading(false)
+                showError("An unexpected error occurred")
+                Timber.e(e, "Registration error $e")
             }
         }
     }
@@ -83,6 +113,44 @@ class RegisterFragment : Fragment() {
     private fun showError(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
+
+
+
+//    // Helper functions
+//    private fun showLoading(isLoading: Boolean) {
+//        binding.apply {
+//            progressBar.isVisible = isLoading
+//            registerButton.isEnabled = !isLoading
+//            // Optionally disable input fields during loading
+//            phoneNumberInput.isEnabled = !isLoading
+//            passwordInput.isEnabled = !isLoading
+//        }
+//    }
+
+//    private fun showError(message: String) {
+//        binding.errorTextView.apply {
+//            text = message
+//            isVisible = true
+//            // Optional: Add animation
+//            alpha = 0f
+//            animate()
+//                .alpha(1f)
+//                .setDuration(300)
+//                .start()
+//        }
+
+        // Hide error after delay
+//        lifecycleScope.launch {
+//            delay(3000)
+//            binding.errorTextView.animate()
+//                .alpha(0f)
+//                .setDuration(300)
+//                .withEndAction {
+//                    binding.errorTextView.isVisible = false
+//                }
+//                .start()
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

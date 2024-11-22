@@ -2,11 +2,6 @@ package np.com.parts.system.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import np.com.parts.system.Models.*
 import np.com.parts.system.Services.UserService
@@ -15,8 +10,8 @@ import java.util.*
 // Request/Response Models
 @Serializable
 data class RegisterRequest(
-    val email: Email,
-    val phoneNumber: PhoneNumber?,
+    val email: String? = null,
+    val phoneNumber: String,
     val password: String,
     val firstName: String,
     val lastName: String,
@@ -62,7 +57,7 @@ class AuthenticationService(
             .withAudience(jwtConfig.audience)
             .withIssuer(jwtConfig.issuer)
             .withClaim("userId", user.userId.value)
-            .withClaim("email", user.email.value)
+            .withClaim("phoneNumber", user.phoneNumber.value)
             .withClaim("username", user.username)
             .withClaim("accountType", user.accountType.name)
             .withExpiresAt(Date(System.currentTimeMillis() + jwtConfig.expirationInMillis))
@@ -71,37 +66,42 @@ class AuthenticationService(
 
     suspend fun register(request: RegisterRequest): Result<AuthResponse> {
         try {
-            // Check for existing email
-            userService.getUserByEmail(request.email)?.let {
-                return Result.failure(Exception("Email already registered"))
+            println("Starting registration for username: ${request.username}")
+            
+            // Validate phone number format
+            val phoneNumber = try {
+                PhoneNumber(request.phoneNumber)
+            } catch (e: Exception) {
+                println("Phone number validation failed: ${e.message}")
+                return Result.failure(Exception("Invalid phone number format"))
             }
 
-            // Check for existing phone if provided
-            request.phoneNumber?.let { phone ->
-                userService.getUserByPhone(phone)?.let {
-                    return Result.failure(Exception("Phone number already registered"))
+            // Validate email if provided
+            val email = request.email?.let {
+                try {
+                    Email(it)
+                } catch (e: Exception) {
+                    println("Email validation failed: ${e.message}")
+                    return Result.failure(Exception("Invalid email format"))
                 }
             }
 
-            val userId = UserId(UUID.randomUUID().hashCode())
             val user = UserModel(
-                userId = userId,
+                userId = UserId(0),
                 username = request.username,
-                email = request.email,
-                phoneNumber = request.phoneNumber,
+                email = email,
+                phoneNumber = phoneNumber,
                 firstName = request.firstName,
                 lastName = request.lastName,
                 accountType = request.accountType
             )
 
-            val credentials = UserCredentials(
-                hashedPassword = userService.hashPassword(request.password),
-                lastPasswordChange = System.currentTimeMillis()
-            )
-
             val fullUserDetails = FullUserDetails(
                 user = user,
-                credentials = credentials,
+                credentials = UserCredentials(
+                    hashedPassword = userService.hashPassword(request.password),
+                    lastPasswordChange = System.currentTimeMillis()
+                ),
                 engagement = UserEngagement(
                     totalTimeSpentMs = 0,
                     lastActive = System.currentTimeMillis(),
@@ -111,15 +111,21 @@ class AuthenticationService(
             )
 
             return if (userService.createUser(fullUserDetails)) {
+                println("User created successfully")
+                val createdUser = userService.getUserByPhone(phoneNumber)
+                    ?: return Result.failure(Exception("Failed to retrieve created user"))
+                
                 Result.success(AuthResponse(
-                    token = generateToken(user),
-                    user = user.userId.value,
-                    expiresIn = jwtConfig.expirationInMillis / 1000 // Convert to seconds
+                    token = generateToken(createdUser.user),
+                    user = createdUser.user.userId.value,
+                    expiresIn = jwtConfig.expirationInMillis / 1000
                 ))
             } else {
-                Result.failure(Exception("Failed to create user"))
+                println("User creation failed - user might already exist")
+                Result.failure(Exception("User already exists"))
             }
         } catch (e: Exception) {
+            println("Registration failed with error: ${e.message}")
             return Result.failure(e)
         }
     }

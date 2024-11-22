@@ -17,7 +17,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import kotlinx.coroutines.launch
-import np.com.parts.API.ViewModels.ProductViewModel
+import np.com.parts.ViewModels.ProductViewModel
 import np.com.parts.Items.BasicProductItem
 import np.com.parts.Items.ProgressItem
 import np.com.parts.R

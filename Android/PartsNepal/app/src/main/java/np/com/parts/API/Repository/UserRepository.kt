@@ -5,35 +5,57 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import np.com.parts.API.BASE_URL
+import np.com.parts.API.Models.FullUserDetails
 import np.com.parts.API.Models.OrderRef
 import np.com.parts.API.Models.ReviewRef
-import np.com.parts.API.Models.User
+import np.com.parts.API.Models.UpdateProfileRequest
+import np.com.parts.API.Models.UserModel
 import np.com.parts.API.Models.UserPreferences
+import timber.log.Timber
 
 class UserRepository(private val client: HttpClient) {
 
-    // Get current user's profile
-    suspend fun getUserProfile(): Result<User> {
-        return try {
-            val response = client.get("$BASE_URL/users/profile")
-            Result.success(response.body())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    // Update user profile
-    suspend fun updateProfile(updates: Map<String, Any>): Result<Boolean> {
+    suspend fun updateProfile(request: UpdateProfileRequest): Result<Boolean> {
         return try {
             val response = client.put("$BASE_URL/users/profile") {
-                setBody(updates)
+                contentType(ContentType.Application.Json)
+                setBody(request)
             }
+
             Result.success(response.status.isSuccess())
         } catch (e: Exception) {
+            Timber.e(e, "Profile update error")
             Result.failure(e)
         }
     }
 
+    suspend fun updatePreferences(preferences: UserPreferences): Result<Boolean> {
+        return try {
+            val response = client.put("$BASE_URL/users/preferences") {
+                contentType(ContentType.Application.Json)
+                setBody(preferences)
+            }
+
+            Result.success(response.status.isSuccess())
+        } catch (e: Exception) {
+            Timber.e(e, "Preferences update error")
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getUserProfile(): Result<UserModel> {
+        return try {
+            val response = client.get("$BASE_URL/users/profile")
+            if (response.status.isSuccess()) {
+                Result.success(response.body())
+            } else {
+                Result.failure(Exception("Failed to load profile"))
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error loading profile")
+            Result.failure(e)
+        }
+    }
     // Add order to user history
     suspend fun addOrder(order: OrderRef): Result<Boolean> {
         return try {
@@ -46,17 +68,6 @@ class UserRepository(private val client: HttpClient) {
         }
     }
 
-    // Update user preferences
-    suspend fun updatePreferences(preferences: UserPreferences): Result<Boolean> {
-        return try {
-            val response = client.put("$BASE_URL/users/preferences") {
-                setBody(preferences)
-            }
-            Result.success(response.status.isSuccess())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
 
     // Add review to user's history
     suspend fun addReview(review: ReviewRef): Result<Boolean> {

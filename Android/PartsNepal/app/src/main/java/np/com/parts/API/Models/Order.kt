@@ -175,12 +175,14 @@ enum class OrderStatus {
     PAYMENT_CONFIRMED,
     PROCESSING,
     READY_TO_SHIP,
-    SHIPPED,
     OUT_FOR_DELIVERY,
-    DELIVERED,
-    CANCELLED,
     RETURNED,
-    REFUNDED
+    REFUNDED,
+    PENDING,
+    CONFIRMED,
+    SHIPPED,
+    DELIVERED,
+    CANCELLED
 }
 
 @Serializable
