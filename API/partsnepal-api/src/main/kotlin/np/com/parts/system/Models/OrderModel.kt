@@ -61,7 +61,7 @@ enum class OrderStatus {
 // Customer Information
 @Serializable
 data class CustomerInfo(
-    val id: String,
+    val id: Int,
     val email: String?,
     val phone: String,
     val name: String,

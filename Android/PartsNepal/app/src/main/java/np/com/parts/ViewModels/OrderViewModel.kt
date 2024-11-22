@@ -5,18 +5,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import np.com.parts.API.Models.CreateOrderRequest
-import np.com.parts.API.Models.Order
+import np.com.parts.API.Models.OrderModel
+import np.com.parts.API.NetworkModule
 import np.com.parts.API.Repository.OrderRepository
+import np.com.parts.API.Repository.UserRepository
 
 class OrderViewModel(
-    private val orderRepository: OrderRepository
 ) : ViewModel() {
+    private val orderRepository by lazy {
+        OrderRepository(NetworkModule.provideHttpClient())
+    }
 
-    private val _orders = MutableStateFlow<List<Order>>(emptyList())
-    val orders: StateFlow<List<Order>> = _orders.asStateFlow()
+    private val _orders = MutableStateFlow<List<OrderModel>>(emptyList())
+    val orders: StateFlow<List<OrderModel>> = _orders.asStateFlow()
 
-    private val _selectedOrder = MutableStateFlow<Order?>(null)
-    val selectedOrder: StateFlow<Order?> = _selectedOrder.asStateFlow()
+    private val _selectedOrder = MutableStateFlow<OrderModel?>(null)
+    val selectedOrder: StateFlow<OrderModel?> = _selectedOrder.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()

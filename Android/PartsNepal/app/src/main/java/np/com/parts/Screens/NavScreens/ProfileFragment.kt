@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
@@ -51,7 +52,7 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val toolbar = requireActivity().findViewById<AppBarLayout>(R.id.appBarLayout)
-
+        toolbar.visibility=View.GONE
 
 binding.logoutButton.setOnClickListener{
     TokenManager.getInstance(requireContext()).clearToken()
@@ -64,6 +65,10 @@ binding.logoutButton.setOnClickListener{
                 .alpha(1f)
                 .setDuration(300)
                 .start()
+        }
+
+        binding.ordersButton.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_ordersFragment)
         }
 
         binding.cancelButton.setOnClickListener {

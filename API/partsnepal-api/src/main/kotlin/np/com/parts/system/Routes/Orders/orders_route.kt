@@ -16,7 +16,7 @@ fun Route.authenticatedOrderRoutes(orderService: OrderService) {
         get {
             try {
                 val principal = call.principal<JWTPrincipal>()
-                val customerId = principal!!.payload.getClaim("userId").asString()
+                val customerId = principal!!.payload.getClaim("userId").asInt()
                 val skip = call.parameters["skip"]?.toIntOrNull() ?: 0
                 val limit = call.parameters["limit"]?.toIntOrNull() ?: 50
 
@@ -31,7 +31,7 @@ fun Route.authenticatedOrderRoutes(orderService: OrderService) {
         post {
             try {
                 val principal = call.principal<JWTPrincipal>()
-                val customerId = principal!!.payload.getClaim("userId").asString()
+                val customerId = principal!!.payload.getClaim("userId").asInt()
                 val orderRequest = call.receive<CreateOrderRequest>()
 
                 // Ensure the order is created for the authenticated user
@@ -52,7 +52,7 @@ fun Route.authenticatedOrderRoutes(orderService: OrderService) {
         get("/{orderNumber}") {
             try {
                 val principal = call.principal<JWTPrincipal>()
-                val customerId = principal!!.payload.getClaim("userId").asString()
+                val customerId = principal!!.payload.getClaim("userId").asInt()
                 val orderNumber = call.parameters["orderNumber"]
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid order number")
 

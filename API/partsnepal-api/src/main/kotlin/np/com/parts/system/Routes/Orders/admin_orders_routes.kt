@@ -37,7 +37,7 @@ data class CreateOrderRequest(
     val shipping: ShippingDetails,
     val payment: PaymentDetails
 ) {
-    fun toOrderModel(customerId: String): OrderModel {
+    fun toOrderModel(customerId: Int): OrderModel {
         val now = System.currentTimeMillis()
         
         // Calculate order summary

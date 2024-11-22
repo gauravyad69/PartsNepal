@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.launch
-import np.com.parts.API.Models.Order
+import np.com.parts.API.Models.OrderModel
+import np.com.parts.R
 import np.com.parts.databinding.FragmentOrdersBinding
 
 /**
@@ -41,8 +44,8 @@ class OrdersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
+        val toolbar = requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        toolbar.visibility=View.GONE
         // Observe orders
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.orders.collect { orders ->
@@ -66,7 +69,7 @@ class OrdersFragment : Fragment() {
 // Load orders
         viewModel.loadUserOrders()
     }
-    private fun updateOrdersList(orders: List<Order>) {
+    private fun updateOrdersList(orders: List<OrderModel>) {
 // Update your RecyclerView or other UI components
     }
     private fun showError(message: String) {

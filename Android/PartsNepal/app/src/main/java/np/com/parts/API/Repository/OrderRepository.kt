@@ -6,12 +6,12 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.CreateOrderRequest
-import np.com.parts.API.Models.Order
+import np.com.parts.API.Models.OrderModel
 
 class OrderRepository(private val client: HttpClient) {
 
     // Get all orders for the current user
-    suspend fun getUserOrders(skip: Int = 0, limit: Int = 50): Result<List<Order>> {
+    suspend fun getUserOrders(skip: Int = 0, limit: Int = 50): Result<List<OrderModel>> {
         return try {
             val response = client.get("$BASE_URL/orders") {
                 parameter("skip", skip)
@@ -36,7 +36,7 @@ class OrderRepository(private val client: HttpClient) {
     }
 
     // Get specific order details
-    suspend fun getOrderDetails(orderNumber: String): Result<Order> {
+    suspend fun getOrderDetails(orderNumber: String): Result<OrderModel> {
         return try {
             val response = client.get("$BASE_URL/orders/$orderNumber")
             Result.success(response.body())

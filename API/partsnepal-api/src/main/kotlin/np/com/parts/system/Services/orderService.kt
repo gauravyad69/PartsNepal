@@ -53,7 +53,7 @@ class OrderService(private val database: MongoDatabase) {
     }
 
     // Read all orders for a customer
-    suspend fun getOrdersByCustomer(customerId: String): List<OrderModel> = withContext(Dispatchers.IO) {
+    suspend fun getOrdersByCustomer(customerId: Int): List<OrderModel> = withContext(Dispatchers.IO) {
         collection.find(Filters.eq("customer.id", customerId)).toList()
     }
 
