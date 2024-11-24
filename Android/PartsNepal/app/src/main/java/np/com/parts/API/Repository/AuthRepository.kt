@@ -5,6 +5,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import android.content.Context
+import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.errors.IOException
 import np.com.parts.API.Auth.AuthError
@@ -85,6 +86,7 @@ class AuthRepository(
             }
         }
     }
+
 
     suspend fun register(
         email: String? = null,

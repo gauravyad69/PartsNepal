@@ -23,8 +23,8 @@ import np.com.parts.Items.ProgressItem
 import np.com.parts.R
 import np.com.parts.Screens.NavScreens.GridSpacingItemDecoration
 import np.com.parts.databinding.FragmentSearchedProductsBinding
-import np.com.parts.system.models.ProductModel
-import np.com.parts.system.models.toBasicView
+import np.com.parts.API.Models.ProductModel
+import np.com.parts.API.Models.toBasicView
 
 class SearchedProductsFragment : Fragment() {
     private var _binding: FragmentSearchedProductsBinding? = null

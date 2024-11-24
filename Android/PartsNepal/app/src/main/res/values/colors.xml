@@ -53,6 +53,7 @@
     <color name="status_failed">#FF0000</color>  <!-- Red -->
     <color name="status_refunded">#8B0000</color>  <!-- DarkRed -->
     <color name="status_unknown">#808080</color>  <!-- Gray -->
+    <color name="status_success">#4CAF50</color>
 
     <color name="shimmer_color">#8E8E93</color>
 

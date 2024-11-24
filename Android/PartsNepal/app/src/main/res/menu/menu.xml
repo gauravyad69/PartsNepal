@@ -16,5 +16,9 @@
         android:title="Profile"
         android:icon="@drawable/iconamoon_profile"/>
 
+    <item
+        android:id="@+id/cartFragment"
+        android:icon="@drawable/ic_cart"
+        android:title="Cart" />
 
 </menu>

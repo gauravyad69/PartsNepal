@@ -10,67 +10,56 @@ import np.com.parts.API.NetworkModule
 import np.com.parts.API.Repository.OrderRepository
 import np.com.parts.API.Repository.UserRepository
 
-class OrderViewModel(
-) : ViewModel() {
+class OrderViewModel : ViewModel() {
     private val orderRepository by lazy {
         OrderRepository(NetworkModule.provideHttpClient())
     }
 
-    private val _orders = MutableStateFlow<List<OrderModel>>(emptyList())
-    val orders: StateFlow<List<OrderModel>> = _orders.asStateFlow()
+    private val _orderState = MutableStateFlow<OrderState>(OrderState.Loading)
+    val orderState: StateFlow<OrderState> = _orderState.asStateFlow()
 
-    private val _selectedOrder = MutableStateFlow<OrderModel?>(null)
-    val selectedOrder: StateFlow<OrderModel?> = _selectedOrder.asStateFlow()
+    sealed class OrderState {
+        object Loading : OrderState()
+        data class Success(val orders: List<OrderModel>) : OrderState()
+        data class Error(val message: String) : OrderState()
+    }
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
-
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading.asStateFlow()
-
-   fun loadUserOrders() {
+    fun loadUserOrders() {
         viewModelScope.launch {
-            _loading.value = true
+            _orderState.value = OrderState.Loading
             orderRepository.getUserOrders()
-                .onSuccess { orderList ->
-                    _orders.value = orderList
+                .onSuccess { orders ->
+                    _orderState.value = OrderState.Success(orders)
                 }
-                .onFailure { exception ->
-                    _error.value = exception.message
+                .onFailure { error ->
+                    _orderState.value = OrderState.Error(error.message ?: "Failed to load orders")
                 }
-            _loading.value = false
         }
     }
 
     fun createOrder(orderRequest: CreateOrderRequest) {
         viewModelScope.launch {
-            _loading.value = true
+            _orderState.value = OrderState.Loading
             orderRepository.createOrder(orderRequest)
-                .onSuccess { success ->
-                    if (success) {
-                        loadUserOrders() // Refresh orders list
-                    } else {
-                        _error.value = "Failed to create order"
-                    }
+                .onSuccess { order ->
+                    loadUserOrders()
                 }
-                .onFailure { exception ->
-                    _error.value = exception.message
+                .onFailure { error ->
+                    _orderState.value = OrderState.Error(error.message ?: "Failed to create order")
                 }
-            _loading.value = false
         }
     }
 
-    fun loadOrderDetails(orderNumber: String) {
+    fun getOrderDetails(orderId: String) {
         viewModelScope.launch {
-            _loading.value = true
-            orderRepository.getOrderDetails(orderNumber)
+            _orderState.value = OrderState.Loading
+            orderRepository.getOrderDetails(orderId)
                 .onSuccess { order ->
-                    _selectedOrder.value = order
+                    _orderState.value = OrderState.Success(listOf(order))
                 }
-                .onFailure { exception ->
-                    _error.value = exception.message
+                .onFailure { error ->
+                    _orderState.value = OrderState.Error(error.message ?: "Failed to load order details")
                 }
-            _loading.value = false
         }
     }
 } 

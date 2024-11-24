@@ -4,7 +4,6 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,9 @@ import np.com.parts.Adapter.ReviewAdapter
 import np.com.parts.Adapter.WarrantyAdapter
 import np.com.parts.R
 import np.com.parts.databinding.FragmentProductBinding
-import np.com.parts.system.models.Reviews
+import np.com.parts.API.Models.Reviews
+import np.com.parts.ViewModels.CartAction
+import np.com.parts.ViewModels.CartViewModel
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 import java.text.NumberFormat
 import kotlin.math.roundToInt
@@ -50,6 +51,7 @@ class ProductFragment : Fragment() {
 
     private var _binding: FragmentProductBinding? = null
     private val viewModel: ProductViewModel by viewModels()
+    private val cartViewModel: CartViewModel by viewModels()
     private val args: ProductFragmentArgs by navArgs()
 
 
@@ -85,21 +87,8 @@ class ProductFragment : Fragment() {
 
         viewModel.loadProductsById(productId)
 
-        binding.addToCartButton.setOnClickListener{
-        // Check if user is logged in
-        if (TokenManager.getInstance(requireContext()).hasToken()) {
-            // User is logged in
-            Log.i("auth", "user logged in")
-            //add to cart function here,
-        } else {
-            // User is not logged in
-            Log.i("auth", "user is not logged in :((((((")
-            // Set up Navigation
-            val action = ProductFragmentDirections.actionProductFragmentToLoginFragment()
-            findNavController().navigate(action)
-        }
-        }
-
+        setupUI()
+        observeCartEvents()
     }
 
     override fun onResume() {
@@ -258,6 +247,77 @@ class ProductFragment : Fragment() {
         }
     }
 
+
+
+    private fun observeCartEvents() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            cartViewModel.cartEvents.collect { event ->
+                when (event) {
+                    is CartEvent.ItemAdded -> {
+                        // Reset button state
+                        binding.addToCartButton.isEnabled = true
+                        binding.addToCartProgress.isVisible = false
+                        binding.addToCartButton.text = getString(R.string.add_to_cart)
+
+                        // Show success animation
+                        showAddToCartSuccess()
+
+                        // Show snackbar
+                        Snackbar.make(
+                            binding.root,
+                            "${event.name} added to cart",
+                            Snackbar.LENGTH_LONG
+                        ).apply {
+                            setAction("VIEW CART") {
+                                findNavController().navigate(R.id.action_productFragment_to_cartFragment)
+                            }
+                            // Optional: Custom styling
+                            setActionTextColor(resources.getColor(R.color.status_success, null))
+                            show()
+                        }
+                    }
+                    is CartEvent.ShowMessage -> {
+                        // Reset button state
+                        binding.addToCartButton.isEnabled = true
+                        binding.addToCartProgress.isVisible = false
+                        binding.addToCartButton.text = getString(R.string.add_to_cart)
+
+                        // Show error
+                        Snackbar.make(binding.root, event.message, Snackbar.LENGTH_LONG).show()
+                    }
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+    private fun showAddToCartSuccess() {
+        binding.addToCartSuccess.apply {
+            alpha = 0f
+            scaleX = 0f
+            scaleY = 0f
+            isVisible = true
+            
+            animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(300)
+                .withEndAction {
+                    postDelayed({
+                        animate()
+                            .alpha(0f)
+                            .scaleX(0f)
+                            .scaleY(0f)
+                            .setDuration(200)
+                            .withEndAction {
+                                isVisible = false
+                            }
+                    }, 1000)
+                }
+        }
+    }
+
     private fun updateReviewSection(reviews: Reviews) {
         with(binding.reviewsSection) {
             // Update average rating
@@ -283,5 +343,30 @@ class ProductFragment : Fragment() {
             reviewAdapter.submitList(reviews.items)
         }
     }
+
+    private fun setupUI() {
+        binding.apply {
+            // Assuming you have a quantity input in your layout
+            // This could be a NumberPicker, EditText, or custom view
+            addToCartButton.setOnClickListener {
+                val product = viewModel.productById.value ?: return@setOnClickListener
+                val quantity = 1 // Or get from your quantity input
+
+                // Show loading state
+                addToCartButton.isEnabled = false
+                addToCartProgress.isVisible = true
+
+                cartViewModel.dispatch(
+                    CartAction.AddItem(
+                        productId = product.productId,
+                        quantity = quantity,
+                        product = product
+                    )
+                )
+            }
+        }
+    }
+
+
 }
 

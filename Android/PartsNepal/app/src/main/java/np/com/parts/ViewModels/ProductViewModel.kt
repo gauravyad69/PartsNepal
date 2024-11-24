@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import np.com.parts.API.Repository.ProductRepository
-import np.com.parts.system.models.BasicProductView
-import np.com.parts.system.models.ProductModel
+import np.com.parts.API.Models.BasicProductView
+import np.com.parts.API.Models.ProductModel
 
 class ProductViewModel : ViewModel() {
     private val productRepository=ProductRepository()

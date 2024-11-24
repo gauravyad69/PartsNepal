@@ -21,6 +21,9 @@ lifecycleViewmodelAndroid = "2.8.7"
 firebaseDataconnect = "16.0.0-beta03"
 swiperefreshlayout = "1.1.0"
 fastAdapter = "5.7.0"
+room_version = "2.6.1"
+activity-ktx = "1.8.2"
+nav_version = "2.7.7"
 
 
 
@@ -34,16 +37,25 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity-ktx" }
 
 
-androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
-androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "nav_version" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "nav_version" }
 media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
 #navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 #navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 smoothbottombar = { group = "com.github.ibrahimsn98", name = "SmoothBottomBar", version.ref = "smoothbottombar" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 coil = { group = "io.coil-kt", name = "coil", version = "2.5.0" }
+
+
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room_version" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room_version" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room_version" }
+work-runtime = { group = "androidx.work", name = "work-runtime-ktx", version = "2.9.0" }
+
+
 
 ktor-client-serialization = { group = "io.ktor", name = "ktor-client-serialization", version.ref = "ktor-version" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor-version" }
@@ -73,6 +85,6 @@ androidx-security-crypto = { group = "androidx.security", name = "security-crypt
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationFragmentKtx" }
+navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "nav_version" }
 
 

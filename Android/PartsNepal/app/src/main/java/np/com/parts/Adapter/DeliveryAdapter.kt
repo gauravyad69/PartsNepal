@@ -9,10 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import np.com.parts.R
-import np.com.parts.databinding.ItemWarrantyBinding
-import np.com.parts.system.models.DeliveryInfo
-import np.com.parts.system.models.DeliveryOption
-import np.com.parts.system.models.WarrantyInfo
+import np.com.parts.API.Models.DeliveryInfo
+import np.com.parts.API.Models.DeliveryOption
 
 class DeliveryAdapter : ListAdapter<DeliveryOption, DeliveryAdapter.DeliveryViewHolder>(DeliveryDiffCallback()) {
     private var deliveryInfo: DeliveryInfo? = null

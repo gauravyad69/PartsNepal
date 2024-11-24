@@ -5,12 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import coil.load
 import np.com.parts.R
 import np.com.parts.databinding.ItemProductBinding
-import np.com.parts.system.models.BasicProductView
+import np.com.parts.API.Models.BasicProductView
 import java.text.NumberFormat
 
 class BasicProductItem(val product: BasicProductView) : AbstractBindingItem<ItemProductBinding>() {

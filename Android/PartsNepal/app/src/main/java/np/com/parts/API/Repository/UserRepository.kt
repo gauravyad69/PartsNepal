@@ -11,9 +11,11 @@ import np.com.parts.API.Models.ReviewRef
 import np.com.parts.API.Models.UpdateProfileRequest
 import np.com.parts.API.Models.UserModel
 import np.com.parts.API.Models.UserPreferences
+import np.com.parts.API.NetworkModule
 import timber.log.Timber
 
-class UserRepository(private val client: HttpClient) {
+class UserRepository(    private val client: HttpClient = NetworkModule.provideHttpClient()
+) {
 
     suspend fun updateProfile(request: UpdateProfileRequest): Result<Boolean> {
         return try {

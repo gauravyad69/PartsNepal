@@ -1,19 +1,12 @@
-package np.com.parts.system.models
+package np.com.parts.API.Models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-sealed interface BaseModel {
-    @SerialName("_id")
-    val id: String?
-    val lastUpdated: Long
-    val version: Int
-}
-
-@Serializable
 sealed interface ProductRelated {
+
     val productId: Int
 }
 
@@ -26,8 +19,8 @@ sealed interface IProductInfo : ProductRelated {
 
 @Serializable
 data class ProductModel(
-    @SerialName("_id")
-    override val id: String? = null,
+    @SerialName("id")  // Add this
+    override val id: String,
     val basic: BasicProductInfo,
     val details: DetailedProductInfo,
     override val lastUpdated: Long = System.currentTimeMillis(),
@@ -37,7 +30,6 @@ data class ProductModel(
     override val productId: Int
         get() = basic.productId
 }
-
 @Serializable
 data class BasicProductInfo(
     override val productId: Int,
@@ -76,27 +68,6 @@ data class PricingInfo(
         get() = salePrice != null && discount != null
 }
 
-@Serializable
-data class Money(
-    val amount: Long,
-    val currency: String = "NPR"
-)
-
-@Serializable
-data class Discount(
-    val percentage: Double,
-    val startDate: Long? = null,
-    val endDate: Long? = null
-) {
-    @Transient
-    val isActive: Boolean
-        get() = when {
-            startDate == null && endDate == null -> true
-            startDate == null -> System.currentTimeMillis() <= endDate!!
-            endDate == null -> System.currentTimeMillis() >= startDate
-            else -> System.currentTimeMillis() in startDate..endDate
-        }
-}
 
 @Serializable
 data class Features(
@@ -125,8 +96,8 @@ data class Reviews(
 
 @Serializable
 data class Review(
-    @SerialName("_id")
-    override val id: String? = null,
+    @SerialName("id")
+    override val id: String,
     val userId: String,
     val rating: Int,
     val comment: String,

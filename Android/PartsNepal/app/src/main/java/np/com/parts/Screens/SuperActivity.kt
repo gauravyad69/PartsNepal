@@ -5,33 +5,33 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.BuildConfig
-import np.com.parts.API.TokenManager
 import np.com.parts.R
-import np.com.parts.Screens.StartingScreens.LoginFragment
 import np.com.parts.databinding.ActivitySuperBinding
+import np.com.parts.ViewModels.CartViewModel
 import timber.log.Timber
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
+import androidx.navigation.ui.setupWithNavController
+import androidx.core.content.ContextCompat
 
 @SuppressLint("StaticFieldLeak")
 private lateinit var navController: NavController
 private lateinit var binding: ActivitySuperBinding
-
+private lateinit var cartViewModel: CartViewModel
 
 class SuperActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
@@ -44,6 +44,10 @@ class SuperActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets }
+
+         val cartViewModel by lazy {
+            ViewModelProvider(this)[CartViewModel::class.java]
+        }
 
 
         if (BuildConfig.DEBUG) {
@@ -80,12 +84,14 @@ class SuperActivity : AppCompatActivity() {
 //        }
 
         // Initialize NavController using the correct ID
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_of_super) as NavHostFragment
-        navController = navHostFragment?.navController!!
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment_of_super) as NavHostFragment
+        navController = navHostFragment.navController
 
 // Set up SmoothBottomBar
 
-        setupSmoothBottomMenu()
+        setupBottomNavigation()
+        observeCartBadge()
 
 
 
@@ -96,14 +102,33 @@ class SuperActivity : AppCompatActivity() {
 
     }
 
-    private fun setupSmoothBottomMenu() {
-        // Set up the menu for SmoothBottomBar
-        val popupMenu = PopupMenu(this, binding.bottomBar)
-        popupMenu.menuInflater.inflate(R.menu.menu, popupMenu.menu)
-
-        // Attach the SmoothBottomBar to the NavController
-        binding.bottomBar.setupWithNavController(popupMenu.menu, navController)
+    private fun setupBottomNavigation() {
+        // Setup bottom navigation with NavController
+        binding.bottomBar.setupWithNavController(navController)
+        
+        // Optional: Add animation for badge
+        binding.bottomBar.setOnNavigationItemReselectedListener { /* Prevent reselection */ }
     }
+
+    private fun observeCartBadge() {
+        lifecycleScope.launch {
+            cartViewModel.cartItemCount.collectLatest { count ->
+                if (count > 0) {
+                    binding.bottomBar.getOrCreateBadge(R.id.cartFragment).apply {
+                        number = count
+                        backgroundColor = ContextCompat.getColor(
+                            this@SuperActivity, 
+                            R.color.status_sending
+                        )
+                        isVisible = true
+                    }
+                } else {
+                    binding.bottomBar.removeBadge(R.id.cartFragment)
+                }
+            }
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }

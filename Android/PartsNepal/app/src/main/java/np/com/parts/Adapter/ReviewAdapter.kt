@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import np.com.parts.R
-import np.com.parts.system.models.Review
+import np.com.parts.API.Models.Review
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

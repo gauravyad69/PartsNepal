@@ -3,11 +3,15 @@ package np.com.parts.API.Repository
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import np.com.parts.system.models.ProductModel
-import np.com.parts.system.models.BasicProductView
+import kotlinx.serialization.SerialName
+import np.com.parts.API.Models.ProductModel
+import np.com.parts.API.Models.BasicProductView
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import np.com.parts.API.NetworkModule
 import np.com.parts.API.PRODUCTS_PATH
+import okhttp3.internal.format
+import java.io.Serial
 
 
 class ProductRepository(
@@ -15,12 +19,12 @@ class ProductRepository(
 
 ) {
 
-    // Response wrapper classes matching the API
     @Serializable
     data class ProductResponse<T>(
         val data: T,
         val message: String? = null,
-        val metadata: ResponseMetadata? = null
+        val metadata: ResponseMetadata? = null,
+        val error: ErrorResponse? = null  // Add this to handle error responses
     )
 
     @Serializable
@@ -53,31 +57,47 @@ class ProductRepository(
     }
 
     // Get basic product details
+    // In ProductRepository.kt
     suspend fun getBasicProducts(
         page: Int = 0,
         pageSize: Int = 20
     ): Result<ProductResponse<List<BasicProductView>>> = try {
-        val response: ProductResponse<List<BasicProductView>> =
-            client.get("$PRODUCTS_PATH/basic") {
-                parameter("page", page)
-                parameter("pageSize", pageSize)
-            }.body()
-        Result.success(response)
+        println("Making request to: $PRODUCTS_PATH/basic with page=$page&pageSize=$pageSize")
+
+        val response = client.get("$PRODUCTS_PATH/basic") {
+            parameter("page", page)
+            parameter("pageSize", pageSize)
+        }
+
+        // Log the raw response
+        val rawBody = response.body<String>()
+        println("Raw response: $rawBody")
+
+        // Try parsing
+        val productResponse = Json.decodeFromString<ProductResponse<List<BasicProductView>>>(rawBody)
+        Result.success(productResponse)
     } catch (e: Exception) {
+        println("Error in getBasicProducts: ${e.message}")
+        e.printStackTrace()
         Result.failure(e)
     }
 
     // Get product by ID
+    // Get product by ID
     suspend fun getProductById(
         productId: Int
     ): Result<ProductResponse<ProductModel>> = try {
-        val response: ProductResponse<ProductModel> =
-            client.get("$PRODUCTS_PATH/$productId").body()
+        println("Making request to: $PRODUCTS_PATH/$productId")  // Add logging
+
+        val response: ProductResponse<ProductModel> = client.get("$PRODUCTS_PATH/$productId").body()
+
+
         Result.success(response)
     } catch (e: Exception) {
+        println("Error in getProductById: ${e.message}")  // Add error logging
+        e.printStackTrace()
         Result.failure(e)
     }
-
     // Search products
     suspend fun searchProducts(
         query: String = "",

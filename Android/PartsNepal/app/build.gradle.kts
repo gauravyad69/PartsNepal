@@ -42,7 +42,16 @@ android {
     }
 }
 
+configurations {
+    all {
+        exclude(group = "com.intellij", module = "annotations")
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
+}
+
 dependencies {
+    implementation("org.jetbrains:annotations:24.1.0")
+    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -76,6 +85,11 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.timber)
 
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    implementation(libs.room.compiler)
+    implementation(libs.work.runtime)
+
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
@@ -88,4 +102,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.androidx.activity.ktx)
 }

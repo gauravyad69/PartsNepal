@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
 <!--    leave this fragment alone nigga, its independent from others -->
@@ -62,7 +65,7 @@
         <argument
             android:name="productId"
             app:argType="integer"
-            android:defaultValue="-1" />
+            android:defaultValue="1" />
         <argument
             android:name="productName"
             app:argType="string"
@@ -71,6 +74,9 @@
         <action
             android:id="@+id/action_productFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
     </fragment>
 
 
@@ -177,25 +183,92 @@
     <fragment
         android:id="@+id/cartFragment"
         android:name="np.com.parts.Screens.MainScreens.CartFragment"
-        android:label="fragment_cart"
-        tools:layout="@layout/fragment_cart" >
+        android:label="Cart"
+        tools:layout="@layout/fragment_cart">
         <action
             android:id="@+id/action_cartFragment_to_checkoutFragment"
-            app:destination="@id/checkoutFragment" />
+            app:destination="@id/checkoutFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action
+            android:id="@+id/action_cartFragment_to_loginFragment"
+            app:destination="@id/loginFragment"/>
     </fragment>
     <fragment
         android:id="@+id/checkoutFragment"
         android:name="np.com.parts.Screens.MainScreens.CheckoutFragment"
-        android:label="fragment_checkout"
-        tools:layout="@layout/fragment_checkout" >
+        android:label="Checkout"
+        tools:layout="@layout/fragment_checkout">
         <action
-            android:id="@+id/action_checkoutFragment_to_ordersFragment"
-            app:destination="@id/ordersFragment" />
+            android:id="@+id/action_checkoutFragment_to_orderConfirmationFragment"
+            app:destination="@id/orderConfirmationFragment">
+            <argument
+                android:name="orderId"
+                app:argType="string"/>
+            <argument
+                android:name="orderNumber"
+                app:argType="string"/>
+        </action>
+        <action
+            android:id="@+id/action_checkoutFragment_to_loginFragment"
+            app:destination="@id/loginFragment"/>
     </fragment>
     <fragment
         android:id="@+id/ordersFragment"
         android:name="np.com.parts.Screens.MainScreens.OrdersFragment"
-        android:label="fragment_orders"
-        tools:layout="@layout/fragment_orders" />
+        android:label="Orders">
+        
+        <argument
+            android:name="orderId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_ordersFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/orderConfirmationFragment"
+        android:name="np.com.parts.Screens.MainScreens.OrderConfirmationFragment"
+        android:label="Order Confirmation">
+        
+        <argument
+            android:name="orderId"
+            app:argType="string" />
+            
+        <argument
+            android:name="orderNumber"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_orderConfirmationFragment_to_ordersFragment"
+            app:destination="@id/ordersFragment">
+            <argument
+                android:name="orderId"
+                app:argType="string" />
+        </action>
+
+        <action
+            android:id="@+id/action_orderConfirmationFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="np.com.parts.Screens.MainScreens.OrderDetailsFragment"
+        android:label="fragment_order_details"
+        tools:layout="@layout/fragment_order_details">
+
+        <argument
+            android:name="orderId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
 </navigation>

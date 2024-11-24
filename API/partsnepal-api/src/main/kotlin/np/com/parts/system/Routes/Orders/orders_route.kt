@@ -7,6 +7,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import np.com.parts.system.Models.CreateOrderRequest
 import np.com.parts.system.Services.OrderService
 
 // AuthenticatedOrderRoutes.kt
@@ -35,11 +36,11 @@ fun Route.authenticatedOrderRoutes(orderService: OrderService) {
                 val orderRequest = call.receive<CreateOrderRequest>()
 
                 // Ensure the order is created for the authenticated user
-                val order = orderRequest.toOrderModel(customerId)
-                val created = orderService.createOrder(order)
+//                val order = orderRequest.toOrderModel(customerId)
+                val created = orderService.createOrder(customerId,orderRequest)
 
-                if (created) {
-                    call.respond(HttpStatusCode.Created, "Order created successfully")
+                if (created.isSuccess) {
+                    call.respond(HttpStatusCode.Created, created.getOrThrow())
                 } else {
                     call.respond(HttpStatusCode.Conflict, "Order already exists")
                 }

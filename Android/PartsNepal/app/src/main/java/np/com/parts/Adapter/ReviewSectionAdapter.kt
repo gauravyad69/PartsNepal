@@ -1,23 +1,15 @@
 package np.com.parts.Adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import np.com.parts.R
-import np.com.parts.system.models.Review
-import np.com.parts.system.models.Reviews
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import np.com.parts.API.Models.Reviews
 import kotlin.math.roundToInt
 
 class ReviewSectionAdapter(

@@ -3,6 +3,7 @@ package np.com.parts.system
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -15,14 +16,16 @@ import np.com.parts.system.Routes.Orders.authenticatedOrderRoutes
 import np.com.parts.system.Routes.Products.adminProductRoutes
 import np.com.parts.system.Routes.Products.authenticatedProductRoutes
 import np.com.parts.system.Routes.Products.unauthenticatedProductRoutes
+import np.com.parts.system.Routes.Cart.cartRoutes
 import np.com.parts.system.Routes.User.adminUserRoutes
 import np.com.parts.system.Routes.User.authenticatedUserRoutes
 import np.com.parts.system.Services.OrderService
 import np.com.parts.system.Services.UserService
 import np.com.parts.system.auth.AuthenticationService
+import np.com.parts.system.Services.CartService
 
 
-fun Route.applicationRoutes(productService: ProductService, orderService: OrderService, userService: UserService) {
+fun Route.applicationRoutes(productService: ProductService, orderService: OrderService, userService: UserService, cartService: CartService) {
     val jwtConfig = AuthenticationService.JWTConfig(
         secret = environment?.config!!.property("jwt.secret").getString(),
         issuer = environment?.config!!.property("jwt.issuer").getString(),
@@ -35,9 +38,18 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
     authenticate("auth-jwt") {
         get("/protected") {
             val principal = call.principal<JWTPrincipal>()
-            val username = principal!!.payload.getClaim("username").asString()
-            call.respondText("Hello, $username!")
+            val userId = principal!!.payload.getClaim("userId").asInt()
+            if (principal==null){
+                return@get call.respond(HttpStatusCode.Unauthorized)
+            }
+            if (userId==null){
+                return@get call.respond(HttpStatusCode.Unauthorized)
+            }
+            call.respond(HttpStatusCode.OK)
+
         }
+        cartRoutes(cartService)
+        
         adminProductRoutes(productService)
         authenticatedProductRoutes(productService)
 

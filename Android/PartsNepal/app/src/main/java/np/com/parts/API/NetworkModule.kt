@@ -26,9 +26,11 @@ object NetworkModule {
     fun provideHttpClient(): HttpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
-                prettyPrint = true
-                isLenient = true
                 ignoreUnknownKeys = true
+                isLenient = true
+                prettyPrint = true
+                encodeDefaults = true
+                coerceInputValues = true  // Add this
             })
         }
 

@@ -12,21 +12,28 @@ import kotlinx.serialization.Serializable
 import np.com.parts.system.Services.ProductService
 import np.com.parts.system.Models.*
 
-// Response Models
-@Serializable
-data class ProductResponse<T>(
-    val data: T,
-    val message: String? = null,
-    val metadata: ResponseMetadata? = null
-)
+  // Response wrapper classes matching the API
+  @Serializable
+  data class ProductResponse<T>(
+      val data: T,
+      val message: String? = null,
+      val metadata: ResponseMetadata? = null
+  )
 
-@Serializable
-data class ResponseMetadata(
-    val page: Int? = null,
-    val totalPages: Int? = null,
-    val totalItems: Int? = null,
-    val itemsPerPage: Int? = null
-)
+  @Serializable
+  data class ResponseMetadata(
+      val page: Int? = null,
+      val totalPages: Int? = null,
+      val totalItems: Int? = null,
+      val itemsPerPage: Int? = null
+  )
+
+  @Serializable
+  data class ErrorResponse(
+      val message: String,
+      val code: String? = null,
+      val debug: String? = null
+  )
 
 @Serializable
 data class ReviewRequest(
@@ -34,13 +41,6 @@ data class ReviewRequest(
     val comment: String
 )
 
-@Serializable
-data class ErrorResponse(
-    val message: String,
-    val code: String? = null,
-    val debug: String? = null
-
-)
 
 // Unauthenticated Routes
 fun Route.unauthenticatedProductRoutes(productService: ProductService) {
@@ -76,21 +76,19 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
         get("/basic") {
             try {
                 val page = call.parameters["page"]?.toIntOrNull() ?: 0
-                val pageSize = call.parameters["pageSize"]?.toIntOrNull() ?: 20
-                val productsFlow = productService.getAllBasicProductsFlow(pageSize)
-                val products = productsFlow.toList()
+                val pageSize = call.parameters["pageSize"]?.toIntOrNull() ?: 10
+                val products = productService.getAllBasicProductsFlow(pageSize).toList()
 
-                call.respond(
-                    HttpStatusCode.OK,
-                    ProductResponse(
-                        data = products,
-                        metadata = ResponseMetadata(
-                            page = page,
-                            itemsPerPage = pageSize,
-                            totalItems = products.size
-                        )
+                val response = ProductResponse(
+                    data = products,
+                    metadata = ResponseMetadata(
+                        page = page,
+                        itemsPerPage = pageSize,
+                        totalItems = products.size
                     )
                 )
+
+                call.respond(HttpStatusCode.OK, response)
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.InternalServerError,

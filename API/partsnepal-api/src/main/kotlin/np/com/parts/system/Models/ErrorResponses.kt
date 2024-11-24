@@ -18,10 +18,3 @@ sealed class RegistrationError {
     @Serializable
     data class UnexpectedError(val message: String) : RegistrationError()
 }
-
-@Serializable
-data class ErrorResponse(
-    val message: String,
-    val code: String,
-    val details: Map<String, String> = emptyMap()
-) 

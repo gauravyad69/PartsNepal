@@ -82,7 +82,7 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             post("/orders") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = UserId(principal!!.payload.getClaim("userId").asString().toInt())
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
                     val order = call.receive<OrderRef>()
 
                     val added = userService.addOrder(userId, order)
@@ -100,7 +100,7 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             put("/preferences") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = UserId(principal!!.payload.getClaim("userId").asString().toInt())
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
                     val preferences = call.receive<UserPreferences>()
 
                     val updated = userService.updatePreferences(userId, preferences)
@@ -118,7 +118,7 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             post("/reviews") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = UserId(principal!!.payload.getClaim("userId").asString().toInt())
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
                     val review = call.receive<ReviewRef>()
 
                     val added = userService.addReview(userId, review)

@@ -2,15 +2,10 @@ package np.com.parts.system.Models
 
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
+import kotlinx.serialization.SerialName
 import org.bson.types.ObjectId
 
 // Base interface for all models with common fields
-@Serializable
-sealed interface BaseModel {
-    val id: String
-    val lastUpdated: Long  // Unix timestamp in milliseconds
-    val version: Int
-}
 
 // Sealed interface for product-related models
 @Serializable
@@ -77,27 +72,6 @@ data class PricingInfo(
         get() = salePrice != null && discount != null
 }
 
-
-@Serializable
-data class Money(
-    val amount: Long,
-    val currency: String = "NPR"
-)
-
-@Serializable
-data class Discount(
-    val percentage: Double,
-    val startDate: Long? = null,  // Unix timestamp
-    val endDate: Long? = null     // Unix timestamp
-) {
-    val isActive: Boolean
-        get() = when {
-            startDate == null && endDate == null -> true
-            startDate == null -> System.currentTimeMillis() <= endDate!!
-            endDate == null -> System.currentTimeMillis() >= startDate
-            else -> System.currentTimeMillis() in startDate..endDate
-        }
-}
 
 @Serializable
 data class Features(

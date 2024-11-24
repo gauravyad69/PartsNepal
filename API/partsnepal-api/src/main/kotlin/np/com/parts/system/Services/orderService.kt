@@ -1,8 +1,5 @@
 package np.com.parts.system.Services
 
-import com.mongodb.ErrorCategory
-import com.mongodb.MongoCommandException
-import com.mongodb.MongoWriteException
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.*
@@ -12,225 +9,311 @@ import np.com.parts.system.Models.*
 import org.bson.conversions.Bson
 import org.litote.kmongo.getCollection
 
-class OrderService(private val database: MongoDatabase) {
-    private lateinit var collection: MongoCollection<OrderModel>
+class OrderService(
+    private val database: MongoDatabase,
+    private val userService: UserService,
+    private val cartService: CartService,
+    private val productService: ProductService
+) {
+    private val collection: MongoCollection<OrderModel>
 
     init {
+
+
         try {
             database.createCollection("orders")
-        } catch (e: MongoCommandException) {
-            // Collection already exists, ignore the error
+        } catch (e: Exception) {
+            // Collection already exists
         }
-        collection = database.getCollection<OrderModel>("orders")
 
-        // Create indexes for better query performance
-        collection.createIndex(Indexes.ascending("orderNumber"))
+        collection = database.getCollection()
+        setupIndexes()
+    }
+
+    private fun setupIndexes() {
+        collection.createIndex(Indexes.ascending("orderNumber"), IndexOptions().unique(true))
         collection.createIndex(Indexes.ascending("customer.id"))
         collection.createIndex(Indexes.ascending("status"))
         collection.createIndex(Indexes.ascending("orderDate"))
         collection.createIndex(Indexes.ascending("payment.status"))
-        collection.createIndex(Indexes.ascending("metadata.createdAt"))
-        collection.createIndex(Indexes.ascending("tracking.trackingNumber"))
     }
 
-    // Create a new order
-    suspend fun createOrder(order: OrderModel): Boolean = withContext(Dispatchers.IO) {
-        try {
-            collection.insertOne(order)
-            true
-        } catch (e: MongoWriteException) {
-            if (e.error.category == ErrorCategory.DUPLICATE_KEY) {
-                false // Order already exists
-            } else {
-                throw e // Rethrow other errors
+    suspend fun createOrder(userId: Int, request: CreateOrderRequest): Result<OrderModel> =
+        withContext(Dispatchers.IO) {
+            try {
+                val user = userService.getUserById(UserId(userId)) ?: 
+                    return@withContext Result.failure(Exception("User not found"))
+                
+                val order = OrderModel(
+                    orderNumber = generateOrderNumber(),
+                    items = request.items,
+                    customer = CustomerInfo(
+                        id = userId,
+                        name = user.fullName,
+                        type = mapAccountTypeToCustomerType(user.accountType)
+                    ),
+                    payment = PaymentInfo(
+                        method = request.paymentMethod,
+                        status = PaymentStatus.PENDING
+                    ),
+                    shippingDetails = request.shippingDetails,
+                    summary = calculateOrderSummary(request.items),
+                    status = OrderStatus.PENDING_PAYMENT,
+                    notes = request.notes,
+                    source = request.source
+                )
+
+                collection.insertOne(order)
+                cartService.clearCart(userId)
+                Result.success(order)
+            } catch (e: Exception) {
+                Result.failure(e)
             }
         }
-    }
 
-    // Read an order by orderNumber
     suspend fun getOrderByNumber(orderNumber: String): OrderModel? = withContext(Dispatchers.IO) {
         collection.find(Filters.eq("orderNumber", orderNumber)).firstOrNull()
     }
 
-    // Read all orders for a customer
-    suspend fun getOrdersByCustomer(customerId: Int): List<OrderModel> = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("customer.id", customerId)).toList()
-    }
+    suspend fun getOrdersByCustomer(customerId: Int, skip: Int = 0, limit: Int = 50): List<OrderModel> = 
+        withContext(Dispatchers.IO) {
+            collection.find(Filters.eq("customer.id", customerId))
+                .sort(Sorts.descending("orderDate"))
+                .skip(skip)
+                .limit(limit)
+                .toList()
+        }
 
-    // Read all orders with optional pagination and sorting
-    suspend fun getAllOrders(
-        skip: Int = 0,
-        limit: Int = 50,
-        sortBy: String = "orderDate",
-        descending: Boolean = true
-    ): List<OrderModel> = withContext(Dispatchers.IO) {
-        collection.find()
-            .skip(skip)
-            .limit(limit)
-            .sort(if (descending) Sorts.descending(sortBy) else Sorts.ascending(sortBy))
-            .toList()
-    }
-
-    // Update order status and add tracking event
     suspend fun updateOrderStatus(
-        orderNumber: String,
-        newStatus: OrderStatus,
-        location: String? = null,
-        description: String? = null,
+        orderNumber: String, 
+        status: OrderStatus, 
         updatedBy: String
-    ): Boolean = withContext(Dispatchers.IO) {
-        val trackingEvent = TrackingEvent(
-            status = newStatus,
-            timestamp = System.currentTimeMillis(),
-            location = location,
-            description = description,
-            updatedBy = updatedBy
-        )
+    ): Result<OrderModel> = withContext(Dispatchers.IO) {
+        try {
+            val order = getOrderByNumber(orderNumber) ?: 
+                return@withContext Result.failure(Exception("Order not found"))
 
-        val result = collection.updateOne(
-            Filters.eq("orderNumber", orderNumber),
-            Updates.combine(
-                Updates.set("status", newStatus),
-                Updates.push("tracking.history", trackingEvent),
-                Updates.set("lastUpdated", System.currentTimeMillis())
+            val trackingEvent = TrackingEvent(
+                status = status,
+                timestamp = System.currentTimeMillis(),
+                updatedBy = updatedBy
             )
-        )
-        result.modifiedCount > 0
+
+            val result = collection.updateOne(
+                Filters.eq("orderNumber", orderNumber),
+                Updates.combine(
+                    Updates.set("status", status),
+                    Updates.push("tracking.history", trackingEvent),
+                    Updates.set("lastUpdated", System.currentTimeMillis()),
+                    Updates.inc("version", 1)
+                )
+            )
+
+            if (result.modifiedCount > 0) {
+                Result.success(getOrderByNumber(orderNumber)!!)
+            } else {
+                Result.failure(Exception("Failed to update order status"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    // Update payment status
     suspend fun updatePaymentStatus(
         orderNumber: String,
         paymentStatus: PaymentStatus,
         transactionId: String? = null
-    ): Boolean = withContext(Dispatchers.IO) {
-        val updates = mutableListOf(
-            Updates.set("payment.status", paymentStatus),
-            Updates.set("lastUpdated", System.currentTimeMillis())
-        )
+    ): Result<OrderModel> = withContext(Dispatchers.IO) {
+        try {
+            val order = getOrderByNumber(orderNumber) ?: 
+                return@withContext Result.failure(Exception("Order not found"))
 
-        if (transactionId != null) {
-            updates.add(Updates.set("payment.transactionId", transactionId))
-            updates.add(Updates.set("payment.paymentDate", System.currentTimeMillis()))
+            val updates = mutableListOf(
+                Updates.set("payment.status", paymentStatus),
+                Updates.set("lastUpdated", System.currentTimeMillis()),
+                Updates.inc("version", 1)
+            )
+
+            transactionId?.let { 
+                updates.add(Updates.set("payment.transactionId", it))
+                updates.add(Updates.set("payment.paidDate", System.currentTimeMillis()))
+            }
+
+            val result = collection.updateOne(
+                Filters.eq("orderNumber", orderNumber),
+                Updates.combine(updates)
+            )
+
+            if (result.modifiedCount > 0) {
+                Result.success(getOrderByNumber(orderNumber)!!)
+            } else {
+                Result.failure(Exception("Failed to update payment status"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private suspend fun calculateOrderSummary(items: List<LineItem>): OrderSummary {
+        var subtotal = Money(0)
+        var totalDiscount = Money(0)
+
+        items.forEach { item ->
+            subtotal = Money(subtotal.amount + item.totalPrice.amount)
+            item.discount?.let { discount ->
+                val discountAmount = when (discount.type) {
+                    DiscountType.PERCENTAGE -> {
+                        val percentage = discount.amount.amount.toDouble() / 100
+                        Money((item.totalPrice.amount * percentage).toLong())
+                    }
+                    DiscountType.FIXED_AMOUNT -> discount.amount
+                }
+                totalDiscount = Money(totalDiscount.amount + discountAmount.amount)
+            }
         }
 
-        val result = collection.updateOne(
-            Filters.eq("orderNumber", orderNumber),
-            Updates.combine(updates)
+        val shippingCost = Money(0) // Calculate based on your business logic
+        val tax = Money((subtotal.amount * 0.13).toLong()) // 13% VAT for Nepal
+
+        return OrderSummary(
+            subtotal = subtotal,
+            discount = if (totalDiscount.amount > 0) totalDiscount else null,
+            shippingCost = shippingCost,
+            tax = tax,
+            total = Money(subtotal.amount - totalDiscount.amount + shippingCost.amount + tax.amount)
         )
-        result.modifiedCount > 0
     }
 
-    // Update shipping details
-    suspend fun updateShippingDetails(orderNumber: String, shipping: ShippingDetails): Boolean = withContext(Dispatchers.IO) {
-        val result = collection.updateOne(
-            Filters.eq("orderNumber", orderNumber),
-            Updates.combine(
-                Updates.set("shipping", shipping),
-                Updates.set("lastUpdated", System.currentTimeMillis())
-            )
-        )
-        result.modifiedCount > 0
+    private fun generateOrderNumber(): String {
+        val timestamp = System.currentTimeMillis()
+        val random = (1000..9999).random()
+        return "ORD-${timestamp}-$random"
     }
 
-    // Add order note
-    suspend fun addOrderNote(orderNumber: String, note: OrderNote): Boolean = withContext(Dispatchers.IO) {
-        val result = collection.updateOne(
-            Filters.eq("orderNumber", orderNumber),
-            Updates.combine(
-                Updates.push("metadata.notes", note),
-                Updates.set("lastUpdated", System.currentTimeMillis())
-            )
-        )
-        result.modifiedCount > 0
-    }
+    private fun mapAccountTypeToCustomerType(accountType: AccountType): CustomerType =
+        when (accountType) {
+            AccountType.BUSINESS -> CustomerType.BUSINESS
+            else -> CustomerType.INDIVIDUAL
+        }
 
-    // Update tracking information
-    suspend fun updateTracking(
+    suspend fun updateShippingDetails(
         orderNumber: String,
-        trackingNumber: String,
-        carrier: String
-    ): Boolean = withContext(Dispatchers.IO) {
-        val result = collection.updateOne(
-            Filters.eq("orderNumber", orderNumber),
-            Updates.combine(
-                Updates.set("tracking.trackingNumber", trackingNumber),
-                Updates.set("tracking.carrier", carrier),
-                Updates.set("tracking.lastUpdated", System.currentTimeMillis()),
-                Updates.set("lastUpdated", System.currentTimeMillis())
+        shippingDetails: ShippingDetails
+    ): Result<OrderModel> = withContext(Dispatchers.IO) {
+        try {
+            val order = getOrderByNumber(orderNumber) ?: 
+                return@withContext Result.failure(Exception("Order not found"))
+
+            val result = collection.updateOne(
+                Filters.eq("orderNumber", orderNumber),
+                Updates.combine(
+                    Updates.set("shippingDetails", shippingDetails),
+                    Updates.set("lastUpdated", System.currentTimeMillis()),
+                    Updates.inc("version", 1)
+                )
             )
-        )
-        result.modifiedCount > 0
-    }
 
-    // Get orders by status
-    suspend fun getOrdersByStatus(status: OrderStatus): List<OrderModel> = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("status", status)).toList()
-    }
-
-    // Get orders by payment status
-    suspend fun getOrdersByPaymentStatus(paymentStatus: PaymentStatus): List<OrderModel> = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("payment.status", paymentStatus)).toList()
-    }
-
-    // Get orders within a date range
-    suspend fun getOrdersByDateRange(
-        startDate: Long,
-        endDate: Long,
-        status: OrderStatus? = null
-    ): List<OrderModel> = withContext(Dispatchers.IO) {
-        val filters = mutableListOf(
-            Filters.gte("orderDate", startDate),
-            Filters.lte("orderDate", endDate)
-        )
-
-        if (status != null) {
-            filters.add(Filters.eq("status", status))
+            if (result.modifiedCount > 0) {
+                Result.success(getOrderByNumber(orderNumber)!!)
+            } else {
+                Result.failure(Exception("Failed to update shipping details"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
-
-        collection.find(Filters.and(filters)).toList()
     }
 
-    // Get orders by customer type
-    suspend fun getOrdersByCustomerType(customerType: CustomerType): List<OrderModel> = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("customer.type", customerType)).toList()
+    suspend fun getOrderStats(customerId: Int): OrderStats = withContext(Dispatchers.IO) {
+        val orders = getOrdersByCustomer(customerId)
+        
+        OrderStats(
+            totalOrders = orders.size,
+            pendingOrders = orders.count { it.status == OrderStatus.PENDING_PAYMENT },
+            completedOrders = orders.count { it.status == OrderStatus.DELIVERED },
+            totalSpent = Money(orders.sumOf { it.summary.total.amount })
+        )
     }
 
-    // Search orders by multiple criteria
-    suspend fun searchOrders(
-        customerName: String? = null,
-        customerEmail: String? = null,
-        orderStatus: OrderStatus? = null,
-        paymentStatus: PaymentStatus? = null,
-        startDate: Long? = null,
-        endDate: Long? = null,
+    suspend fun getFilteredOrders(
+        filters: List<Bson>,
         skip: Int = 0,
         limit: Int = 50
-    ): List<OrderModel> = withContext(Dispatchers.IO) {
-        val filters = mutableListOf<Bson>()
+    ): Result<List<OrderModel>> = withContext(Dispatchers.IO) {
+        try {
+            val combinedFilter = if (filters.isEmpty()) {
+                Filters.empty()
+            } else {
+                Filters.and(filters)
+            }
 
-        customerName?.let { filters.add(Filters.regex("customer.name", it, "i")) }
-        customerEmail?.let { filters.add(Filters.eq("customer.email", it)) }
-        orderStatus?.let { filters.add(Filters.eq("status", it)) }
-        paymentStatus?.let { filters.add(Filters.eq("payment.status", it)) }
+            val orders = collection.find(combinedFilter)
+                .sort(Sorts.descending("orderDate"))
+                .skip(skip)
+                .limit(limit)
+                .toList()
 
-        if (startDate != null && endDate != null) {
-            filters.add(Filters.and(
-                Filters.gte("orderDate", startDate),
-                Filters.lte("orderDate", endDate)
-            ))
+            Result.success(orders)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
+    }
 
-        val query = if (filters.isEmpty()) {
-            Filters.empty()
-        } else {
-            Filters.and(filters)
+    suspend fun updateOrderStatus(
+        orderNumber: String,
+        status: OrderStatus,
+        updatedBy: String,
+        location: String? = null,
+        description: String? = null
+    ): Result<OrderModel> = withContext(Dispatchers.IO) {
+        try {
+            val order = getOrderByNumber(orderNumber) ?:
+                return@withContext Result.failure(Exception("Order not found"))
+
+            val trackingEvent = TrackingEvent(
+                status = status,
+                timestamp = System.currentTimeMillis(),
+                location = location,
+                description = description,
+                updatedBy = updatedBy
+            )
+
+            val result = collection.updateOne(
+                Filters.eq("orderNumber", orderNumber),
+                Updates.combine(
+                    Updates.set("status", status),
+                    Updates.push("tracking.events", trackingEvent),
+                    Updates.set("tracking.currentStatus", status),
+                    Updates.set("tracking.lastUpdated", System.currentTimeMillis()),
+                    Updates.set("lastUpdated", System.currentTimeMillis()),
+                    Updates.inc("version", 1)
+                )
+            )
+
+            if (result.modifiedCount > 0) {
+                Result.success(getOrderByNumber(orderNumber)!!)
+            } else {
+                Result.failure(Exception("Failed to update order status"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
+    }
 
-        collection.find(query)
-            .skip(skip)
-            .limit(limit)
-            .sort(Sorts.descending("orderDate"))
-            .toList()
+    suspend fun getOrderTracking(orderNumber: String): Result<OrderTracking> = withContext(Dispatchers.IO) {
+        try {
+            val order = getOrderByNumber(orderNumber) ?:
+                return@withContext Result.failure(Exception("Order not found"))
+            
+            Result.success(order.tracking)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
+
+data class OrderStats(
+    val totalOrders: Int,
+    val pendingOrders: Int,
+    val completedOrders: Int,
+    val totalSpent: Money
+)

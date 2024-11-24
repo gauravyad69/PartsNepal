@@ -5,81 +5,141 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import android.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.appbar.AppBarLayout
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import np.com.parts.Adapter.OrdersAdapter
 import np.com.parts.API.Models.OrderModel
 import np.com.parts.R
 import np.com.parts.databinding.FragmentOrdersBinding
 
-/**
- * An example full-screen fragment that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 class OrdersFragment : Fragment() {
-
     private var _binding: FragmentOrdersBinding? = null
-    private val viewModel: OrderViewModel by viewModels()
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+    
+    private val viewModel: OrderViewModel by viewModels()
+    private val args: OrdersFragmentArgs by navArgs()
+    
+    private val ordersAdapter = OrdersAdapter(
+        onOrderClicked = { order ->
+            navigateToOrderDetails(order)
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
+    ): View {
         _binding = FragmentOrdersBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val toolbar = requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        toolbar.visibility=View.GONE
-        // Observe orders
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.orders.collect { orders ->
-                updateOrdersList(orders)
-            }
+        
+        setupToolbar()
+        setupRecyclerView()
+        setupObservers()
+        
+        // If we have an orderId from navigation, scroll to that order
+        args.orderId?.let { orderId ->
+            viewModel.getOrderDetails(orderId)
+        } ?: run {
+            viewModel.loadUserOrders()
         }
-
-        // Observe loading state
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loading.collect { isLoading ->
-                binding.progressBar.isVisible = isLoading
-            }
-        }
-
-        // Observe errors
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.error.collect { error ->
-                error?.let { showError(it) }
-            }
-        }
-// Load orders
-        viewModel.loadUserOrders()
     }
+
+    private fun setupToolbar() {
+        binding.toolbar.apply {
+            setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
+        }
+    }
+
+    private fun setupRecyclerView() {
+        binding.ordersRecyclerView.apply {
+            adapter = ordersAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+        }
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.orderState.collect { state ->
+                    when (state) {
+                        is OrderViewModel.OrderState.Loading -> {
+                            showLoading(true)
+                        }
+                        is OrderViewModel.OrderState.Success -> {
+                            showLoading(false)
+                            updateOrdersList(state.orders)
+                        }
+                        is OrderViewModel.OrderState.Error -> {
+                            showLoading(false)
+                            showError(state.message)
+                        }
+
+                        else -> {}
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.apply {
+            progressBar.isVisible = isLoading
+            ordersRecyclerView.isVisible = !isLoading
+            emptyStateLayout.isVisible = false
+        }
+    }
+
     private fun updateOrdersList(orders: List<OrderModel>) {
-// Update your RecyclerView or other UI components
+        if (orders.isEmpty()) {
+            showEmptyState()
+        } else {
+            binding.emptyStateLayout.isVisible = false
+            ordersAdapter.submitList(orders)
+            
+            // If we have an orderId from navigation, scroll to that order
+            args.orderId?.let { orderId ->
+                val position = orders.indexOfFirst { it.id == orderId }
+                if (position != -1) {
+                    binding.ordersRecyclerView.scrollToPosition(position)
+                }
+            }
+        }
     }
+
+    private fun showEmptyState() {
+        binding.apply {
+            emptyStateLayout.isVisible = true
+            ordersRecyclerView.isVisible = false
+        }
+    }
+
     private fun showError(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
-
-
-
-
+    private fun navigateToOrderDetails(order: OrderModel) {
+        findNavController().navigate(
+            OrdersFragmentDirections.actionOrdersFragmentToOrderDetailsFragment(
+                orderId = order.id)
+        )
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
