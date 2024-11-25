@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Shopping Cart"
-            app:titleTextColor="@color/white">
+            style="@style/MyToolbarStyle">
         <ImageView
             android:id="@+id/syncStatusIndicator"
             android:layout_width="24dp"

@@ -12,6 +12,12 @@ import np.com.parts.system.Services.OrderService
 
 // AuthenticatedOrderRoutes.kt
 fun Route.authenticatedOrderRoutes(orderService: OrderService) {
+    get("/protected") {
+        val principal = call.principal<JWTPrincipal>()
+        val userId = principal!!.payload.getClaim("userId").asInt() ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+        call.respond(HttpStatusCode.OK)
+    }
     route("/orders") {
         // GET - Get all orders for the current user
         get {

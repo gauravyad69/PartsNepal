@@ -26,13 +26,13 @@
         <!--                <item name="android:titleTextAppearance">@style/ToolbarTitleTextAppearance</item>-->
 
         <!--        <item name="android:height">40dp</item>-->
-        <item name="title">Parts Nepal</item>
         <item name="fontFamily">@font/inter_medium</item>
         <item name="font">@font/inter_medium</item>
         <item name="background">@color/light_primary_container</item>
         <item name="backgroundColor">@color/light_primary_container</item>
         <item name="backgroundTint">@color/light_primary_container</item>
-        <item name="android:logo">@drawable/baseline_chevron_right_24</item>
+        <item name="android:logo">@drawable/ic_chevron_left</item>
+        <item name="iconTint">@color/black</item>
 
         <!-- Subtitle text appearance -->
         <!--                <item name="android:subtitleTextAppearance">@style/ToolbarSubtitleTextAppearance</item>-->

@@ -15,8 +15,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.launch
+import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.formatted
+import np.com.parts.API.NetworkModule
 import np.com.parts.Adapter.CartAdapter
 import np.com.parts.R
 import np.com.parts.ViewModels.CartAction
@@ -24,6 +29,7 @@ import np.com.parts.ViewModels.CartState
 import np.com.parts.ViewModels.CartViewModel
 import np.com.parts.databinding.FragmentCartBinding
 import np.com.parts.utils.SyncStatus
+import timber.log.Timber
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.
@@ -140,8 +146,22 @@ class CartFragment : Fragment() {
         binding.apply {
             checkoutButton.setOnClickListener {
                 // Ensure cart is synced before proceeding to checkout
+
                 viewModel.syncCart()
-                findNavController().navigate(R.id.action_cartFragment_to_checkoutFragment)
+
+                lifecycleScope.launch {
+                val response = NetworkModule.provideHttpClient().get("$BASE_URL/protected")
+                val code=response.status
+                Timber.e("Failed to get protected")
+
+                if (code== HttpStatusCode.Unauthorized){
+                    findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
+
+                }
+                    if(code==HttpStatusCode.OK){
+                    findNavController().navigate(R.id.action_cartFragment_to_checkoutFragment)
+                    }
+                }
             }
 
             startShoppingButton.setOnClickListener {

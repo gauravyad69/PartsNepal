@@ -36,18 +36,7 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
     unauthenticatedProductRoutes(productService)
 
     authenticate("auth-jwt") {
-        get("/protected") {
-            val principal = call.principal<JWTPrincipal>()
-            val userId = principal!!.payload.getClaim("userId").asInt()
-            if (principal==null){
-                return@get call.respond(HttpStatusCode.Unauthorized)
-            }
-            if (userId==null){
-                return@get call.respond(HttpStatusCode.Unauthorized)
-            }
-            call.respond(HttpStatusCode.OK)
 
-        }
         cartRoutes(cartService)
         
         adminProductRoutes(productService)

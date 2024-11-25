@@ -15,7 +15,7 @@
             android:layout_height="?attr/actionBarSize"
             app:title="Checkout"
             app:navigationIcon="@drawable/ic_chevron_left"
-            app:titleTextColor="@color/white"/>
+            style="@style/MyToolbarStyle"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
