@@ -68,7 +68,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bottomNavigationView = requireActivity().findViewById<SmoothBottomBar>(R.id.bottomBar)
+        val bottomNavigationView = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomBar)
         retainInstance = true
 
 

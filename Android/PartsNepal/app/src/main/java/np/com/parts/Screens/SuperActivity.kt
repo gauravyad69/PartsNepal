@@ -31,10 +31,9 @@ import androidx.core.content.ContextCompat
 @SuppressLint("StaticFieldLeak")
 private lateinit var navController: NavController
 private lateinit var binding: ActivitySuperBinding
-private lateinit var cartViewModel: CartViewModel
-
 class SuperActivity : AppCompatActivity() {
-    @RequiresApi(Build.VERSION_CODES.R)
+    private val cartViewModel: CartViewModel by viewModels()
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySuperBinding.inflate(layoutInflater)
@@ -45,9 +44,7 @@ class SuperActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets }
 
-         val cartViewModel by lazy {
-            ViewModelProvider(this)[CartViewModel::class.java]
-        }
+
 
 
         if (BuildConfig.DEBUG) {

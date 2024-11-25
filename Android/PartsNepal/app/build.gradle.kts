@@ -1,8 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.navigation.safeargs)
+    id("com.google.devtools.ksp")
 
 }
 
@@ -16,8 +18,6 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -30,11 +30,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -42,36 +42,25 @@ android {
     }
 }
 
-configurations {
-    all {
-        exclude(group = "com.intellij", module = "annotations")
-        exclude(group = "org.jetbrains", module = "annotations")
-    }
-}
-
 dependencies {
-    implementation("org.jetbrains:annotations:24.1.0")
-    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7")
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-
-
-    implementation(libs.androidx.navigation.fragment.ktx)
+ implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation (libs.media3.common)
 //    implementation (libs.navigation.fragment)
 //    implementation (libs.navigation.ui)
     implementation(libs.smoothbottombar)
-
+    implementation(libs.material)
     implementation(libs.coil)
     implementation(libs.whynot.imagecarousel)
     implementation(libs.facebook.shimmer)
     implementation(libs.airbnb.paris)
+
 
 
     implementation(libs.mikepenz.fastadapter)
@@ -80,14 +69,15 @@ dependencies {
     implementation(libs.mikepenz.fastadapter.util)
     implementation(libs.androidx.security.crypto)
 
-
+    
+    // Your existing dependencies
     implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.client.core)
     implementation(libs.timber)
 
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
-    implementation(libs.room.compiler)
+    ksp(libs.room.compiler)
     implementation(libs.work.runtime)
 
     implementation(libs.ktor.client.cio)
@@ -104,4 +94,24 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.androidx.activity.ktx)
+//configurations.all {
+//    resolutionStrategy {
+//        force("org.jetbrains:annotations:24.1.0")
+//        force("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
+//        force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22")
+//        force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22")
+//    }
+//}
+
+    constraints {
+        implementation("org.jetbrains:annotations:24.1.0") {
+            because("Resolve duplicate class conflicts")
+        }
+    }
+    
+    modules {
+        module("com.intellij:annotations") {
+            replacedBy("org.jetbrains:annotations", "Replaced to avoid duplicate classes")
+        }
+    }
 }

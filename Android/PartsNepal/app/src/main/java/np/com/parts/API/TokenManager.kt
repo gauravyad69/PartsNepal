@@ -7,7 +7,7 @@ import androidx.security.crypto.MasterKeys
 import timber.log.Timber
 
 class TokenManager(context: Context) {
-    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+    private val masterKeyAlias =    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     
     private val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
         "secure_prefs",
