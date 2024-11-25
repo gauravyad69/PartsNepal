@@ -122,7 +122,7 @@
                         android:text="My Orders"
                         android:textAlignment="textStart"
                         android:drawableTint="@color/background_main"
-                        android:drawableEnd="@drawable/round_keyboard_arrow_right_24"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -132,7 +132,7 @@
                         android:text="Shipping Addresses"
                         android:textAlignment="textStart"
                         android:drawableTint="@color/background_main"
-                        android:drawableEnd="@drawable/round_keyboard_arrow_right_24"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -142,7 +142,7 @@
                         android:text="Payment Methods"
                         android:textAlignment="textStart"
                         android:drawableTint="@color/background_main"
-                        android:drawableEnd="@drawable/round_keyboard_arrow_right_24"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                 </LinearLayout>
@@ -207,7 +207,7 @@
                         android:text="Help &amp; Support"
                         android:textAlignment="textStart"
                         android:drawableTint="@color/background_main"
-                        android:drawableEnd="@drawable/round_keyboard_arrow_right_24"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                     <com.google.android.material.button.MaterialButton

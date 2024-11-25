@@ -18,7 +18,7 @@
         android:layout_gravity="center"
         android:layout_marginBottom="50dp"
         android:keepScreenOn="true"
-        android:src="@drawable/ic_falcon_bird_shape" />
+        android:src="@drawable/plan_premium" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"
