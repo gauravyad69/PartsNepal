@@ -23,13 +23,8 @@ import np.com.parts.databinding.FragmentHomeBinding
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import np.com.parts.API.BASE_URL
-import np.com.parts.API.Models.Cart
 import np.com.parts.API.NetworkModule
 import np.com.parts.Items.BasicProductItem
 import np.com.parts.Items.ProgressItem

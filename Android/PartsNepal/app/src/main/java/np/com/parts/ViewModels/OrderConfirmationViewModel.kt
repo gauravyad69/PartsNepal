@@ -25,10 +25,10 @@ class OrderConfirmationViewModel(
     private val _orderState = MutableStateFlow<OrderConfirmationState>(OrderConfirmationState.Loading)
     val orderState: StateFlow<OrderConfirmationState> = _orderState
 
-    fun loadOrder(orderId: String) {
+    fun loadOrder(orderNumber: String) {
         viewModelScope.launch {
             _orderState.value = OrderConfirmationState.Loading
-            orderRepository.getOrderDetails(orderId)
+            orderRepository.getOrderDetails(orderNumber)
                 .onSuccess { order ->
                     _orderState.value = OrderConfirmationState.Success(order)
                 }

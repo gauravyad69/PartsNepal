@@ -225,6 +225,12 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+
+        <argument
+            android:name="orderNumber"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_ordersFragment_to_orderDetailsFragment"
             app:destination="@id/orderDetailsFragment" />
@@ -250,6 +256,11 @@
             <argument
                 android:name="orderId"
                 app:argType="string" />
+
+            <argument
+                android:name="orderNumber"
+                app:argType="string" />
+
         </action>
 
         <action
@@ -269,6 +280,13 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+                <argument
+            android:name="orderNumber"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+
     </fragment>
 
 </navigation>

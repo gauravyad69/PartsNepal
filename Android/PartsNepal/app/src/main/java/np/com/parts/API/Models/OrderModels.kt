@@ -31,16 +31,10 @@ data class OrderSummary(
     fun formattedTotal() = total.formatted()
 }
 
-@Serializable
-data class Cart(
-    val userId: UserId,
-    val items: List<LineItem>,
-    val summary: OrderSummary
-)
 
 @Serializable
 data class OrderModel(
-    @SerialName("id")
+    @SerialName("_id")
     override val id: String,
     val orderNumber: String,
     val items: List<LineItem>,
@@ -51,7 +45,7 @@ data class OrderModel(
     val status: OrderStatus,
     val tracking: OrderTracking = OrderTracking(),
     val notes: String? = null,
-    val source: OrderSource,
+    val source: OrderSource = OrderSource.MOBILE_APP,
     val orderDate: Long = System.currentTimeMillis(),
     override val lastUpdated: Long = System.currentTimeMillis(),
     override val version: Int = 1

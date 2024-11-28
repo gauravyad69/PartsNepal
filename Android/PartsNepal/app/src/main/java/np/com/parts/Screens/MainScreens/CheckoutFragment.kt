@@ -52,7 +52,7 @@ class CheckoutFragment : Fragment() {
         setupToolbar()
         setupObservers()
         setupOrderButton()
-        viewModel.loadCartSummary()
+//        viewModel.loadCartSummary()
     }
 
     private fun setupToolbar() {
@@ -72,25 +72,29 @@ class CheckoutFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.checkoutState.collect { state ->
                     when (state) {
+                        is CheckoutState.Initial -> {
+                            binding.placeOrderButton.isEnabled = true
+                            binding.progressBar.isVisible = false
+                        }
                         is CheckoutState.Loading -> {
-//                            DialogManager(requireContext()).showLoading()
-                            Timber.tag("checkout").i("loading")
-
+                            binding.placeOrderButton.isEnabled = false
+                            binding.progressBar.isVisible = true
+                            Timber.i("Processing order...")
                         }
                         is CheckoutState.Success -> {
-//                            DialogManager(requireContext()).dismissAll()
-                            Timber.tag("checkout").i("success")
+                            binding.progressBar.isVisible = false
+                            binding.placeOrderButton.isEnabled = true
                             handleOrderSuccess(state.order)
+                            Timber.i("Order placed successfully")
                         }
                         is CheckoutState.Error -> {
-                            DialogManager(requireContext()).showError(message = state.message)
-                            Timber.tag("checkout").i("error")
-                            Timber.i(state.message)
-                        }
-                        is CheckoutState.CartSummaryLoaded -> {
-                            Timber.tag("checkout").i("summary loaded")
-//                            DialogManager(requireContext()).dismissAll()
-                            updateOrderSummary(state.items, state.summary)
+                            binding.progressBar.isVisible = false
+                            binding.placeOrderButton.isEnabled = true
+                            DialogManager(requireContext()).showError(
+                                title = "Order Failed",
+                                message = state.message
+                            )
+                            Timber.e("Order failed: ${state.message}")
                         }
                     }
                 }
@@ -101,18 +105,21 @@ class CheckoutFragment : Fragment() {
     private fun placeOrder() {
         if (!validateInputs()) return
 
+        // Show loading state
+        binding.placeOrderButton.isEnabled = false
+
         val shippingDetails = ShippingDetails(
             address = ShippingAddress(
                 recipient = RecipientInfo(
-                    name = binding.fullNameInput.text.toString(),
-                    phone = binding.phoneInput.text.toString()
+                    name = binding.fullNameInput.text.toString().trim(),
+                    phone = binding.phoneInput.text.toString().trim()
                 ),
-                street = binding.streetInput.text.toString(),
+                street = binding.streetInput.text.toString().trim(),
                 ward = binding.wardInput.text.toString().toIntOrNull() ?: 0,
-                city = binding.cityInput.text.toString(),
-                district = binding.districtInput.text.toString(),
-                province = binding.provinceInput.text.toString(),
-                landmark = binding.landmarkInput.text?.toString()
+                city = binding.cityInput.text.toString().trim(),
+                district = binding.districtInput.text.toString().trim(),
+                province = binding.provinceInput.text.toString().trim(),
+                landmark = binding.landmarkInput.text?.toString()?.trim()
             ),
             method = ShippingMethod.STANDARD,
             cost = Money(0)
@@ -128,7 +135,7 @@ class CheckoutFragment : Fragment() {
         viewModel.placeOrder(
             shippingDetails = shippingDetails,
             paymentMethod = paymentMethod,
-            notes = binding.notesInput.text?.toString()
+            notes = binding.notesInput.text?.toString()?.trim()
         )
     }
 
@@ -178,7 +185,9 @@ class CheckoutFragment : Fragment() {
         return isValid
     }
 
-    private fun updateOrderSummary(items: List<LineItem>, summary: OrderSummary) {
+
+    ///todo this
+    private fun updateOrderSummaryUI(items: List<LineItem>, summary: OrderSummary) {
         binding.apply {
             // Update summary
             subtotalText.text = summary.subtotal.formatted()

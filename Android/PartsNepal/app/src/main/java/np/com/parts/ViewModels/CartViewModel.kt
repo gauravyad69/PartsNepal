@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import np.com.parts.API.Models.*
 import np.com.parts.App
+import np.com.parts.repository.CartError
 import np.com.parts.repository.CartRepository
 import np.com.parts.utils.SyncManager
 import np.com.parts.utils.SyncStatus
@@ -138,17 +139,21 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun syncCart() {
-        viewModelScope.launch {
-            try {
-                cartRepository.syncCart()
-                    .onFailure { e ->
-                        _cartEvents.emit(CartEvent.ShowMessage(e.message ?: "Failed to sync cart"))
-                    }
-            } catch (e: Exception) {
-                Timber.e(e, "Error syncing cart")
-                _cartEvents.emit(CartEvent.ShowMessage(e.message ?: "Failed to sync cart"))
+    fun syncCart(): Flow<Result<Unit>> = flow {
+        try {
+            _cartEvents.emit(CartEvent.SyncEvent.Started)
+            val result = cartRepository.syncCart()
+            if (result.isSuccess) {
+                _cartEvents.emit(CartEvent.SyncEvent.Completed)
+            } else {
+                val error = result.exceptionOrNull()
+                _cartEvents.emit(CartEvent.SyncEvent.Failed(error?.message ?: "Unknown error"))
             }
+            emit(result)
+        } catch (e: Exception) {
+            Timber.e(e, "Error syncing cart")
+            _cartEvents.emit(CartEvent.SyncEvent.Failed(e.message ?: "Failed to sync cart"))
+            emit(Result.failure(e))
         }
     }
 
@@ -158,5 +163,19 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             cartRepository.syncCart()
         }
+    }
+
+    private suspend fun validateCart(): Boolean {
+        val currentState = _cartState.value
+        if (currentState !is CartState.Success || currentState.items.isEmpty()) {
+            _cartEvents.emit(CartEvent.ShowMessage("Cart is empty"))
+            return false
+        }
+        return true
+    }
+
+    // Add this function to check cart status
+    suspend fun validateCartForCheckout(): Boolean {
+        return validateCart()
     }
 }

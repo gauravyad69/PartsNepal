@@ -3,7 +3,6 @@ package np.com.parts.utils
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import np.com.parts.workers.CartSyncWorker
 import timber.log.Timber
 
 class AppLifecycleObserver(private val context: Context) : DefaultLifecycleObserver {
@@ -11,13 +10,13 @@ class AppLifecycleObserver(private val context: Context) : DefaultLifecycleObser
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         // App came to foreground
-        CartSyncWorker.cancelSync(context)
+//        CartSyncWorker.cancelSync(context)
     }
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         // App went to background
         Timber.d("App went to background, scheduling cart sync")
-        CartSyncWorker.schedule(context)
+//        CartSyncWorker.schedule(context)
     }
 } 

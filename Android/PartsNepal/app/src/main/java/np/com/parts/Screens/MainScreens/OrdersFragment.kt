@@ -137,7 +137,9 @@ class OrdersFragment : Fragment() {
     private fun navigateToOrderDetails(order: OrderModel) {
         findNavController().navigate(
             OrdersFragmentDirections.actionOrdersFragmentToOrderDetailsFragment(
-                orderId = order.id)
+                orderId = order.id,
+                orderNumber = order.orderNumber
+            )
         )
     }
 

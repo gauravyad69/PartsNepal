@@ -13,6 +13,7 @@ class App : Application() {
     val database: AppDatabase by lazy { AppDatabase.getDatabase(this) }
     val cartRepository: CartRepository by lazy { CartRepository(database) }
 
+
     override fun onCreate() {
         super.onCreate()
         // init timber
