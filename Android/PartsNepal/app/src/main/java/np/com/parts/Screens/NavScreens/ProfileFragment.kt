@@ -51,9 +51,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val toolbar = requireActivity().findViewById<AppBarLayout>(R.id.appBarLayout)
-        toolbar.visibility=View.GONE
-
 binding.logoutButton.setOnClickListener{
     TokenManager.getInstance(requireContext()).clearToken()
 }

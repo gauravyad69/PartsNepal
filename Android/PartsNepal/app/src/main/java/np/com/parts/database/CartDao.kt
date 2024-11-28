@@ -8,6 +8,15 @@ interface CartDao {
     @Query("SELECT * FROM cart_items")
     fun getAllItems(): Flow<List<CartItem>>
     
+    @Query("SELECT * FROM cart_items")
+    suspend fun getItemsSync(): List<CartItem>
+    
+    @Query("SELECT SUM(quantity) FROM cart_items")
+    fun getTotalQuantity(): Flow<Int>
+    
+    @Query("SELECT SUM(quantity) FROM cart_items")
+    suspend fun getTotalQuantitySync(): Int
+    
     @Query("SELECT * FROM cart_items WHERE id = :itemId")
     suspend fun getItem(itemId: String): CartItem?
     
@@ -31,10 +40,8 @@ interface CartDao {
     
     @Query("SELECT COUNT(*) FROM cart_items")
     fun getItemCount(): Flow<Int>
-    
-    @Query("SELECT SUM(quantity) FROM cart_items")
-    fun getTotalQuantity(): Flow<Int>
-    
+
+
     @Query("SELECT * FROM cart_items WHERE syncStatus = :status")
     suspend fun getItemsByStatus(status: SyncStatus): List<CartItem>
 } 

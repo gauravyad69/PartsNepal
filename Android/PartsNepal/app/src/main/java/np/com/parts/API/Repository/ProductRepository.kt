@@ -70,11 +70,11 @@ class ProductRepository(
         }
 
         // Log the raw response
-        val rawBody = response.body<String>()
-        println("Raw response: $rawBody")
+        val body = response.body<ProductResponse<List<BasicProductView>>>()
+
 
         // Try parsing
-        val productResponse = Json.decodeFromString<ProductResponse<List<BasicProductView>>>(rawBody)
+        val productResponse = body
         Result.success(productResponse)
     } catch (e: Exception) {
         println("Error in getBasicProducts: ${e.message}")

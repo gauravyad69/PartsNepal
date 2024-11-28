@@ -18,7 +18,9 @@ import com.google.android.material.snackbar.Snackbar
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.formatted
 import np.com.parts.API.NetworkModule
@@ -99,7 +101,36 @@ class CartFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.cartEvents.collect { event ->
-                    handleEvent(event)
+                    when (event) {
+                        is CartEvent.ShowMessage -> showSnackbar(event.message)
+                        is CartEvent.ItemAdded -> showSnackbar("${event.name} added to cart")
+                        is CartEvent.ItemRemoved -> showSnackbar("Item removed from cart")
+                        is CartEvent.QuantityUpdated -> showSnackbar("Quantity updated")
+                        is CartEvent.SyncEvent -> handleSyncEvent(event)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleSyncEvent(event: CartEvent.SyncEvent) {
+        binding.syncStatusIndicator.apply {
+            when (event) {
+                CartEvent.SyncEvent.Started -> {
+                    setImageResource(R.drawable.ic_sync_pending)
+                    isVisible = true
+                }
+                CartEvent.SyncEvent.Completed -> {
+                    setImageResource(R.drawable.ic_sync_success)
+                    // Hide after delay using viewLifecycleOwner
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        delay(2000)
+                        isVisible = false
+                    }
+                }
+                is CartEvent.SyncEvent.Failed -> {
+                    setImageResource(R.drawable.ic_sync_failed)
+                    showSnackbar("Sync failed: ${event.error}")
                 }
             }
         }
@@ -145,72 +176,72 @@ class CartFragment : Fragment() {
     private fun setupClickListeners() {
         binding.apply {
             checkoutButton.setOnClickListener {
-                // Ensure cart is synced before proceeding to checkout
-
-                viewModel.syncCart()
-
-                lifecycleScope.launch {
-                val response = NetworkModule.provideHttpClient().get("$BASE_URL/protected")
-                val code=response.status
-                Timber.e("Failed to get protected")
-
-                if (code== HttpStatusCode.Unauthorized){
-                    findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
-
-                }
-                    if(code==HttpStatusCode.OK){
-                    findNavController().navigate(R.id.action_cartFragment_to_checkoutFragment)
-                    }
-                }
+                proceedToCheckout()
             }
 
             startShoppingButton.setOnClickListener {
                 findNavController().navigateUp()
             }
 
-            // Manual sync button
             syncButton.setOnClickListener {
-                viewModel.syncCart()
+                syncCart()
             }
+        }
+    }
+
+    private fun proceedToCheckout() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            binding.checkoutButton.isEnabled = false
+            
+            try {
+                val response = NetworkModule.provideHttpClient().get("$BASE_URL/protected")
+                
+                when (response.status) {
+                    HttpStatusCode.Unauthorized -> {
+                        findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
+                        return@launch
+                    }
+                    HttpStatusCode.OK -> {
+                        viewModel.syncCart()
+                            .collect { result ->
+                                result.fold(
+                                    onSuccess = {
+                                        findNavController().navigate(R.id.action_cartFragment_to_checkoutFragment)
+                                    },
+                                    onFailure = { error ->
+                                        showError("Failed to sync cart: ${error.message}")
+                                    }
+                                )
+                            }
+                    }
+                    else -> showError("Unexpected error")
+                }
+            } catch (e: Exception) {
+                showError("Network error: ${e.message}")
+            } finally {
+                binding.checkoutButton.isEnabled = true
+            }
+        }
+    }
+
+    private fun syncCart() {
+        lifecycleScope.launch {
+            viewModel.syncCart()
+                .collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            // Success is handled via CartEvents
+                        },
+                        onFailure = { error ->
+                            showError("Failed to sync: ${error.message}")
+                        }
+                    )
+                }
         }
     }
 
     private fun showError(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-    }
-
-    private fun handleEvent(event: CartEvent) {
-        when (event) {
-            is CartEvent.ShowMessage -> {
-                showSnackbar(event.message)
-            }
-            is CartEvent.ItemAdded -> {
-                showSnackbar("${event.name} added to cart")
-            }
-            is CartEvent.ItemRemoved -> {
-                showSnackbar("Item removed from cart")
-            }
-            is CartEvent.QuantityUpdated -> {
-                // Optional: Show quantity update confirmation
-                showSnackbar("Quantity updated")
-            }
-            is CartEvent.SyncStarted -> {
-                binding.syncStatusIndicator.setImageResource(R.drawable.ic_sync_pending)
-                binding.syncStatusIndicator.isVisible = true
-            }
-            is CartEvent.SyncCompleted -> {
-                binding.syncStatusIndicator.setImageResource(R.drawable.ic_sync_success)
-                // Hide the indicator after a delay
-                binding.syncStatusIndicator.postDelayed({
-                    binding.syncStatusIndicator.isVisible = false
-                }, 2000)
-            }
-            is CartEvent.SyncFailed -> {
-                binding.syncStatusIndicator.setImageResource(R.drawable.ic_sync_failed)
-                showSnackbar("Failed to sync cart: ${event.error}")
-            }
-            else -> Unit // Handle any other events
-        }
     }
 
     private fun showSnackbar(message: String) {

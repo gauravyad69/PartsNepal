@@ -4,6 +4,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import np.com.parts.API.Models.LineItem
 import np.com.parts.API.Models.Money
+import np.com.parts.repository.CartItemSync
+import np.com.parts.repository.CartSyncRequest
+import np.com.parts.repository.CartSyncResponse
+import java.lang.System
+import kotlin.Long
 
 @Entity(tableName = "cart_items")
 data class CartItem(
@@ -25,6 +30,12 @@ data class CartItem(
         imageUrl = imageUrl
     )
 
+    fun toCartItemSync() = CartItemSync(
+        id = id,
+        productId = productId,
+        quantity = quantity,
+        lastModified = System.currentTimeMillis()
+    )
     companion object {
         fun fromLineItem(item: LineItem) = CartItem(
             id = item.id,

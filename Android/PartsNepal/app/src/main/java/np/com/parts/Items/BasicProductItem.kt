@@ -54,8 +54,8 @@ class BasicProductItem(val product: BasicProductView) : AbstractBindingItem<Item
             // Load image
             productImage.load(product.basic.inventory.mainImage) {
                 crossfade(true)
-                placeholder(R.drawable.bgmi)
-                error(R.drawable.plan_pro)
+                placeholder(R.drawable.plan_premium)
+                error(R.drawable.ic_close)
             }
         }
     }

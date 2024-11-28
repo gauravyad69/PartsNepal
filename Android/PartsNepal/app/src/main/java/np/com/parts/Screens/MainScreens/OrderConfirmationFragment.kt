@@ -45,7 +45,7 @@ class OrderConfirmationFragment : Fragment() {
         setupObservers()
         setupButtons()
         
-        viewModel.loadOrder(args.orderId)
+        viewModel.loadOrder(args.orderNumber)
     }
 
     private fun setupToolbar() {
@@ -110,7 +110,8 @@ class OrderConfirmationFragment : Fragment() {
     private fun navigateToOrders() {
         findNavController().navigate(
             OrderConfirmationFragmentDirections.actionOrderConfirmationFragmentToOrdersFragment(
-                orderId = args.orderId
+                orderId = args.orderId,
+                orderNumber = args.orderNumber
             )
         )
     }

@@ -62,8 +62,8 @@ class OrderDetailsFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
 
-        args.orderId?.let { orderId ->
-            viewModel.getOrderDetails(orderId)
+        args.orderNumber?.let { orderNumber ->
+            viewModel.getOrderDetails(orderNumber)
         }
     }
 
