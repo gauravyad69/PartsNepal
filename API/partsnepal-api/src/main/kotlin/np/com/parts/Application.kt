@@ -6,10 +6,7 @@ import kotlinx.coroutines.launch
 import np.com.parts.plugins.*
 import np.com.parts.system.Routes.Auth.configureAuthRoutes
 import np.com.parts.system.Routes.Cart.cartRoutes
-import np.com.parts.system.Services.CartService
-import np.com.parts.system.Services.OrderService
-import np.com.parts.system.Services.ProductService
-import np.com.parts.system.Services.UserService
+import np.com.parts.system.Services.*
 import np.com.parts.system.applicationRoutes
 import np.com.parts.system.Utils.TestDataSetup
 
@@ -32,27 +29,29 @@ fun Application.module() {
     configureAuthRoutes(userService = userService)
     val orderService = OrderService(connection, userService = userService, cartService = cartService, productsService)
 
-    // Setup test data if in development environment
-    if (environment.developmentMode) {
-        val testDataSetup = TestDataSetup(
-            orderService = orderService,
-            productService = productsService,
-            userService = userService,
-            cartService = cartService
-        )
-        
-        launch {
-            try {
-                testDataSetup.setupAll()
-                log.info("Test data setup completed successfully")
-            } catch (e: Exception) {
-                log.error("Failed to setup test data", e)
-            }
-        }
-    }
+    val paymentService = PaymentService(connection, orderService, userService)
+
+//    // Setup test data if in development environment
+//    if (environment.developmentMode) {
+//        val testDataSetup = TestDataSetup(
+//            orderService = orderService,
+//            productService = productsService,
+//            userService = userService,
+//            cartService = cartService
+//        )
+//
+//        launch {
+//            try {
+//                testDataSetup.setupAll()
+//                log.info("Test data setup completed successfully")
+//            } catch (e: Exception) {
+//                log.error("Failed to setup test data", e)
+//            }
+//        }
+//    }
 
     routing {
-    applicationRoutes(productsService, orderService, userService,  cartService)
+    applicationRoutes(productsService, orderService, userService,  cartService, paymentService)
 
     }
 }

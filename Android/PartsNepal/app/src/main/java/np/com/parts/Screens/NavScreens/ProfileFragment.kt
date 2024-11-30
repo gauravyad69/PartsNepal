@@ -51,6 +51,9 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.paymentButton.setOnClickListener{
+            findNavController().navigate(R.id.action_profileFragment_to_paymentFragment)
+        }
 binding.logoutButton.setOnClickListener{
     TokenManager.getInstance(requireContext()).clearToken()
 }

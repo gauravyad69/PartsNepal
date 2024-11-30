@@ -20,15 +20,21 @@ enum class CustomerType {
 enum class PaymentStatus {
     @SerialName("PENDING")
     PENDING,
-    
+
+    @SerialName("INITIATED")
+    INITIATED,
+
     @SerialName("COMPLETED")
     COMPLETED,
-    
+
     @SerialName("FAILED")
     FAILED,
-    
+
     @SerialName("REFUNDED")
-    REFUNDED
+    REFUNDED,
+
+    @SerialName("ON_HOLD")
+    ON_HOLD
 }
 
 // Extension functions

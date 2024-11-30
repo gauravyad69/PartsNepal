@@ -1,15 +1,10 @@
-package np.com.parts.Screens.MainScreens
+package np.com.parts.Screens.OrderScreens
 
 import OrderViewModel
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,10 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import np.com.parts.API.Models.OrderModel
+import np.com.parts.API.Models.PaymentStatus
 import np.com.parts.API.Models.formatted
 import np.com.parts.API.Models.formattedDate
 import np.com.parts.Adapter.OrderItemsAdapter
 import np.com.parts.databinding.FragmentOrderDetailsBinding
+import java.util.Locale
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.
@@ -61,6 +58,18 @@ class OrderDetailsFragment : Fragment() {
         setupToolbar()
         setupRecyclerView()
         setupObservers()
+        binding.pay.visibility= View.GONE
+
+        binding.pay.setOnClickListener{
+            args.orderNumber?.let { orderNumber ->
+                findNavController().navigate(
+                    OrderDetailsFragmentDirections.Companion
+                        .actionOrderDetailsFragmentToPaymentFragment(
+                            orderNumber = orderNumber
+                        )
+                )
+            }
+        }
 
         args.orderNumber?.let { orderNumber ->
             viewModel.getOrderDetails(orderNumber)
@@ -114,7 +123,7 @@ class OrderDetailsFragment : Fragment() {
             orderStatusText.text = order.status.toString()
                 .replace("_", " ")
                 .lowercase()
-                .capitalize()
+                .capitalize(Locale.ROOT)
 
             // Update shipping details
             with(order.shippingDetails) {
@@ -136,6 +145,10 @@ class OrderDetailsFragment : Fragment() {
 
             // Update order items
             orderItemsAdapter.submitList(order.items)
+
+            if(order.payment.status.equals(PaymentStatus.PENDING)){
+                pay.visibility= View.VISIBLE
+            }
         }
     }
 

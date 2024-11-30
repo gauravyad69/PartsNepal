@@ -27,13 +27,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.activity.viewModels
 import androidx.navigation.ui.setupWithNavController
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 @SuppressLint("StaticFieldLeak")
 private lateinit var navController: NavController
 private lateinit var binding: ActivitySuperBinding
 class SuperActivity : AppCompatActivity() {
     private val cartViewModel: CartViewModel by viewModels()
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySuperBinding.inflate(layoutInflater)
@@ -50,6 +51,30 @@ class SuperActivity : AppCompatActivity() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+
+
+
+        // Initialize NavController using the correct ID
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment_of_super) as NavHostFragment
+        navController = navHostFragment.navController
+
+// Set up SmoothBottomBar
+
+        setupBottomNavigation()
+        observeCartBadge()
+
+
+
+
+
+
+
+
+    }
+
+    private fun setupStatusBar(){
+
 
 //
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -68,34 +93,23 @@ class SuperActivity : AppCompatActivity() {
 //        }
 
 
+        val isDarkMode = false
 //        val isDarkMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-//        val window = window
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            if (isDarkMode) {
-//                window.statusBarColor = ContextCompat.getColor(this, R.color.background_main)
-//                window.navigationBarColor = ContextCompat.getColor(this, R.color.background_main)
-//            } else {
-//                window.statusBarColor = ContextCompat.getColor(this, R.color.color_main)
-//                window.navigationBarColor = ContextCompat.getColor(this, R.color.color_main)
-//            }
-//        }
+        val window = window
 
-        // Initialize NavController using the correct ID
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment_of_super) as NavHostFragment
-        navController = navHostFragment.navController
+        if (isDarkMode) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.background_main)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.background_main)
 
-// Set up SmoothBottomBar
+            // Ensure text/icons on the status bar are light in dark mode
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+        } else {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.color_main)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.color_main)
 
-        setupBottomNavigation()
-        observeCartBadge()
-
-
-
-
-
-
-
+            // Ensure text/icons on the status bar are dark in light mode
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+        }
 
     }
 

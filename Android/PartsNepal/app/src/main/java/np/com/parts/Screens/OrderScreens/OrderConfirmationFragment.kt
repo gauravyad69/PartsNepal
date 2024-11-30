@@ -1,4 +1,4 @@
-package np.com.parts.Screens.MainScreens
+package np.com.parts.Screens.OrderScreens
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import np.com.parts.API.Models.OrderModel
 import np.com.parts.API.Models.formattedDate
 import np.com.parts.API.Models.formattedTotal
-import np.com.parts.R
 import np.com.parts.ViewModels.OrderConfirmationState
 import np.com.parts.ViewModels.OrderConfirmationViewModel
 import np.com.parts.databinding.FragmentOrderConfirmationBinding
@@ -109,7 +108,7 @@ class OrderConfirmationFragment : Fragment() {
 
     private fun navigateToOrders() {
         findNavController().navigate(
-            OrderConfirmationFragmentDirections.actionOrderConfirmationFragmentToOrdersFragment(
+            OrderConfirmationFragmentDirections.Companion.actionOrderConfirmationFragmentToOrdersFragment(
                 orderId = args.orderId,
                 orderNumber = args.orderNumber
             )
@@ -118,7 +117,7 @@ class OrderConfirmationFragment : Fragment() {
 
     private fun navigateToHome() {
         findNavController().navigate(
-            OrderConfirmationFragmentDirections.actionOrderConfirmationFragmentToHomeFragment()
+            OrderConfirmationFragmentDirections.Companion.actionOrderConfirmationFragmentToHomeFragment()
         )
     }
 

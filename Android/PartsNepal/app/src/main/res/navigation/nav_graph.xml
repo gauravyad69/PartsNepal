@@ -52,6 +52,9 @@
         <action
             android:id="@+id/action_profileFragment_to_ordersFragment"
             app:destination="@id/ordersFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
     </fragment>
 
 
@@ -59,7 +62,7 @@
 
     <fragment
         android:id="@+id/productFragment"
-        android:name="np.com.parts.Screens.MainScreens.ProductFragment"
+        android:name="np.com.parts.Screens.ProductScreen.ProductFragment"
         android:label="ProductFragment"
         tools:layout="@layout/fragment_product">
         <argument
@@ -82,7 +85,7 @@
 
 <fragment
     android:id="@+id/searchedProductsFragment"
-    android:name="np.com.parts.Screens.MainScreens.SearchedProductsFragment"
+    android:name="np.com.parts.Screens.ProductScreen.SearchedProductsFragment"
     android:label="Search Results">
     <argument
         android:name="query"
@@ -107,7 +110,7 @@
 </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="np.com.parts.Screens.MainScreens.SearchFragment"
+        android:name="np.com.parts.Screens.ProductScreen.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search">
         <action
@@ -198,7 +201,7 @@
     </fragment>
     <fragment
         android:id="@+id/checkoutFragment"
-        android:name="np.com.parts.Screens.MainScreens.CheckoutFragment"
+        android:name="np.com.parts.Screens.OrderScreens.CheckoutFragment"
         android:label="Checkout"
         tools:layout="@layout/fragment_checkout">
         <action
@@ -217,7 +220,7 @@
     </fragment>
     <fragment
         android:id="@+id/ordersFragment"
-        android:name="np.com.parts.Screens.MainScreens.OrdersFragment"
+        android:name="np.com.parts.Screens.OrderScreens.OrdersFragment"
         android:label="Orders">
         
         <argument
@@ -239,7 +242,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderConfirmationFragment"
-        android:name="np.com.parts.Screens.MainScreens.OrderConfirmationFragment"
+        android:name="np.com.parts.Screens.OrderScreens.OrderConfirmationFragment"
         android:label="Order Confirmation">
         
         <argument
@@ -271,7 +274,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderDetailsFragment"
-        android:name="np.com.parts.Screens.MainScreens.OrderDetailsFragment"
+        android:name="np.com.parts.Screens.OrderScreens.OrderDetailsFragment"
         android:label="fragment_order_details"
         tools:layout="@layout/fragment_order_details">
 
@@ -285,8 +288,27 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_orderDetailsFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment">
+            <argument
+                android:name="orderNumber"
+                app:argType="string"/>
+        </action>
 
 
+    </fragment>
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="np.com.parts.Screens.MainScreens.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment">
+
+        <argument
+            android:name="orderNumber"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 
 </navigation>

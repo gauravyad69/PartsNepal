@@ -10,5 +10,8 @@
         <domain includeSubdomains="true">192.168.*.*</domain>
         <domain includeSubdomains="true">*.*.*.*</domain>
         <domain includeSubdomains="true">0.0.0.0</domain>
+        <domain includeSubdomains="true">a.khalti.com</domain>
+        <domain includeSubdomains="true">khalti.com</domain>
+        <domain includeSubdomains="true">https://a.khalti.com</domain>
 =    </domain-config>
 </network-security-config>

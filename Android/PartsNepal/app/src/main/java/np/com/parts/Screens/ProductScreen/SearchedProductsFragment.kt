@@ -1,4 +1,4 @@
-package np.com.parts.Screens.MainScreens
+package np.com.parts.Screens.ProductScreen
 
 import android.os.Bundle
 import android.view.LayoutInflater

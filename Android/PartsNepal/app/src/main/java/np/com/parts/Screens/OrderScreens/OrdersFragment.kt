@@ -1,4 +1,4 @@
-package np.com.parts.Screens.MainScreens
+package np.com.parts.Screens.OrderScreens
 
 import OrderViewModel
 import android.os.Bundle
@@ -18,7 +18,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import np.com.parts.Adapter.OrdersAdapter
 import np.com.parts.API.Models.OrderModel
-import np.com.parts.R
 import np.com.parts.databinding.FragmentOrdersBinding
 
 class OrdersFragment : Fragment() {
@@ -136,7 +135,7 @@ class OrdersFragment : Fragment() {
 
     private fun navigateToOrderDetails(order: OrderModel) {
         findNavController().navigate(
-            OrdersFragmentDirections.actionOrdersFragmentToOrderDetailsFragment(
+            OrdersFragmentDirections.Companion.actionOrdersFragmentToOrderDetailsFragment(
                 orderId = order.id,
                 orderNumber = order.orderNumber
             )

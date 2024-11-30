@@ -85,10 +85,10 @@ class OrderService(
         }
 
     suspend fun updateOrderStatus(
-        orderNumber: String, 
+        orderNumber: String,
         status: OrderStatus, 
         updatedBy: String
-    ): Result<OrderModel> = withContext(Dispatchers.IO) {
+    ): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
             val order = getOrderByNumber(orderNumber) ?: 
                 return@withContext Result.failure(Exception("Order not found"))
@@ -110,7 +110,7 @@ class OrderService(
             )
 
             if (result.modifiedCount > 0) {
-                Result.success(getOrderByNumber(orderNumber)!!)
+                Result.success(true)
             } else {
                 Result.failure(Exception("Failed to update order status"))
             }
@@ -258,13 +258,13 @@ class OrderService(
         }
     }
 
-    suspend fun updateOrderStatus(
+    suspend fun updateOrderTrackingStatus(
         orderNumber: String,
         status: OrderStatus,
         updatedBy: String,
         location: String? = null,
         description: String? = null
-    ): Result<OrderModel> = withContext(Dispatchers.IO) {
+    ): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
             val order = getOrderByNumber(orderNumber) ?:
                 return@withContext Result.failure(Exception("Order not found"))
@@ -290,7 +290,7 @@ class OrderService(
             )
 
             if (result.modifiedCount > 0) {
-                Result.success(getOrderByNumber(orderNumber)!!)
+                Result.success(true)
             } else {
                 Result.failure(Exception("Failed to update order status"))
             }

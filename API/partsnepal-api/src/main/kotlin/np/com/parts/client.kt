@@ -1,6 +1,6 @@
-package np.com.parts.API
+package np.com.parts
 
-import android.content.Context
+
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.DefaultRequest
@@ -11,23 +11,12 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import np.com.parts.API.Models.configureSslValidation
-import timber.log.Timber
-import java.security.SecureRandom
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.SSLContext
 
-const val BASE_URL = "http://192.168.0.8:9090"
-const val PRODUCTS_PATH = "$BASE_URL/products"
+//const val BASE_URL_KHALTI = "https://a.khalti.com/api/v2"
 
 object NetworkModule {
-    private var tokenManager: TokenManager? = null
 
-    fun initialize(context: Context) {
-        tokenManager = TokenManager.getInstance(context)
-    }
-
-    fun provideHttpClient(): HttpClient = HttpClient(CIO) {
+    fun provideHttpClientForKhalti(): HttpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -40,20 +29,19 @@ object NetworkModule {
 
 
 
-            install(DefaultRequest) {
-            url(BASE_URL)
+        install(DefaultRequest) {
+//            url(BASE_URL_KHALTI)
             contentType(ContentType.Application.Json)
-            
-            // Add JWT token to all requests if available
-            tokenManager?.getToken()?.let { token ->
-                header("Authorization", "Bearer $token")
+            headers{
+                append("Authorization", "key 0d189d52c15041d781b0907abf346724")
             }
+
         }
 
         install(Logging) {
             logger = object : Logger {
                 override fun log(message: String) {
-                    Timber.tag("Ktor").d(message)
+                    println(message)
                 }
             }
             level = LogLevel.INFO
@@ -63,8 +51,7 @@ object NetworkModule {
             onResponse { response ->
                 // Handle 401 Unauthorized responses
                 if (response.status == HttpStatusCode.Unauthorized) {
-                    tokenManager?.clearToken()
-                    // You might want to emit an event to navigate to login screen
+                    println("got 401 Unauthorized")
                 }
             }
         }

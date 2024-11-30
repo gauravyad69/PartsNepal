@@ -1,4 +1,4 @@
-package np.com.parts.Screens.MainScreens
+package np.com.parts.Screens.OrderScreens
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -206,7 +206,7 @@ class CheckoutFragment : Fragment() {
 
     private fun handleOrderSuccess(order: OrderModel) {
         findNavController().navigate(
-            CheckoutFragmentDirections
+            CheckoutFragmentDirections.Companion
                 .actionCheckoutFragmentToOrderConfirmationFragment(
                     orderId = order.id,
                     orderNumber = order.orderNumber

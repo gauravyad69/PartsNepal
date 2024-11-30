@@ -1,4 +1,4 @@
-package np.com.parts.Screens.MainScreens
+package np.com.parts.Screens.ProductScreen
 
 import android.graphics.Paint
 import android.os.Bundle
@@ -18,11 +18,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import me.ibrahimsn.lib.SmoothBottomBar
 import np.com.parts.ViewModels.ProductViewModel
-import np.com.parts.API.TokenManager
 import np.com.parts.Adapter.DeliveryAdapter
 import np.com.parts.Adapter.FeatureAdapter
 import np.com.parts.Adapter.ReviewAdapter
@@ -72,7 +71,7 @@ class ProductFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bottomNavigationView = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomBar)
+        val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomBar)
 
         val productId = args.productId
         val productTitle = args.productName

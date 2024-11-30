@@ -49,7 +49,13 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
- implementation(libs.androidx.navigation.fragment.ktx)
+//    implementation ("com.khalti:khalti-android:2.04.00")
+    implementation ("com.khalti:checkout-android:0.06.00")
+
+    implementation("com.github.javafaker:javafaker:1.0.2")
+
+
+    implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation (libs.media3.common)
 //    implementation (libs.navigation.fragment)
