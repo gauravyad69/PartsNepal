@@ -28,10 +28,12 @@ import androidx.activity.viewModels
 import androidx.navigation.ui.setupWithNavController
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("StaticFieldLeak")
 private lateinit var navController: NavController
 private lateinit var binding: ActivitySuperBinding
+@AndroidEntryPoint
 class SuperActivity : AppCompatActivity() {
     private val cartViewModel: CartViewModel by viewModels()
 

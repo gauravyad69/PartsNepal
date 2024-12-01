@@ -23,9 +23,6 @@ const val PRODUCTS_PATH = "$BASE_URL/products"
 object NetworkModule {
     private var tokenManager: TokenManager? = null
 
-    fun initialize(context: Context) {
-        tokenManager = TokenManager.getInstance(context)
-    }
 
     fun provideHttpClient(): HttpClient = HttpClient(CIO) {
         install(ContentNegotiation) {

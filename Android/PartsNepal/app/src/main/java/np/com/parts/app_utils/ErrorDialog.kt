@@ -1,4 +1,4 @@
-package np.com.parts.utils
+package np.com.parts.app_utils
 
 import android.app.Dialog
 import android.content.Context

@@ -34,8 +34,9 @@ import np.com.parts.ViewModels.CartViewModel
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 import java.text.NumberFormat
 import kotlin.math.roundToInt
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ProductFragment : Fragment() {
     private val hideHandler = Handler(Looper.myLooper()!!
     )

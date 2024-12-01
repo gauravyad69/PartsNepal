@@ -1,4 +1,4 @@
-package np.com.parts.Utils
+package np.com.parts.app_utils
 
 import com.github.javafaker.Faker
 import np.com.parts.API.Models.KhaltiAmountBreakdown

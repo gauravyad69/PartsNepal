@@ -4,10 +4,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class TokenManager(context: Context) {
-    private val masterKeyAlias =    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+@Singleton
+class TokenManager @Inject constructor(
+    @ApplicationContext context: Context
+) {
+    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     
     private val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
         "secure_prefs",
@@ -17,33 +23,28 @@ class TokenManager(context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    companion object {
+    private companion object {
         private const val KEY_JWT_TOKEN = "jwt_token"
-        private var INSTANCE: TokenManager? = null
-
-        fun getInstance(context: Context): TokenManager {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: TokenManager(context.applicationContext).also {
-                    INSTANCE = it
-                }
-            }
-        }
     }
 
     fun saveToken(token: String) {
-        Timber.tag("token").i("saved")
-        sharedPreferences.edit().putString(KEY_JWT_TOKEN, token).apply()
+        Timber.tag("TokenManager").d("Saving token: ${token.take(10)}...")
+        sharedPreferences.edit()
+            .putString(KEY_JWT_TOKEN, token)
+            .commit()
     }
 
     fun getToken(): String? {
-        Timber.tag("token").i("fetched")
-        return sharedPreferences.getString(KEY_JWT_TOKEN, null)
+        val token = sharedPreferences.getString(KEY_JWT_TOKEN, null)
+        Timber.tag("TokenManager").d("Retrieved token: ${token?.take(10)}...")
+        return token
     }
 
     fun clearToken() {
-        Timber.tag("token").i("cleared")
-
-        sharedPreferences.edit().remove(KEY_JWT_TOKEN).apply()
+        Timber.tag("TokenManager").d("Clearing token")
+        sharedPreferences.edit()
+            .remove(KEY_JWT_TOKEN)
+            .commit()
     }
 
     fun hasToken(): Boolean = getToken() != null

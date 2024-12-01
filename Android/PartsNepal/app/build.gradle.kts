@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.navigation.safeargs)
     id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    id("kotlin-kapt")  // Add this line
 
 }
 
@@ -29,6 +31,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -40,6 +43,13 @@ android {
         viewBinding = true
         dataBinding = true
     }
+    sourceSets {
+        getByName("main") {
+            assets {
+                srcDirs("src\\main\\assets", "src\\main\\assets")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -49,10 +59,20 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+
+    // For Hilt ViewModel support
 //    implementation ("com.khalti:khalti-android:2.04.00")
     implementation ("com.khalti:checkout-android:0.06.00")
 
     implementation("com.github.javafaker:javafaker:1.0.2")
+    // Replace existing Hilt dependencies with these
+    implementation("com.google.dagger:hilt-android:2.52")
+    kapt("com.google.dagger:hilt-android-compiler:2.52")  // Change ksp to kapt
+    implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")  // Change ksp to kapt
+
+
+    implementation ("com.github.skydoves:powerspinner:1.2.7")
 
 
     implementation(libs.androidx.navigation.fragment.ktx)
@@ -108,6 +128,8 @@ dependencies {
 //        force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22")
 //    }
 //}
+
+
 
     constraints {
         implementation("org.jetbrains:annotations:24.1.0") {

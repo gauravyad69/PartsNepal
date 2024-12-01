@@ -1,4 +1,4 @@
-package np.com.parts.Utils
+package np.com.parts.app_utils
 
 object RandomTextGenerator {
     private val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')

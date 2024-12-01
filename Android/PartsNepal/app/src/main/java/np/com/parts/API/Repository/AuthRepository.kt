@@ -18,12 +18,15 @@ import np.com.parts.API.Models.AccountType
 import np.com.parts.API.TokenManager
 import timber.log.Timber
 import java.util.Timer
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthRepository(
+@Singleton
+class AuthRepository @Inject constructor(
     private val client: HttpClient,
-    private val context: Context
+    private val tokenManager: TokenManager
 ) {
-    private val tokenManager = TokenManager.getInstance(context)
+
 
     sealed class AuthResult<out T> {
         data class Success<T>(val data: T) : AuthResult<T>()

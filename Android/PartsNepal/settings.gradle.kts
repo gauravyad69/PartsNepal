@@ -19,6 +19,7 @@ pluginManagement {
             url = uri("https://jitpack.io") // Add JitPack repository
         }
     }
+
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -35,6 +36,7 @@ dependencyResolutionManagement {
             url = uri("./ivy-repo")
         }
     }
+
 }
 
 rootProject.name = "Parts Nepal"

@@ -1,18 +1,19 @@
 package np.com.parts.ViewModels
 
 import CartEvent
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.Context
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import np.com.parts.API.Models.*
-import np.com.parts.App
-import np.com.parts.repository.CartError
 import np.com.parts.repository.CartRepository
-import np.com.parts.utils.SyncManager
-import np.com.parts.utils.SyncStatus
+import np.com.parts.app_utils.SyncManager
+import np.com.parts.app_utils.SyncStatus
 import timber.log.Timber
+import javax.inject.Inject
 
 sealed class CartState {
     object Loading : CartState()
@@ -38,9 +39,12 @@ sealed class CartAction {
 //    object NavigateToCart : CartEvent()
 //}
 
-class CartViewModel(application: Application) : AndroidViewModel(application) {
-    private val cartRepository: CartRepository = (application as App).cartRepository
-
+@HiltViewModel
+class CartViewModel @Inject constructor(
+    private val cartRepository: CartRepository,
+    private val syncManager: SyncManager,
+    @ApplicationContext private val context: Context
+) : ViewModel() {
     private val _cartState = MutableStateFlow<CartState>(CartState.Loading)
     val cartState: StateFlow<CartState> = _cartState.asStateFlow()
 
@@ -85,7 +89,7 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun observeSyncStatus() {
         viewModelScope.launch {
-            SyncManager.getSyncStatus(getApplication())
+            syncManager.getSyncStatus(context)
                 .collect { syncStatus ->
                     val currentState = _cartState.value
                     if (currentState is CartState.Success) {

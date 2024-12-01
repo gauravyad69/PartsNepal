@@ -2,10 +2,13 @@ package np.com.parts.ViewModels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import android.net.http.HttpException
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -15,6 +18,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import np.com.parts.API.Models.*
 import np.com.parts.API.NetworkModule
 import np.com.parts.API.Repository.OrderRepository
@@ -22,6 +27,7 @@ import np.com.parts.App
 import np.com.parts.database.AppDatabase
 import np.com.parts.repository.CartRepository
 import timber.log.Timber
+import javax.inject.Inject
 
 sealed class CheckoutState {
     object Initial : CheckoutState()
@@ -30,18 +36,54 @@ sealed class CheckoutState {
     data class Error(val message: String) : CheckoutState()
 }
 
-class CheckoutViewModel(application: Application) : AndroidViewModel(application) {
-    private val cartRepository: CartRepository = (application as App).cartRepository
-    private val orderRepository: OrderRepository = OrderRepository(NetworkModule.provideHttpClient())
+@Serializable
+data class LocationData(
+    val provinceList: List<Province>
+)
 
+@Serializable
+data class Province(
+    val id: Int,
+    val name: String,
+    val districtList: List<District>
+)
+
+@Serializable
+data class District(
+    val id: Int,
+    val name: String,
+    val municipalityList: List<Municipality>
+)
+
+@Serializable
+data class Municipality(
+    val id: Int,
+    val name: String
+)
+
+@HiltViewModel
+class CheckoutViewModel @Inject constructor(private val cartRepository: CartRepository, private val orderRepository: OrderRepository,
+                                            @ApplicationContext context: Context) : ViewModel() {
+
+                                                private var context = context
     private val _checkoutState = MutableStateFlow<CheckoutState>(CheckoutState.Initial)
     val checkoutState: StateFlow<CheckoutState> = _checkoutState
 
     private val _cartSummary = MutableStateFlow<OrderSummary?>(null)
     val cartSummary: StateFlow<OrderSummary?> = _cartSummary
 
+    private val _provinces = MutableStateFlow<List<Province>>(emptyList())
+    val provinces: StateFlow<List<Province>> = _provinces
+
+    private val _selectedProvince = MutableStateFlow<Province?>(null)
+    val selectedProvince: StateFlow<Province?> = _selectedProvince
+
+    private val _selectedDistrict = MutableStateFlow<District?>(null)
+    val selectedDistrict: StateFlow<District?> = _selectedDistrict
+
     init {
         loadCartSummary()
+        loadLocationData()
     }
 
     private fun loadCartSummary() {
@@ -57,6 +99,27 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                 _checkoutState.value = CheckoutState.Error("Failed to load cart summary")
             }
         }
+    }
+
+    private fun loadLocationData() {
+        viewModelScope.launch {
+            try {
+                val jsonString = context.assets.open("data.json").bufferedReader().use { it.readText() }
+                val data = Json.decodeFromString<LocationData>(jsonString)
+                _provinces.value = data.provinceList
+            } catch (e: Exception) {
+                Timber.e(e, "Error loading location data")
+            }
+        }
+    }
+
+    fun setSelectedProvince(province: Province) {
+        _selectedProvince.value = province
+        _selectedDistrict.value = null // Reset district when province changes
+    }
+
+    fun setSelectedDistrict(district: District) {
+        _selectedDistrict.value = district
     }
 
     @SuppressLint("NewApi")
@@ -86,9 +149,9 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                     _checkoutState.value = CheckoutState.Error("Failed to create order request: ${e.message}")
                     return@launch
                 }
-                
+
                 Timber.d("Sending order request to server...")
-                
+
                 // Place the order with timeout
                 withTimeout(30000) { // 30 second timeout
                     Timber.d("Making API call to create order...")
@@ -96,7 +159,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                         orderRepository.createOrder(request)
                     }
                     Timber.d("API call completed with result: $orderResult")
-                    
+
                     when {
                         orderResult.isSuccess -> {
                             val order = orderResult.getOrNull()!!
@@ -137,6 +200,9 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                 )
             }
         }
+
+
+
     }
 
     override fun onCleared() {

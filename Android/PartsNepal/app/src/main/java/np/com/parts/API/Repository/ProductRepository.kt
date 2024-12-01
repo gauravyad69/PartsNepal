@@ -12,35 +12,36 @@ import np.com.parts.API.NetworkModule
 import np.com.parts.API.PRODUCTS_PATH
 import okhttp3.internal.format
 import java.io.Serial
+import javax.inject.Inject
 
 
-class ProductRepository(
-    private val client: HttpClient = NetworkModule.provideHttpClient()
+@Serializable
+data class ProductResponse<T>(
+    val data: T,
+    val message: String? = null,
+    val metadata: ResponseMetadata? = null,
+    val error: ErrorResponse? = null  // Add this to handle error responses
+)
+
+@Serializable
+data class ResponseMetadata(
+    val page: Int? = null,
+    val totalPages: Int? = null,
+    val totalItems: Int? = null,
+    val itemsPerPage: Int? = null
+)
+
+@Serializable
+data class ErrorResponse(
+    val message: String,
+    val code: String? = null,
+    val debug: String? = null
+)
+
+class ProductRepository @Inject constructor(
+    private val client: HttpClient
 
 ) {
-
-    @Serializable
-    data class ProductResponse<T>(
-        val data: T,
-        val message: String? = null,
-        val metadata: ResponseMetadata? = null,
-        val error: ErrorResponse? = null  // Add this to handle error responses
-    )
-
-    @Serializable
-    data class ResponseMetadata(
-        val page: Int? = null,
-        val totalPages: Int? = null,
-        val totalItems: Int? = null,
-        val itemsPerPage: Int? = null
-    )
-
-    @Serializable
-    data class ErrorResponse(
-        val message: String,
-        val code: String? = null,
-        val debug: String? = null
-    )
 
     // Get all products
     suspend fun getAllProducts(

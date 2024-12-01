@@ -9,6 +9,7 @@ import com.khalti.checkout.Khalti
 import com.khalti.checkout.data.Environment
 import com.khalti.checkout.data.KhaltiPayConfig
 import com.khalti.checkout.data.PaymentResult
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -21,16 +22,20 @@ import kotlinx.coroutines.launch
 import np.com.parts.API.Models.KhaltiPaymentResponse
 import np.com.parts.API.Models.PaymentRequestModel
 import np.com.parts.API.NetworkModule
+import np.com.parts.API.TokenManager
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
+class KhaltiPaymentRepository @Inject constructor(
+    @ApplicationContext private val contextMain: Context,
+    private val client: HttpClient
+) {
 
-class KhaltiPaymentRepository(private val contextMain: Context) {
-
-    val client: HttpClient= NetworkModule.provideHttpClient()
 
     suspend fun startKhaltiPayment(
         purchaseOrderName: String,
-        context: Context,
         onResult: (PaymentResult) -> Unit
     ) {
         val request = PaymentRequestModel(

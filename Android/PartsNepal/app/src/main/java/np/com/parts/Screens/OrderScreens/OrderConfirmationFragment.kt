@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.API.Models.OrderModel
 import np.com.parts.API.Models.formattedDate
@@ -21,6 +22,7 @@ import np.com.parts.ViewModels.OrderConfirmationState
 import np.com.parts.ViewModels.OrderConfirmationViewModel
 import np.com.parts.databinding.FragmentOrderConfirmationBinding
 
+@AndroidEntryPoint
 class OrderConfirmationFragment : Fragment() {
     private var _binding: FragmentOrderConfirmationBinding? = null
     private val binding get() = _binding!!

@@ -2,6 +2,7 @@ package np.com.parts.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,13 +14,12 @@ import np.com.parts.API.Models.UserPreferences
 import np.com.parts.API.NetworkModule
 import np.com.parts.API.Repository.UserRepository
 import timber.log.Timber
+import javax.inject.Inject
 
-class UserProfileViewModel(
-) : ViewModel() {
+@HiltViewModel
+class UserProfileViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
-    private val userRepository by lazy {
-        UserRepository(NetworkModule.provideHttpClient())
-    }
+
 
     private val _userProfile = MutableStateFlow<UserModel?>(null)
     val userProfile: StateFlow<UserModel?> = _userProfile.asStateFlow()

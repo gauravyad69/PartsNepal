@@ -13,8 +13,12 @@ import np.com.parts.API.Models.UserModel
 import np.com.parts.API.Models.UserPreferences
 import np.com.parts.API.NetworkModule
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository(    private val client: HttpClient = NetworkModule.provideHttpClient()
+@Singleton
+class UserRepository @Inject constructor(
+    private val client: HttpClient
 ) {
 
     suspend fun updateProfile(request: UpdateProfileRequest): Result<Boolean> {

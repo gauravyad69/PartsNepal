@@ -1,39 +1,34 @@
 package np.com.parts.Screens.NavScreens
 
-import android.net.http.HttpException
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
-import androidx.annotation.RequiresExtension
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import np.com.parts.API.Auth.AuthError
-import np.com.parts.API.NetworkModule
 import np.com.parts.API.Models.AccountType
 import np.com.parts.API.Models.UpdateProfileRequest
-import np.com.parts.API.Repository.AuthRepository
 import np.com.parts.API.Repository.UserRepository
 import np.com.parts.R
 import np.com.parts.databinding.FragmentOtherBinding
 import timber.log.Timber
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OtherFragment : Fragment() {
     private var _binding: FragmentOtherBinding? = null
     private val binding get() = _binding!!
     
-    private val userRepository by lazy {
-        UserRepository(NetworkModule.provideHttpClient())
-    }
+    @Inject
+    lateinit var userRepository: UserRepository
 
     override fun onCreateView(
         inflater: LayoutInflater,

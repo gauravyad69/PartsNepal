@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.ViewModels.ProductViewModel
 import np.com.parts.Items.BasicProductItem
@@ -26,6 +27,7 @@ import np.com.parts.databinding.FragmentSearchedProductsBinding
 import np.com.parts.API.Models.ProductModel
 import np.com.parts.API.Models.toBasicView
 
+@AndroidEntryPoint
 class SearchedProductsFragment : Fragment() {
     private var _binding: FragmentSearchedProductsBinding? = null
     private val binding get() = _binding!!

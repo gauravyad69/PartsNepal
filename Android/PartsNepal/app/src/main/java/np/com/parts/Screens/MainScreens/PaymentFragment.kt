@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.khalti.checkout.Khalti
 import com.khalti.checkout.data.Environment
 import com.khalti.checkout.data.KhaltiPayConfig
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.API.Repository.KhaltiPaymentRepository
 import np.com.parts.Screens.OrderScreens.OrderDetailsFragmentArgs
@@ -26,18 +27,19 @@ import np.com.parts.ViewModels.CheckoutViewModel
 import np.com.parts.ViewModels.PaymentViewModel
 import np.com.parts.databinding.FragmentPaymentBinding
 import np.com.parts.workers.PaymentViewModelFactory
+import timber.log.Timber
+import javax.inject.Inject
 import kotlin.getValue
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
+@AndroidEntryPoint
 class PaymentFragment : Fragment() {
+    private val paymentViewModel: PaymentViewModel by viewModels()
 
-    private val paymentViewModel: PaymentViewModel by viewModels {
-        val repository = KhaltiPaymentRepository(requireActivity())
-        PaymentViewModelFactory(repository)
-    }
+
     private val args: PaymentFragmentArgs by navArgs()
 
 
@@ -64,12 +66,14 @@ class PaymentFragment : Fragment() {
 
         binding.payKhalti.setOnClickListener{
             args.orderNumber?.let { orderNumber ->
+                Timber.i("got order number $orderNumber")
                 lifecycleScope.launch{
-                    paymentViewModel.processPayment(orderNumber, requireContext())
+                    paymentViewModel.processPayment(orderNumber)
                 }
             }
 
         }
+
         lifecycleScope.launch{
             paymentViewModel.paymentState.collect { paymentResult ->
                 paymentResult?.let {

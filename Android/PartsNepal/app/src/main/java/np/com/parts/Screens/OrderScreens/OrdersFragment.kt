@@ -1,6 +1,5 @@
 package np.com.parts.Screens.OrderScreens
 
-import OrderViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +14,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.Adapter.OrdersAdapter
 import np.com.parts.API.Models.OrderModel
+import np.com.parts.ViewModels.OrderViewModel
 import np.com.parts.databinding.FragmentOrdersBinding
 
+@AndroidEntryPoint
 class OrdersFragment : Fragment() {
     private var _binding: FragmentOrdersBinding? = null
     private val binding get() = _binding!!

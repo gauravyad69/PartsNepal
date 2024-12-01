@@ -127,36 +127,86 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:layout_marginTop="8dp">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
+                            android:id="@+id/provinceLayout"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            android:hint="Province">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/districtInput"
+                            <com.skydoves.powerspinner.PowerSpinnerView
+                                android:id="@+id/provinceSpinner"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="District"/>
+                                android:hint="Select Province"
+                                android:padding="12dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:spinner_arrow_gravity="end"
+                                app:spinner_arrow_padding="8dp"
+                                app:spinner_divider_color="@color/gray"
+                                app:spinner_divider_show="true"
+                                app:spinner_popup_animation="dropdown"
+                                app:spinner_popup_background="@color/white"
+                                app:spinner_popup_elevation="14dp" />
+
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
+                            android:id="@+id/districtLayout"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="4dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            android:layout_marginTop="8dp"
+                            android:hint="District">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/provinceInput"
+                            <com.skydoves.powerspinner.PowerSpinnerView
+                                android:id="@+id/districtSpinner"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Province"/>
+                                android:hint="Select District"
+                                android:padding="12dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:spinner_arrow_gravity="end"
+                                app:spinner_arrow_padding="8dp"
+                                app:spinner_divider_color="@color/gray"
+                                app:spinner_divider_show="true"
+                                app:spinner_popup_animation="dropdown"
+                                app:spinner_popup_background="@color/white"
+                                app:spinner_popup_elevation="14dp" />
+
                         </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/municipalityLayout"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:hint="Municipality">
+
+                            <com.skydoves.powerspinner.PowerSpinnerView
+                                android:id="@+id/municipalitySpinner"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Select Municipality"
+                                android:padding="12dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:spinner_arrow_gravity="end"
+                                app:spinner_arrow_padding="8dp"
+                                app:spinner_divider_color="@color/gray"
+                                app:spinner_divider_show="true"
+                                app:spinner_popup_animation="dropdown"
+                                app:spinner_popup_background="@color/white"
+                                app:spinner_popup_elevation="14dp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
                     </LinearLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
