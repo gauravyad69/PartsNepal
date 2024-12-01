@@ -43,10 +43,9 @@ object RepositoryModule {
     @Provides
    @Singleton
    fun provideKhaltiPaymentRepository(
-       @ApplicationContext context: Context,
        client: HttpClient
    ): KhaltiPaymentRepository {
-       return KhaltiPaymentRepository(context, client)
+       return KhaltiPaymentRepository(client)
    }
     @Provides
     @Singleton

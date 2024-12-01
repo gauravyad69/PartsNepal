@@ -26,9 +26,7 @@ import np.com.parts.Screens.OrderScreens.OrderDetailsFragmentArgs
 import np.com.parts.ViewModels.CheckoutViewModel
 import np.com.parts.ViewModels.PaymentViewModel
 import np.com.parts.databinding.FragmentPaymentBinding
-import np.com.parts.workers.PaymentViewModelFactory
 import timber.log.Timber
-import javax.inject.Inject
 import kotlin.getValue
 
 /**
@@ -68,7 +66,7 @@ class PaymentFragment : Fragment() {
             args.orderNumber?.let { orderNumber ->
                 Timber.i("got order number $orderNumber")
                 lifecycleScope.launch{
-                    paymentViewModel.processPayment(orderNumber)
+                    paymentViewModel.processPayment(orderNumber, requireActivity())
                 }
             }
 
