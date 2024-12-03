@@ -103,7 +103,7 @@ class TestDataSetup(
             productId = id,
             productSKU = "SKU-$id",
             productName = name,
-            productType = "Auto Parts",
+            categoryId = 5,
             inventory = InventoryInfo(
                 stock = stock,
                 mainImage = "https://example.com/images/$id.jpg",
