@@ -16,7 +16,7 @@ export class CartComponent implements OnInit {
   opanCartlist: boolean = false;
   isVisable: boolean = false;
   cartList!: CartItem[];
-  deleteProductId!: string;
+  deleteProductId!: number;
   constructor
     (
       private router: Router,
@@ -59,7 +59,7 @@ export class CartComponent implements OnInit {
       this.totalPrice = 0;
       if (cart) {
         cart.items?.map((item) => {
-          this.totalPrice += item.product.price! * item.quantity!;
+          this.totalPrice += item.product?.basic?.pricing?.regularPrice?.amount! * item.quantity!;
         });
       }
     });
@@ -87,12 +87,12 @@ export class CartComponent implements OnInit {
     this.router.navigate(['/checkout']);
   }
 
-  navigateToProductDetails(productId: string) {
+  navigateToProductDetails(productId: number) {
     this.closeSidebar();
     this.router.navigate(['/products', productId]);
   }
 
-  openCofirmModal(productId: string) {
+  openCofirmModal(productId: number) {
     this.isVisable = true;
     this.deleteProductId = productId
   }

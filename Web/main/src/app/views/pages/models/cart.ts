@@ -1,13 +1,15 @@
+import { ProductModel } from "./product.model";
+
 export class Cart {
   items?: CartItem[];
 }
 
 export class CartItem {
-  product?: any;
+  product?: ProductModel;
   quantity?: number;
 }
 
 export class CartItemDetailed {
-  product?: any;
+  product?: ProductModel;
   quantity?: number;
 }

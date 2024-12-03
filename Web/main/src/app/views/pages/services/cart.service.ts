@@ -39,10 +39,10 @@ export class CartService {
 
   setCartItem(cartItem: CartItem, updateCartItem?: boolean): Cart {
     const cart = this.getCart();
-    const cartItemExist = cart.items?.find((item) => item.product.id === cartItem.product.id);
+    const cartItemExist = cart.items?.find((item) => item.product?.basic?.productId === cartItem.product?.basic?.productId);
     if (cartItemExist) {
       cart.items?.map((item) => {
-        if (item.product.id === cartItem.product.id) {
+        if (item.product?.basic?.productId === cartItem.product?.basic!!.productId) {
           if (updateCartItem) {
             item.quantity = cartItem.quantity;
           } else {
@@ -62,9 +62,9 @@ export class CartService {
     return cart;
   }
 
-  deleteCartItem(productId: string) {
+  deleteCartItem(productId: number) {
     const cart = this.getCart();
-    const newCart = cart.items?.filter((item) => item.product.id !== productId);
+    const newCart = cart.items?.filter((item) => item.product?.basic?.productId !== productId);
 
     cart.items = newCart;
 

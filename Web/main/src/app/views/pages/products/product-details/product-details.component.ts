@@ -179,14 +179,14 @@ export class ProductDetailsComponent implements OnInit {
     });
   }
 
-  checkProductInCartList(product: any) {
-    const cartItemExist = this.cartList.find((item) => item.product.id === product.id);
+  checkProductInCartList(product: ProductModel) {
+    const cartItemExist = this.cartList.find((item) => item.product?.basic?.productId === product.basic?.productId);
     this.quantity = cartItemExist?.quantity || 0
     return cartItemExist;
   }
 
-  productInWishList(product: any) {
-    const WishItemExist = this.WishItems.some((item) => item.product.id === product.id);
+  productInWishList(product: ProductModel) {
+    const WishItemExist = this.WishItems.some((item) => item.product?.basic?.productId === product.basic?.productId);
     return WishItemExist;
   }
 
@@ -222,7 +222,7 @@ export class ProductDetailsComponent implements OnInit {
       product: item
     };
     if (this.isProductInWishList) {
-      this._wishlistService.deleteWishItem(WishItem.product.id);
+      this._wishlistService.deleteWishItem(WishItem.product?.basic?.productId!);
       this._toast.error('Product removed from wishlist',
         {
           position: 'top-left'

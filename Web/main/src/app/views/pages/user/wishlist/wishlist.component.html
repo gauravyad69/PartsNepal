@@ -42,16 +42,16 @@
     <article class="card card-product-list" *ngFor="let item of WishItems">
         <div class="row g-0  align-items-center">
             <aside class="col-xl-3 col-lg-4 col-md-12 col-12 text-center">
-                <a routerLink="/products/{{item?.product?.id}}" class="img-wrap">
-                    <img class=" rounded" [src]="item?.product?.images[0]"
+                <a routerLink="/products/{{item?.product?.basic?.productId}}" class="img-wrap">
+                    <img class=" rounded" [src]="item?.product?.details?.features!!.images[0].url"
                         onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'">
                 </a>
             </aside>
 
             <div class="col-xl-6 col-lg col-md-7 col-sm-7">
                 <div class="card-body">
-                    <a routerLink="/products/{{item?.product?.id}}" class="title">
-                        {{item?.product?.title}}
+                    <a routerLink="/products/{{item?.product?.basic?.productId}}" class="title">
+                        {{item?.product?.basic?.productName}}
                     </a>
                     <div class="rating-wrap mb-2">
                         <ul class="rating-stars">
@@ -68,10 +68,10 @@
                     </div>
 
                     <p class="text-muted">
-                        {{item?.product?.description}}
+                        {{item?.product?.details?.description}}
                     </p>
                     <p class="my-2">
-                        <span class="tag"> {{item?.product?.category?.name}} </span>
+                        <span class="tag"> {{item?.product?.basic?.categoryId}} </span>
                         <span class="tag"> Pink Color </span>
                     </p>
                 </div>
@@ -79,15 +79,15 @@
             <aside class="col-xl-3 col-lg-auto col-md-5 col-sm-5">
                 <div class="info-aside">
                     <div class="price-wrap">
-                        <span class="price h5"> ${{item?.product?.price}} </span>
-                        <del class="price-old"> ${{item?.product?.price + 198}}</del>
+                        <span class="price h5"> ${{item?.product?.basic?.pricing?.regularPrice?.amount}} </span>
+                        <del class="price-old"> ${{item?.product?.basic?.pricing?.regularPrice!!.amount + 198}}</del>
                     </div>
                     <p class="text-success">Free shipping</p>
                     <br>
                     <a routerLink="/products/{{item?.product?.id}}" class="btn btn-warning">
                         Buy this
                     </a>
-                    <a href="#" class="btn btn-danger ms-2" (click)="$event.preventDefault(); openCofirmModal(item?.product?.id)">
+                    <a href="#" class="btn btn-danger ms-2" (click)="$event.preventDefault(); openCofirmModal(item?.product?.basic?.productId!)">
                         <i class="fa fa-heart"></i>
                     </a>
                 </div>

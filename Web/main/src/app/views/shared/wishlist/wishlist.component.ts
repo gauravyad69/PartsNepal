@@ -5,7 +5,7 @@ import { CartItem } from '../../pages/models/cart';
 import { WishItem} from '../../pages/models/wishlist';
 import { CartService } from '../../pages/services/cart.service';
 import { WishlistService } from '../../pages/services/wishlist.service';
-
+import { ProductModel } from '../../pages/models/product.model';
 @Component({
   selector: 'app-wishlist',
   templateUrl: './wishlist.component.html',
@@ -62,8 +62,8 @@ export class WishlistComponent implements OnInit {
   }
 
 
-  productInCartList(product: any){
-    const cartItemExist = this.cartList.find((item) => item.product.id === product.product.id);
+  productInCartList(product: ProductModel){
+    const cartItemExist = this.cartList.find((item) => item.product?.basic?.productId === product.basic?.productId);
     return cartItemExist;
   }
 

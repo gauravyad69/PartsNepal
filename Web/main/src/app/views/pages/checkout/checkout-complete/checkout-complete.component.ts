@@ -27,7 +27,7 @@ export class CheckoutCompleteComponent implements OnInit {
       this.totalPrice = 0;
       if (cart) {
         cart.items?.map((item) => {
-          this.totalPrice += item.product.price! * item.quantity!;
+          this.totalPrice += item.product?.basic?.pricing?.regularPrice?.amount!! * item.quantity!;
         });
       }
     });

@@ -98,7 +98,7 @@ export class AllProductsComponent implements OnInit {
     };
     if (event.currentTarget.classList.contains("is-favourite")) {
       event.currentTarget.classList.remove("is-favourite")
-      this._wishlistService.deleteWishItem(WishItem.product.id);
+      this._wishlistService.deleteWishItem(WishItem.product?.basic?.productId!);
       this._toast.error('Product removed from wishlist',
         {
           position: 'top-left'
@@ -116,7 +116,7 @@ export class AllProductsComponent implements OnInit {
   }
 
   productInWishList(itm: any) {
-    const cartItemExist = this.WishItems.find((item) => item.product.id === itm.id);
+    const cartItemExist = this.WishItems.find((item) => item.product?.basic?.productId === itm.id);
     return cartItemExist;
   }
 

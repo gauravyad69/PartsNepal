@@ -41,10 +41,10 @@ export class WishlistService {
 
   setWishItem(cartItem: CartItem, updateCartItem?: boolean): Cart {
     const WishList = this.getWishlist();
-    const cartItemExist = WishList.items?.find((item) => item.product?.basic?.productId === cartItem.product.id);
+    const cartItemExist = WishList.items?.find((item) => item.product?.basic?.productId === cartItem.product?.basic?.productId);
     if (cartItemExist) {
       WishList.items?.map((item) => {
-        if (item.product?.basic?.productId === cartItem.product.id) {
+        if (item.product?.basic?.productId === cartItem.product?.basic?.productId) {
           // if (updateCartItem) {
           //   item.quantity = cartItem.quantity;
           // } else {

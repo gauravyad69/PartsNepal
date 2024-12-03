@@ -244,11 +244,11 @@
                     <figure class="itemside align-items-center mb-4" *ngFor="let item of cartList">
                         <div class="aside">
                             <b class="badge bg-secondary rounded-pill">{{item?.quantity}}</b>
-                            <img [src]="item?.product?.images[0]" class="img-sm rounded border">
+                            <img [src]="item?.product?.details?.features!!.images[0].url" class="img-sm rounded border">
                         </div>
                         <figcaption class="info">
-                            <a routerLink="/products/{{item?.product?.id}}" class="title">{{item?.product?.title}}</a>
-                            <div class="price text-muted">Price: ${{item?.product?.price}}</div>
+                            <a routerLink="/products/{{item?.product?.basic?.productId}}" class="title">{{item?.product?.basic?.productName}}</a>
+                            <div class="price text-muted">Price: ${{item?.product?.basic?.pricing?.regularPrice?.amount}}</div>
                         </figcaption>
                     </figure>
                 </article>

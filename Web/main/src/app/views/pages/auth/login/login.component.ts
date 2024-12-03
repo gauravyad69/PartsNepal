@@ -17,7 +17,8 @@ export class LoginComponent implements OnInit {
   isSubmitted: boolean = false;
   authError: boolean = false;
   authMessage:string = 'Email or Password are wrong';
-
+  isPhoneLogin: boolean = false;
+  
   constructor(
     private _formBuilder: FormBuilder,
     private _auth: AuthService,
@@ -28,16 +29,20 @@ export class LoginComponent implements OnInit {
 
   initLoginForm() {
     this.loginFormGroup = this._formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
+  
+      // email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+
   }
   onSubmit() {
+    this.isPhoneLogin = /^\d+$/.test(this.loginForm.email.value);
+
     this.isSubmitted = true;
 
     if (this.loginFormGroup.invalid) return;
 
-    this._auth.login(this.loginForm.email.value, this.loginForm.password.value).pipe(
+    this._auth.login(this.loginForm.email.value, this.loginForm.password.value, this.isPhoneLogin).pipe(
       this._toast.observe(
         {
           loading: 'Logging in...',
@@ -48,7 +53,7 @@ export class LoginComponent implements OnInit {
       ).subscribe(
       (user) => {
         this.authError = false;
-        this._localstorageService.setToken(user.access_token);
+        this._localstorageService.setToken(user.token);
         this._auth.startRefreshTokenTimer();
         this._router.navigate(['/']);
       },

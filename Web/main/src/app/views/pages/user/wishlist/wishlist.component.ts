@@ -14,7 +14,7 @@ export class WishlistComponent implements OnInit {
   cartList!: CartItem[];
   isVisable: boolean = false;
   isWishItemsEmpty: boolean = false;
-  deleteProductId!: string;
+  deleteProductId!: number;
 
   constructor(
     private _wishlistService: WishlistService,
@@ -29,13 +29,13 @@ export class WishlistComponent implements OnInit {
   }
  
 
-  removeItem(id: string) {
+  removeItem(id: number) {
     this.deleteProductId = id;
     this._wishlistService.deleteWishItem(this.deleteProductId);
   }
 
 
-  openCofirmModal(productId: string) {
+  openCofirmModal(productId: number) {
     this.isVisable = true;
     this.deleteProductId = productId
   }

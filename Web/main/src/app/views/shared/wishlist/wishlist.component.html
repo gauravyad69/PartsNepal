@@ -60,10 +60,10 @@
                     {{item.product?.basic?.productName}}
                 </a>
                 <h5 class="item-price">${{item.product?.basic?.pricing?.regularPrice?.amount}}</h5>
-                <button type="button" class="btn-add btn-mobile-add" [disabled]="productInCartList(item)"  (click)="addProductToCart(item.product)">
+                <button type="button" class="btn-add btn-mobile-add" [disabled]="productInCartList(item.product!)"  (click)="addProductToCart(item.product!)">
                     <i class="fa-solid fa-clipboard"></i>
                 </button>
-                <button type="button" class="btn-add btn-large-add" [disabled]="productInCartList(item)" (click)="addProductToCart(item.product)">
+                <button type="button" class="btn-add btn-large-add" [disabled]="productInCartList(item.product!)" (click)="addProductToCart(item.product!)">
                     <span>Added to cart</span>
                 </button>
             </div>
