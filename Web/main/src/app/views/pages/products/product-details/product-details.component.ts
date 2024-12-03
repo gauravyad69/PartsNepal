@@ -8,7 +8,7 @@ import { CartItem } from '../../models/cart';
 import { HotToastService } from '@ngneat/hot-toast';
 import { WishItem } from '../../models/wishlist';
 import { WishlistService } from '../../services/wishlist.service';
-
+import { ProductModel } from '../../models/product.model';
 @Component({
   selector: 'app-product-details',
   templateUrl: './product-details.component.html',
@@ -109,7 +109,7 @@ export class ProductDetailsComponent implements OnInit {
     nav: true,
   }
 
-  product: any
+  product!: ProductModel
   productId!: number
   categoryId!: number
   imgNotFounded: boolean = false;
@@ -151,11 +151,11 @@ export class ProductDetailsComponent implements OnInit {
   getproduct() {
     this._productService.getSingleProduct(this.productId).subscribe((data) => {
       this.product = data;
-      this.categoryId = data.category.id;
+      this.categoryId = data.basic.categoryId;
       this.getProductsByCategory(this.categoryId);
       this.productInCartList = this.checkProductInCartList(data);
       this.isProductInWishList = this.productInWishList(data);
-      if (data.images.length == 1) {
+      if (data.details.features.images.length == 1) {
         this.imgNotFounded = true
       }
     })
@@ -255,3 +255,4 @@ export class ProductDetailsComponent implements OnInit {
   }
 
 }
+ 

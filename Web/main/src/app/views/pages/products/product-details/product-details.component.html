@@ -20,11 +20,11 @@
         <div class="row">
             <aside class="col-lg-4">
                 <owl-carousel-o [options]="slider1Settings" #myCarousel>
-                    <ng-container *ngFor="let slide of product?.images">
-                        <ng-template carouselSlide [id]="slide?.id">
-                            <figure class="zoom-image" style="background-image: url({{slide}});"
+                    <ng-container *ngFor="let slide of product?.details?.features?.images">
+                        <ng-template carouselSlide [id]="slide?.toString()||''">
+                            <figure class="zoom-image" style="background-image: url({{slide?.url}});"
                                 [style.backgroundPosition]="backgroundPos" (mousemove)="ZoomImage($event)">
-                                <img class="rounded" src="{{slide}}" alt="clothes"
+                                <img class="rounded" src="{{slide?.url}}" alt="clothes"
                                     onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'; imgNotFounded=true">
                             </figure>
                         </ng-template>
@@ -32,9 +32,9 @@
                 </owl-carousel-o>
                 <owl-carousel-o id="controll" [options]="slider2Settings" (dragging)="nextSlide($event)"
                     *ngIf="!imgNotFounded">
-                    <ng-container *ngFor="let slide of product?.images">
-                        <ng-template carouselSlide [id]="slide?.id">
-                            <img class="rounded" width="97" src="{{slide}}" alt="clothes"
+                    <ng-container *ngFor="let slide of product?.details?.features?.images">
+                        <ng-template carouselSlide [id]="slide?.toString()||''">
+                            <img class="rounded" width="97" src="{{slide?.url}}" alt="clothes"
                                 onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'">
                         </ng-template>
                     </ng-container>
@@ -43,7 +43,7 @@
             <main class="col-lg-6">
                 <article class="ps-lg-3">
                     <h4 class="title text-dark">
-                        {{product?.title }}
+                        {{product?.basic?.productName }}
 
                     </h4>
                     <div class="rating-wrap my-3">
@@ -55,37 +55,29 @@
                                 <img src="assets/images/starts-disable.svg" alt="">
                             </li>
                         </ul>
-                        <b class="label-rating text-warning"> 4.5</b>
+                        <b class="label-rating text-warning"> {{product?.details?.features?.reviews?.averageRating}}</b>
                         <i class="dot"></i>
                         <span class="label-rating text-muted">
                             <i class="fa fa-shopping-basket"></i> 154 orders
                         </span>
                         <i class="dot"></i>
-                        <span class="label-rating text-success">In stock</span>
+                        <span class="label-rating text-success">In Stock: {{product?.basic?.inventory?.stock}}</span>
                     </div>
 
 
                     <div class="mb-3">
-                        <span class="price h5">${{product?.price}}</span>
+                        <span class="price h5">{{product?.basic?.pricing?.regularPrice?.currency}}{{product?.basic?.pricing?.regularPrice?.amount}}</span>
                         <span class="text-muted">/per box</span>
                     </div>
 
                     <p>
-                        {{product?.description || loremText }}
+                        {{product?.details?.description || loremText }}
                     </p>
 
                     <dl class="row">
-                        <dt class="col-3">Type:</dt>
-                        <dd class="col-9">{{product?.category?.name}}</dd>
-
-                        <dt class="col-3">Color:</dt>
-                        <dd class="col-9">Brown</dd>
-
-                        <dt class="col-3">Material:</dt>
-                        <dd class="col-9">Cotton, Jeans </dd>
-
-                        <dt class="col-3">Brand:</dt>
-                        <dd class="col-9">Reebook </dd>
+                        <ng-container *ngFor="let highlight of product?.details?.features?.highlights | keyvalue">
+                            <dd class="col-9">{{highlight }}</dd>
+                        </ng-container>
                     </dl>
 
                     <hr>

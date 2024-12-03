@@ -53,13 +53,13 @@
         </div>
         <div class="item" *ngFor="let item of WishItems">
             <div class="item-img">
-                <img [src]="item.product.images[0]"  onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'" alt="product_image">
+                <img [src]="item.product?.details?.features!!.images[0].url"  onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'" alt="product_image">
             </div>
             <div class="item-description">
-                <a href="#" (click)="$event.preventDefault(); navigateToProductDetails(item.product.id)" class="item-title">
-                    {{item.product.title}}
+                <a href="#" (click)="$event.preventDefault(); navigateToProductDetails(item.product?.basic?.productId!)" class="item-title">
+                    {{item.product?.basic?.productName}}
                 </a>
-                <h5 class="item-price">${{item.product.price}}</h5>
+                <h5 class="item-price">${{item.product?.basic?.pricing?.regularPrice?.amount}}</h5>
                 <button type="button" class="btn-add btn-mobile-add" [disabled]="productInCartList(item)"  (click)="addProductToCart(item.product)">
                     <i class="fa-solid fa-clipboard"></i>
                 </button>
@@ -68,7 +68,7 @@
                 </button>
             </div>
             <div class="item-close-btn">
-                <a href="#" (click)="$event.preventDefault(); openCofirmModal(item.product.id);">
+                <a href="#" (click)="$event.preventDefault(); openCofirmModal(item.product?.basic?.productId!);">
                     <svg viewBox="64 64 896 896" focusable="false" class="" data-icon="close" width="1em" height="1em"
                         fill="currentColor" aria-hidden="true">
                         <path

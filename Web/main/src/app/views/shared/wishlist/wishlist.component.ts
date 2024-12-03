@@ -17,7 +17,7 @@ export class WishlistComponent implements OnInit {
   WishItems!: WishItem[];
   cartList!: CartItem[];
   isVisable: boolean = false;
-  deleteProductId!: string;
+  deleteProductId!: number;
   constructor
   (
     private _wishlistService: WishlistService,
@@ -81,12 +81,12 @@ export class WishlistComponent implements OnInit {
     });
   }
   
-  navigateToProductDetails(productId: string) {
+  navigateToProductDetails(productId: number) {
     this.closeSidebar();
     this.router.navigate(['/products', productId]);
   }
 
-  openCofirmModal(productId: string) {
+  openCofirmModal(productId: number) {
     this.isVisable = true;
     this.deleteProductId = productId
   }
