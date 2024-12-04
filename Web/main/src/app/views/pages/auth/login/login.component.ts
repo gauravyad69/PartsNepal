@@ -1,10 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LocalstorageService } from '../services/localstorage.service';
 import { HotToastService } from '@ngneat/hot-toast';
+
+// Add this custom validator function
+function emailOrPhoneValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  
+  // Check if empty
+  if (!value) return null;
+
+  // Check if it's a phone number (only digits)
+  const isPhone = /^\d+$/.test(value);
+  
+  // Check if it's an email
+  const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+
+  // Valid if either phone or email
+  return (isEmail || isPhone) ? null : { 'emailOrPhone': true };
+}
 
 @Component({
   selector: 'app-login',
@@ -29,8 +46,7 @@ export class LoginComponent implements OnInit {
 
   initLoginForm() {
     this.loginFormGroup = this._formBuilder.group({
-  
-      // email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, emailOrPhoneValidator]],
       password: ['', Validators.required]
     });
 

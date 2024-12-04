@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../services/user.service';
+import { UserModel } from '../../models/user.model';
 
 @Component({
   selector: 'app-profile',
@@ -9,7 +10,7 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  profile: any = {}
+  profile: UserModel = {} as UserModel;
   isVisable: boolean = false;
   isSubmitted: boolean = false;
   editUserFormGroup!: FormGroup;
@@ -28,9 +29,9 @@ export class ProfileComponent implements OnInit {
   */
   initeditUserForm() {
     this.editUserFormGroup = this._formBuilder.group({
-      name: [this.profile.name, Validators.required],
+      name: [this.profile.firstName + ' ' + this.profile.lastName, Validators.required],
       email: [this.profile.email, [Validators.required, Validators.email]],
-      role: [this.profile.role, Validators.required]
+      role: [this.profile.accountType, Validators.required]
     });
   }
 

@@ -48,9 +48,9 @@
                                         <i class="fas fa-envelope"></i>
                                     </span>
                                 </div>
-                                <small *ngIf="loginForm.email.invalid && isSubmitted" class=" d-block text-danger">
-                                    <span *ngIf="loginForm.email.errors?.required">Email is required</span>
-                                    <span *ngIf="loginForm.email.errors?.email">Email is invalid</span>
+                                <small *ngIf="loginForm.email.invalid && isSubmitted" class="d-block text-danger">
+                                    <span *ngIf="loginForm.email.errors?.required">Email or Phone is required</span>
+                                    <span *ngIf="loginForm.email.errors?.emailOrPhone">Please enter a valid email or phone number</span>
                                 </small>
                                 <label class="form-label fw-500" for="loginPassword">Password</label>
                                 <div
@@ -97,11 +97,11 @@
                                 <tbody>
                                     <tr class="p-2">
                                         <th scope="row">Email Address</th>
-                                        <td>john@mail.com</td>                                        
+                                        <td>9746621180</td>                                        
                                     </tr>
                                     <tr>
                                         <td scope="row">Password</td>
-                                        <td>changeme</td>
+                                        <td>Karikbaba@5</td>
                                     </tr>
                                 </tbody>
                             </table>

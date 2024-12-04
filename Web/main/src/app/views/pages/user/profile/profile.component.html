@@ -9,7 +9,7 @@
                 </span>
             </div>
             <figcaption class="info d-flex justify-content-between align-items-center">
-                <h6 class="title">{{profile.name}}</h6>
+                <h6 class="title">{{profile.firstName + ' ' + profile.lastName}}</h6>
                 <button class="btn btn-warning rounded py-2 px-1" (click)="openEditModal(profile)">
                     <i class="fa fa-pen px-2"></i>
                 </button>
@@ -32,7 +32,7 @@
                     <b class="mx-2 text-muted">
                         <i class="fa-solid fa-phone-flip"></i>
                     </b>
-                    Phone: +1234567890988
+                    Phone: {{profile.phoneNumber}}
                 </article>
             </div>
             <div class="col-md-6">
@@ -40,7 +40,7 @@
                     <b class="mx-2 text-muted">
                         <i class="fa-solid fa-user"></i>
                     </b>
-                    {{profile.role}}
+                    {{profile.accountType}}
                 </article>
             </div>
             <div class="col-md-6">

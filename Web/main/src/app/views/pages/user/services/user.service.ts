@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LocalstorageService } from '../../auth/services/localstorage.service';
+import { UserModel } from '../../models/user.model';
 
 LocalstorageService
 @Injectable({
@@ -21,8 +22,8 @@ export class UserService {
   //   })
   // };
 
-  getUser(): Observable<any> {
-    return this._http.get<any>(`${environment.api}v1/auth/profile`);
+  getUser(): Observable<UserModel> {
+    return this._http.get<UserModel>(`${environment.api}/users/profile`);
   }
   /*
     ----------------------------
