@@ -1,5 +1,7 @@
+@file:SuppressLint("UnsafeOptInUsageError")
 package np.com.parts.API.Models
 
+import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

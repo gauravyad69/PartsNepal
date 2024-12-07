@@ -150,7 +150,7 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    ErrorResponse("Error retrieving product", "CATEGORY_PRODUCT_RETRIEVAL_ERROR")
+                    ErrorResponse("Error retrieving product", "CATEGORY_PRODUCT_RETRIEVAL_ERROR", "$e")
                 )
             }
         }

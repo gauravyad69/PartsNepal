@@ -256,7 +256,7 @@ class ProductService(private val database: MongoDatabase) {
         categoryId: Int,
         page: Int = 0,
         pageSize: Int = 20
-    ): Flow<ProductModel> = flow {
+    ): List<BasicProductInfo> {
         val products = withContext(Dispatchers.IO) {
             productCollection.find(Filters.eq("basic.categoryId", categoryId))
                 .skip(page * pageSize)
@@ -264,7 +264,7 @@ class ProductService(private val database: MongoDatabase) {
                 .toList()
         }
 
-        products.forEach { emit(it) }
+       return products.map { it.basic }
     }
 
     // Get products on sale

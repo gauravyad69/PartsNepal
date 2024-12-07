@@ -1,5 +1,7 @@
+@file:SuppressLint("UnsafeOptInUsageError")
 package np.com.parts.repository
 
+import android.annotation.SuppressLint
 import android.database.sqlite.SQLiteException
 import io.ktor.client.*
 import io.ktor.client.request.post
@@ -192,7 +194,7 @@ class CartRepository @Inject constructor(
             
             Timber.d("Converting ${items.size} cart items to line items...")
             val lineItems = items.map { cartItem ->
-                cartItem.toLineItem().also {
+                cartItem.toItemForRequest().also {
                     Timber.d("Converted cart item ${cartItem.id} to line item")
                 }
             }

@@ -46,7 +46,7 @@ fun Route.authenticatedOrderRoutes(orderService: OrderService) {
                 val created = orderService.createOrder(customerId,orderRequest)
 
                 if (created.isSuccess) {
-                    call.respond(HttpStatusCode.Created, created.getOrThrow())
+                    call.respond(HttpStatusCode.Created, created.getOrNull()?:"Order Created Successfully, But couldn't retrieved it")
                 } else {
                     call.respond(HttpStatusCode.Conflict, "Order already exists")
                 }

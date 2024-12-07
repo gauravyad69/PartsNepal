@@ -3,6 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CartItem } from '../../models/cart';
 import { CartService } from '../../services/cart.service';
+import { CheckoutService } from '../checkout.service';
+import { OrderSource, ShippingMethod, PaymentMethod } from '../../models/order.types';
+import { CreateOrderRequest, LineItem } from '../../models/order.model';
 
 @Component({
   selector: 'app-checkout-page',
@@ -16,11 +19,14 @@ export class CheckoutPageComponent implements OnInit {
   cartList!: CartItem[];
   totalPrice!: number;
   isCartEmpty: boolean = false;
+  ShippingMethod = ShippingMethod;
+  PaymentMethod = PaymentMethod;
 
   constructor(
     private router: Router,
     private _cartService: CartService,
     private formBuilder: FormBuilder,
+    private _checkoutService: CheckoutService
   ) { }
 
   getCartList() {
@@ -45,17 +51,17 @@ export class CheckoutPageComponent implements OnInit {
 
   initCheckoutForm() {
     this.checkoutFormGroup = this.formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      email: ['', [Validators.email, Validators.required]],
-      phone: ['', Validators.required],
-      // city: ['', Validators.required],
-      // country: ['', Validators.required],
-      postalcode: ['', Validators.required],
-      message: [''],
-      zip: ['', Validators.required],
-      house: ['', Validators.required],
-      address: ['', Validators.required]
+      recipientName: ['', Validators.required],
+      recipientPhone: ['', Validators.required],
+      street: ['', Validators.required],
+      city: ['', Validators.required],
+      district: ['', Validators.required],
+      province: ['', Validators.required],
+      ward: ['', Validators.required],
+      landmark: [''],
+      shippingMethod: [ShippingMethod.STANDARD, Validators.required],
+      paymentMethod: [PaymentMethod.CASH_ON_DELIVERY, Validators.required],
+      notes: ['']
     });
   }
 
@@ -69,8 +75,55 @@ export class CheckoutPageComponent implements OnInit {
       return;
     }
 
-    this.router.navigate(['/checkout/succuss'])
-    console.log(this.checkoutForm)
+    const items: LineItem[] = this.cartList.map((item) => ({
+      productId: item.product?.basic?.productId!,
+      name: item.product?.basic.productName || 'Untitled Product',
+      quantity: item.quantity!,
+      unitPrice: {
+        amount: item.product?.basic?.pricing?.regularPrice?.amount!,
+        currency: 'NPR'
+      },
+      imageUrl: item.product?.basic.inventory.mainImage || '',
+      lastModified: Date.now()
+    }));
+
+    const order: CreateOrderRequest = {
+      items,
+      paymentMethod: this.checkoutForm.paymentMethod.value,
+      shippingDetails: {
+        address: {
+          street: this.checkoutForm.street.value,
+          city: this.checkoutForm.city.value,
+          district: this.checkoutForm.district.value,
+          province: this.checkoutForm.province.value,
+          ward: this.checkoutForm.ward.value,
+          landmark: this.checkoutForm.landmark.value || undefined,
+          recipient: {
+            name: this.checkoutForm.recipientName.value,
+            phone: this.checkoutForm.recipientPhone.value
+          }
+        },
+        method: this.checkoutForm.shippingMethod.value,
+        cost: {
+          amount: this.totalPrice,
+          currency: 'NPR'
+        }
+      },
+      notes: this.checkoutForm.notes.value || undefined,
+      source: OrderSource.WEB
+    };
+
+    this._checkoutService.createOrder(order).subscribe({
+      next: (response) => {
+        if (response.orderNumber!=null) {
+          this.router.navigate(['/checkout/success'])
+        }
+        console.log(response);
+      },
+      error: (error) => {
+        console.error('Order creation failed:', error);
+      }
+    });
   }
 
   ngOnInit(): void {
