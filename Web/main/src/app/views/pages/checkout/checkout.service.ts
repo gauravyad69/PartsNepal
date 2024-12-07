@@ -1,15 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 // import { ApiResponse } from '../../models/api-response';
 import { OrderModel, CreateOrderRequest } from '../models/order.model';
 import { ApiResponse } from '../models/api-response';
+import { PaymentMethod } from '../models/order.types';
+
+interface CheckoutDetails {
+  orderNumber?: string;
+  paymentMethod: PaymentMethod;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class CheckoutService {
+
+
+  private checkoutDetailsSubject = new BehaviorSubject<CheckoutDetails | null>(null);
+
+  setCheckoutDetails(details: CheckoutDetails) {
+    this.checkoutDetailsSubject.next(details);
+  }
+
+  clearCheckoutDetails() {
+    this.checkoutDetailsSubject.next(null);
+  }
+  checkoutDetails$ = this.checkoutDetailsSubject.asObservable();
+
+
 
   constructor(private _HttpClient: HttpClient) { }
   getAllOrders(page: number, pageSize: number): Observable<OrderModel[]> {

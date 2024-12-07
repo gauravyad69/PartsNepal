@@ -1,25 +1,30 @@
-<section id="checkout-complete" *ngIf="orderNumber">
+
+<section id="checkout-complete">
     <div class="checkout-complete-header text-center">
         <div class="rounded-circle checkmark">
             <i>✓</i>
         </div>
         <h4>
-            Congratulations! Your order has been placed successfully.
+            Congratulation! You’ve completed payment.
         </h4>
-        <p>We have received your order and it will be delivered in the next 3 days</p>
+        <p>We have recieved your order and it will be delivered in the next 3 days</p>
     </div>
     <div class="checkout-complete-summary text-center">
         <div class="item">
             <h5>Order Number</h5>
-            <p>{{orderNumber}}</p>
+            <p>120</p>
         </div>
         <div class="item">
             <h5>Date</h5>
             <p>{{today | date}}</p>
         </div>
         <div class="item">
-            <h5>Payment Method</h5>
-            <p>{{getPaymentMethodDisplay(paymentMethod!)}}</p>
+            <h5>Total</h5>
+            <p>$ {{totalPrice}}</p>
+        </div>
+        <div class="item">
+            <h5>Payment methods</h5>
+            <p>Check payment</p>
         </div>
     </div>
     <button class="btn btn-warning rounded mt-4" (click)="navigateToStore()">Back to store</button>

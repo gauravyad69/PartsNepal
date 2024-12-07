@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CheckoutPageComponent } from './checkout-page/checkout-page.component';
 import { CheckoutCompleteComponent } from './checkout-complete/checkout-complete.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,10 @@ const routes: Routes = [
       {
         path: 'success',
         component: CheckoutCompleteComponent,
+      },
+      {
+        path: 'payment',
+        component: CheckoutPaymentComponent,
       }
     ],
   }

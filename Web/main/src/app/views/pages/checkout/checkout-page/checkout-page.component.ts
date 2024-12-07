@@ -113,12 +113,21 @@ export class CheckoutPageComponent implements OnInit {
       source: OrderSource.WEB
     };
 
+    // Store the payment method before making the API call
+    const paymentMethod = this.checkoutForm.paymentMethod.value;
+
     this._checkoutService.createOrder(order).subscribe({
       next: (response) => {
-        if (response.orderNumber!=null) {
-          this.router.navigate(['/checkout/success'])
+        if (response.orderNumber != null) {
+          // Set both payment method and order number
+          this._checkoutService.setCheckoutDetails({
+            orderNumber: response.orderNumber,
+            paymentMethod: paymentMethod
+          });
+          this.router.navigate(['/checkout/success']);
+        } else {
+          console.error("Order creation failed");
         }
-        console.log(response);
       },
       error: (error) => {
         console.error('Order creation failed:', error);
