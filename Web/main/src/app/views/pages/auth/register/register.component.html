@@ -40,7 +40,7 @@
                             <h3 class="text-12 mb-4">Sign Up</h3>
                             <form id="signupForm"  [formGroup]="registerFormGroup">
                                 <label class="form-label fw-500" for="fullName">Full Name</label>
-                                <div [classList]="registerForm.name.invalid && isSubmitted?'input-group':'mb-3 input-group'">
+                                <div [ngClass]="{'input-group': true, 'mb-3': !registerForm.name.invalid || !isSubmitted}">
                                     <input type="text" class="form-control bg-light border-light" id="fullName"
                                     [class.is-invalid]="registerForm.name.invalid && isSubmitted"
                                         placeholder="Full Name" formControlName="name">
@@ -48,11 +48,13 @@
                                         <i class="fas fa-user"></i>
                                     </span>
                                 </div>
-                                <small *ngIf="registerForm.name.invalid && isSubmitted" class="d-block text-danger">
-                                    Name is required
-                                </small>
+                                @if ((registerForm.name?.errors?.['required'] ?? false)&& (isSubmitted ?? false)) {
+                                    <small class="d-block text-danger">
+                                        Name is required
+                                    </small>
+                                }
                                 <label class="form-label fw-500" for="emailAddress">Email Address</label>
-                                <div [classList]="registerForm.email.invalid && isSubmitted?'input-group':'mb-3 input-group'">
+                                <div [ngClass]="{'input-group': true, 'mb-3': !registerForm.email.invalid || !isSubmitted}">
                                     <input type="email" class="form-control bg-light border-light" id="emailAddress"
                                     [class.is-invalid]="registerForm.email.invalid && isSubmitted"
                                          placeholder="Email Address" formControlName="email">
@@ -60,24 +62,32 @@
                                         <i class="fas fa-envelope"></i>
                                     </span>
                                 </div>
-                                <small *ngIf="registerForm.email.invalid && isSubmitted" class=" d-block text-danger">
-                                    <span *ngIf="registerForm.email.errors?.required">Email is required</span>
-                                    <span *ngIf="registerForm.email.errors?.email">Email is invalid</span>
-                                </small>
+                                @if ((registerForm.email?.errors?.['required'] ?? false)&& (isSubmitted ?? false)) {
+                                    <small class="d-block text-danger">
+                                        Email is required
+                                    </small>
+                                }
+                                @if ((registerForm.email?.errors?.['email'] ?? false) && (isSubmitted ?? false)){
+                                    <small class="d-block text-danger">
+                                        Please enter a valid email
+                                    </small>
+                                }
                                 <label class="form-label fw-500" for="loginPassword">Password</label>
-                                <div [classList]="registerForm.password.invalid && isSubmitted?'input-group':'mb-3 input-group'">
+                                <div [ngClass]="{'input-group': true, 'mb-3': !registerForm.password.invalid || !isSubmitted}">
                                     <input [type]="passwordVisible?'text':'password'"
                                         class="form-control form-control-lg bg-light border-light" id="loginPassword"
                                         [class.is-invalid]="registerForm.password.invalid && isSubmitted"
                                          placeholder="Password" formControlName="password">
                                     <span class="input-group-text text-muted" (click)="visibilityToggle()"
                                         style="cursor: pointer;">
-                                        <i [classList]="passwordVisible?'fas fa-eye':'fas fa-eye-slash'"></i>
+                                        <i [ngClass]="passwordVisible?'fas fa-eye':'fas fa-eye-slash'"></i>
                                     </span>
                                 </div>
-                                <small *ngIf="registerForm.password.invalid && isSubmitted" class="d-block text-danger">
-                                    Password is required
-                                </small>
+                                @if (registerForm.password.invalid && isSubmitted) {
+                                    <small class="d-block text-danger">
+                                        Password is required
+                                    </small>
+                                }
                                 <div class="form-check my-4">
                                     <input id="agree" name="agree" class="form-check-input" type="checkbox">
                                     <label class="form-check-label" for="agree">

@@ -22,15 +22,19 @@
                             <i class="fa-solid fa-circle-question"></i>
                             <span>Help</span>
                         </a>
-                        <a routerLink="/auth" *ngIf="!loggedIn">
-                            <i class="fa-solid fa-right-to-bracket"></i>
-                            <span>Login</span>
-                        </a>
-                        <a routerLink="/user" *ngIf="loggedIn" class="d-flex userProfile-Link">
-                            <img src="assets/images/avatar.jpg"
-                                class="d-inline rounded-circle" width="32" height="32" alt="avater" srcset="">
-                            <span class="d-lg-none d-sm-inline">My Profile</span>
-                        </a>
+                        @if (!(loggedIn)) {
+                            <a routerLink="/auth">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                <span>Login</span>
+                            </a>
+                        }
+                        @if (loggedIn) {
+                            <a routerLink="/user" class="d-flex userProfile-Link">
+                                <img src="assets/images/avatar.jpg"
+                                    class="d-inline rounded-circle" width="32" height="32" alt="avater" srcset="">
+                                <span class="d-lg-none d-sm-inline">My Profile</span>
+                            </a>
+                        }
 
                     </div>
                 </div>
@@ -45,7 +49,7 @@
                 <div class="col-lg-2 col-sm-8 col-8 mt-15 mb-15">
                     <div class="header-logo">
                         <a routerLink="/products">
-                            Store
+                            Parts Nepal
                             <i class="fa-solid fa-cart-shopping"></i>
                         </a>
                     </div>
@@ -53,13 +57,13 @@
                 <div class="col-lg-3 col-sm-3 col-4 order-lg-last">
                     <div class="header-shop-links float-end">
 
-                        <a href="#" class="header-wishlist" (click)="$event.preventDefault();wishlist.openWishList()">
+                        <a href="#" class="header-wishlist" (click)="$event.preventDefault();wishlist.openWishlist()">
                             <i class="fa-solid fa-heart text-danger"></i>
                             <span class="number">{{wishCount}}</span>
                         </a>
                         <a href="#" class="header-cart" (click)="$event.preventDefault();cart.openCartlist();">
                             <i class="fa-solid fa-bag-shopping"></i>
-                            <span class="number">{{cartCount}}</span>
+                            <span class="number" *ngIf="(cartCount ?? 0) > 0">{{cartCount}}</span>
                         </a>
 
                     </div>

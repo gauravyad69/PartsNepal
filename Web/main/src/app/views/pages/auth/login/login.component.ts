@@ -1,34 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { LocalstorageService } from '../services/localstorage.service';
 import { HotToastService } from '@ngneat/hot-toast';
-
-// Add this custom validator function
-function emailOrPhoneValidator(control: AbstractControl): ValidationErrors | null {
-  const value = control.value;
-  
-  // Check if empty
-  if (!value) return null;
-
-  // Check if it's a phone number (only digits)
-  const isPhone = /^\d+$/.test(value);
-  
-  // Check if it's an email
-  const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
-
-  // Valid if either phone or email
-  return (isEmail || isPhone) ? null : { 'emailOrPhone': true };
-}
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule
+  ]
 })
-export class LoginComponent implements OnInit {
+
+
+
+export class LoginComponent  {
   passwordVisible: boolean = false
   loginFormGroup!: FormGroup;
   isSubmitted: boolean = false;
@@ -46,7 +40,7 @@ export class LoginComponent implements OnInit {
 
   initLoginForm() {
     this.loginFormGroup = this._formBuilder.group({
-      email: ['', [Validators.required, emailOrPhoneValidator]],
+      email: ['', [Validators.required, Validators.pattern(/^\d+$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
       password: ['', Validators.required]
     });
 
@@ -104,3 +98,5 @@ export class LoginComponent implements OnInit {
   }
 
 }
+
+

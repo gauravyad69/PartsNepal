@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { CheckoutService } from '../checkout.service';
 import { PaymentMethod } from '../../models/order.types';
@@ -8,7 +9,9 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-checkout-complete',
   templateUrl: './checkout-complete.component.html',
-  styleUrls: ['./checkout-complete.component.css']
+  styleUrls: ['./checkout-complete.component.css'],
+  standalone: true,
+  imports: [CommonModule, RouterModule]
 })
 export class CheckoutCompleteComponent implements OnInit, OnDestroy {
   orderNumber?: string;
@@ -21,8 +24,6 @@ export class CheckoutCompleteComponent implements OnInit, OnDestroy {
     private _cartService: CartService,
     private _checkoutService: CheckoutService
   ) { }
-
-
 
   ngOnInit(): void {
     this.subscription = this._checkoutService.checkoutDetails$.subscribe(
@@ -57,7 +58,7 @@ export class CheckoutCompleteComponent implements OnInit, OnDestroy {
   }
 
   navigateToStore() {
-    this._cartService.clearCart();
+    // this._cartService.clearCart();
     this.router.navigate(['/']);
   }
 }

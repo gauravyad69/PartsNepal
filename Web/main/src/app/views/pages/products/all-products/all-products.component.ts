@@ -1,18 +1,35 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { CartItem } from '../../models/cart';
 import { WishItem } from '../../models/wishlist';
 import { CartService } from '../../services/cart.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { ProductService } from '../services/product.service';
 import { HotToastService } from '@ngneat/hot-toast';
+import { ProductComponent } from '../product/product.component';
+import { FilterPipe } from '../pipe/filter.pipe';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-all-products',
   templateUrl: './all-products.component.html',
-  styleUrls: ['./all-products.component.css']
+  styleUrls: ['./all-products.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    InfiniteScrollModule,
+    NgxSkeletonLoaderModule,
+    ProductComponent,
+    FilterPipe,
+    FormsModule
+  ]
 })
 export class AllProductsComponent implements OnInit {
-
+  Loading: boolean = true;
   products: any[] = [];
   PageNumber: number = 1;
   numberOfPages: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -20,18 +37,20 @@ export class AllProductsComponent implements OnInit {
   WishItems!: WishItem[];
   fliterValue: string = "Default";
   items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20]
-  Loading: boolean = false;
 
   throttle = 300;
   scrollDistance = 1;
   scrollUpDistance = 2;
   limit: number = 20;
+
   constructor(
     private _product: ProductService,
     private _cartService: CartService,
     private _wishlistService: WishlistService,
     private _toast: HotToastService
-  ) { }
+    
+  ) {    console.log('AllProductsComponent constructed');
+  }
 
 
   getAllProducts(offset: number, limit: number) {
@@ -136,6 +155,8 @@ export class AllProductsComponent implements OnInit {
   ngOnInit(): void {
     this.getAllProducts(0, this.limit);
     this.getWishList();
+    console.log('AllProductsComponent initialized');
+
   }
 
 

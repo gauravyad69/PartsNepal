@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   api: 'http://localhost:9090',
-};
+} as const;
 
 /*
  * For easier debugging in development mode, you can import the following file

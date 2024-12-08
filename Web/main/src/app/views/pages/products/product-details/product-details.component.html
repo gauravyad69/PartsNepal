@@ -18,28 +18,36 @@
 <section class="padding-y">
     <div class="container">
         <div class="row">
-            <aside class="col-lg-4">
-                <owl-carousel-o [options]="slider1Settings" #myCarousel>
-                    <ng-container *ngFor="let slide of product?.details?.features?.images">
-                        <ng-template carouselSlide [id]="slide?.toString()||''">
-                            <figure class="zoom-image" style="background-image: url({{slide?.url}});"
-                                [style.backgroundPosition]="backgroundPos" (mousemove)="ZoomImage($event)">
-                                <img class="rounded" src="{{slide?.url}}" alt="clothes"
-                                    onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'; imgNotFounded=true">
-                            </figure>
-                        </ng-template>
-                    </ng-container>
-                </owl-carousel-o>
-                <owl-carousel-o id="controll" [options]="slider2Settings" (dragging)="nextSlide($event)"
-                    *ngIf="!imgNotFounded">
-                    <ng-container *ngFor="let slide of product?.details?.features?.images">
-                        <ng-template carouselSlide [id]="slide?.toString()||''">
-                            <img class="rounded" width="97" src="{{slide?.url}}" alt="clothes"
-                                onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'">
-                        </ng-template>
-                    </ng-container>
-                </owl-carousel-o>
-            </aside>
+            @defer (on viewport) {
+                <aside class="col-lg-4">
+                    <owl-carousel-o [options]="slider1Settings" #myCarousel>
+                        @for (slide of product?.details?.features?.images ?? []; track slide?.url) {
+                            <ng-template carouselSlide [id]="slide?.toString() ?? ''">
+                                <figure class="zoom-image" style="background-image: url({{slide?.url}});"
+                                    [style.backgroundPosition]="backgroundPos" (mousemove)="ZoomImage($event)">
+                                    <img class="rounded" src="{{slide?.url}}" alt="clothes"
+                                        onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'; imgNotFounded=true">
+                                </figure>
+                            </ng-template>
+                        }
+                    </owl-carousel-o>
+                    <owl-carousel-o id="controll" [options]="slider2Settings" (dragging)="nextSlide($event)"
+                        *ngIf="!imgNotFounded">
+                        <ng-container *ngFor="let slide of product?.details?.features?.images">
+                            <ng-template carouselSlide [id]="slide?.toString()||''">
+                                <img class="rounded" width="97" src="{{slide?.url}}" alt="clothes"
+                                    onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'">
+                            </ng-template>
+                        </ng-container>
+                    </owl-carousel-o>
+                </aside>
+            } @placeholder {
+                <div class="col-lg-4">
+                    <ngx-skeleton-loader [theme]="{ 'border-radius': '0', height: '350px' }">
+                    </ngx-skeleton-loader>
+                </div>
+            }
+
             <main class="col-lg-6">
                 <article class="ps-lg-3">
                     <h4 class="title text-dark">
@@ -127,18 +135,25 @@
             </main>
         </div>
 
-        <div class="row my-5 position-relative"> 
-            <div class="title text-md-center mb-2">
-                <span>best match</span>
-                <h4 class="text-dark">Related products</h4>
+        @defer (on viewport) {
+            <div class="row my-5 position-relative">
+                <div class="title text-md-center mb-2">
+                    <span>best match</span>
+                    <h4 class="text-dark">Related products</h4>
+                </div>
+                <owl-carousel-o [options]="slider3Settings" #myCarousel>
+                    @for (item of categoryProducts ?? []; track item.id) {
+                        <ng-template carouselSlide [id]="item.id">
+                            <app-product [product]="item"></app-product>
+                        </ng-template>
+                    }
+                </owl-carousel-o>
             </div>
-            <owl-carousel-o [options]="slider3Settings" #myCarousel>
-                <ng-container class="col-md-2 col-6" *ngFor="let item of categoryProducts">
-                    <ng-template carouselSlide [id]="item.id">
-                        <app-product [product]="item"></app-product>
-                    </ng-template>
-                </ng-container>
-            </owl-carousel-o>
-        </div>
+        } @placeholder {
+            <div class="row my-5">
+                <ngx-skeleton-loader count="4" [theme]="{ 'border-radius': '0', height: '200px' }">
+                </ngx-skeleton-loader>
+            </div>
+        }
     </div>
 </section> 

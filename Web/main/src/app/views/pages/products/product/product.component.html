@@ -1,29 +1,42 @@
 <div class="product">
     <div class="product-image">
-        <a style="height: 227px;" routerLink="/products/{{product?.basic?.productId}}">
-            <img [src]="product?.details?.features?.images[0]?.url" alt="Product_image"
-                onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'">
-            <img [src]="product?.details?.features?.images[1]?.url" alt="Product_image"
-                onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'">
+        <!-- Using string interpolation with nullish coalescing -->
+        <a [style.height.px]="227" [routerLink]="['/products', product?.basic?.productId ?? '']">
+            <!-- Using ngOptimizedImage directive for better image loading -->
+            <img [ngSrc]="product?.details?.features!!.images[0]?.url ?? 'assets/images/ImageNotFound.png'"
+                 [alt]="'Product image'"
+                 width="300" height="200"
+                 priority
+                 (error)="onImageError($event)">
+            <img [ngSrc]="product?.details?.features!!.images[1]?.url ?? product?.details?.features!!.images[0]?.url ?? 'assets/images/ImageNotFound.png'"
+                 [alt]="'Product image'"
+                 width="300" height="200"
+                 (error)="onImageError($event)">
         </a>
-        <p class="product-sale" *ngIf="product?.basic?.pricing?.isOnSale">Sale</p>
+        <!-- Using @if instead of *ngIf -->
+        @if (product?.basic?.pricing?.isOnSale) {
+            <p class="product-sale">Sale</p>
+        }
         <button type="button" class="btn-favourite btn-circle"
-            [class.is-favourite]='productInWishList(product)'
-            (click)="addProductToWishList(product, $event)">
+                [class.is-favourite]="productInWishList(product)"
+                (click)="addProductToWishList(product, $event)">
             <i class="fa-solid fa-heart"></i>
         </button>
     </div>
     <div class="product-content">
         <a class="product-name d-flex justify-content-between align-items-center"
-            routerLink="/products/{{product?.basic?.productId}}">
-            <span class="item-title">{{product?.basic?.productName}}</span>
-            <span class="badge badge-pill bg-warning p-1">{{product?.basic?.categoryId}}</span>
+           [routerLink]="['/products', product.basic.productId ?? '']">
+            <span class="item-title">{{product.basic.productName}}</span>
+            <span class="badge badge-pill bg-warning p-1">{{product.basic.categoryId}}</span>
         </a>
         <div class="price-wrap">
-            <span class="price">{{product?.basic?.pricing?.regularPrice?.amount | currency}}</span>
-            <span class="price-old" *ngIf="product?.basic?.pricing?.salePrice">
-                {{product?.basic?.pricing?.salePrice?.amount | currency}}
-            </span>
+            <!-- Using built-in number pipe with currency -->
+            <span class="price">{{product.basic.pricing.regularPrice.amount | number:'1.2-2':'en-US' | currency:"NPR"}}</span>
+            @if (product.basic.pricing.salePrice) {
+                <span class="price-old">
+                    {{product.basic.pricing.salePrice.amount | number:'1.2-2':'en-US' | currency:"NPR"}}
+                </span>
+            }
         </div>
     </div>
 </div>

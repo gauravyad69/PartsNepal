@@ -1,18 +1,30 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { OwlOptions } from 'ngx-owl-carousel-o';
-import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.service';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { ProductService } from '../services/product.service';
-import { ActivatedRoute } from '@angular/router';
 import { CartService } from '../../services/cart.service';
-import { CartItem } from '../../models/cart';
-import { HotToastService } from '@ngneat/hot-toast';
-import { WishItem } from '../../models/wishlist';
 import { WishlistService } from '../../services/wishlist.service';
+import { HotToastService } from '@ngneat/hot-toast';
 import { ProductModel } from '../../models/product.model';
-@Component({
+import { CartItem } from '../../models/cart';
+import { WishItem } from '../../models/wishlist';
+import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.service';
+import { ProductComponent } from '../product/product.component';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+
+@Component({ 
   selector: 'app-product-details',
   templateUrl: './product-details.component.html',
-  styleUrls: ['./product-details.component.css']
+  styleUrls: ['./product-details.component.css'],
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    CommonModule,
+    RouterModule,
+    CarouselModule,
+    NgxSkeletonLoaderModule
+  ] 
 })
 export class ProductDetailsComponent implements OnInit {
   backgroundPos: string = 'center center';
@@ -120,6 +132,9 @@ export class ProductDetailsComponent implements OnInit {
   categoryProducts: any
   isProductInWishList: boolean = false;
   productInCartList: any;
+  isLoading: boolean = true;
+
+
 
   constructor(
     private _productService: ProductService,
@@ -245,13 +260,15 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._route.params.subscribe(params => {
-      this.productId = params['id'];
-      this.getproduct();
-      this.getCartList();
-      this.getWishList();
+    this._route.params.subscribe((params: any) => {
+      const id = params['id'];
+      if (id) {
+        this.productId = id;
+        this.getproduct();
+        this.getCartList();
+        this.getWishList();
+      }
     });
-
   }
 
 }

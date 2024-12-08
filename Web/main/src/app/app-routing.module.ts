@@ -1,44 +1,36 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { BaseComponent } from './views/layout/base/base.component';
-import { AuthGuard } from './views/pages/auth/services/auth-guard.service';
 import { ErrorPageComponent } from './views/pages/error-page/error-page.component';
+import { AuthGuard } from './views/pages/auth/services/auth-guard.service';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'auth',
-    loadChildren: () =>
-      import('./views/pages/auth/auth.module').then((m) => m.AuthModule),
+    loadChildren: () => import('./views/pages/auth/auth.routes')
+      .then((m) => m.AUTH_ROUTES)
   },
   {
     path: '',
     component: BaseComponent,
-    // canActivate: [AuthGuard],
     children: [
       {
         path: 'products',
-        loadChildren: () =>
-          import('./views/pages/products/products.module').then(
-            (m) => m.ProductsModule
-          ),
+        loadChildren: () => import('./views/pages/products/products.routes')
+          .then((m) => m.PRODUCT_ROUTES)
       },
       {
         path: 'checkout',
         canActivate: [AuthGuard],
-        loadChildren: () =>
-          import('./views/pages/checkout/checkout.module').then(
-            (m) => m.CheckoutModule
-          ),
+        loadChildren: () => import('./views/pages/checkout/checkout.routes')
+          .then((m) => m.CHECKOUT_ROUTES)
       },
       {
         path: 'user',
         canActivate: [AuthGuard],
-        loadChildren: () =>
-          import('./views/pages/user/user.module').then(
-            (m) => m.UserModule
-          ),
+        loadChildren: () => import('./views/pages/user/user.routes')
+          .then((m) => m.USER_ROUTES)
       },
-      { path: '', redirectTo: 'products', pathMatch: 'full' },
+      { path: '', redirectTo: 'products', pathMatch: 'full' }
     ]
   },
   {
@@ -47,18 +39,8 @@ const routes: Routes = [
     data: {
       type: 404,
       title: 'Page Not Found',
-      desc: "Oopps!! The page you were looking for doesn't exist.",
-    },
+      desc: "Oopps!! The page you were looking for doesn't exist."
+    }
   },
-  {
-    path: 'error/:type',
-    component: ErrorPageComponent,
-  },
-  { path: '**', redirectTo: 'error', pathMatch: 'full' },
+  { path: '**', redirectTo: 'error', pathMatch: 'full' }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes , { scrollPositionRestoration: 'enabled' })],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }

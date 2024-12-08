@@ -1,18 +1,19 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-error-page',
   templateUrl: './error-page.component.html',
-  styleUrls: ['./error-page.component.css']
+  styleUrls: ['./error-page.component.css'],
+  standalone: true,
+  imports: [CommonModule, RouterModule]
 })
-export class ErrorPageComponent implements OnInit, OnDestroy {
+export class ErrorPageComponent {
 
   type: any;
   title: any;
   desc: any;
-  private sub?: Subscription;
 
   constructor(private route: ActivatedRoute) { }
 
@@ -20,7 +21,7 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
     this.type = this.route.snapshot.paramMap.get('type');
     console.log(this.type);
     
-    this.sub = this.route.data.subscribe( param => {
+    this.route.data.subscribe( param => {
       if(param.type) {
         this.type = param.type;
       }
@@ -60,10 +61,6 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
           this.desc = 'Looks like something went wrong.<br>' + 'We\'re working on it';
         }
     }
-  }
-
-	ngOnDestroy(): void {
-    this.sub?.unsubscribe();
   }
 
 }
