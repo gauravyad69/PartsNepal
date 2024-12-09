@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.Adapter.OrdersAdapter
 import np.com.parts.API.Models.OrderModel
+import np.com.parts.R
 import np.com.parts.ViewModels.OrderViewModel
 import np.com.parts.databinding.FragmentOrdersBinding
 
@@ -46,7 +47,9 @@ class OrdersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+        val bottomNavigationView = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomBar)
+        bottomNavigationView.visibility=View.GONE
+
         setupToolbar()
         setupRecyclerView()
         setupObservers()

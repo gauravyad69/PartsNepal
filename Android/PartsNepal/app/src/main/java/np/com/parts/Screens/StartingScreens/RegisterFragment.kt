@@ -13,7 +13,6 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 import np.com.parts.API.Auth.AuthError
 import np.com.parts.API.Repository.AuthRepository
-import np.com.parts.API.NetworkModule
 import np.com.parts.API.Models.AccountType
 import np.com.parts.R
 import np.com.parts.app_utils.RandomTextGenerator

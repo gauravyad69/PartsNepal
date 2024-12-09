@@ -1,18 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { CartItem } from '../../models/cart';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
 import { CheckoutService } from '../checkout.service';
 import { OrderSource, ShippingMethod, PaymentMethod } from '../../models/order.types';
 import { CreateOrderRequest, LineItem } from '../../models/order.model';
+import { CartItem } from '../../models/cart';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @Component({
   selector: 'app-checkout-page',
   templateUrl: './checkout-page.component.html',
-  styleUrls: ['./checkout-page.component.css']
+  styleUrls: ['./checkout-page.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    NgxSkeletonLoaderModule
+  ]
 })
-export class CheckoutPageComponent implements OnInit {
+export class CheckoutPageComponent {
 
   checkoutFormGroup!: FormGroup;
   isSubmitted = false;

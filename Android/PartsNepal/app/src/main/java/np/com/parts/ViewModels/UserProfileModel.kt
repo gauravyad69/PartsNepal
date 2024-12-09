@@ -11,7 +11,6 @@ import np.com.parts.API.Models.FullUserDetails
 import np.com.parts.API.Models.UpdateProfileRequest
 import np.com.parts.API.Models.UserModel
 import np.com.parts.API.Models.UserPreferences
-import np.com.parts.API.NetworkModule
 import np.com.parts.API.Repository.UserRepository
 import timber.log.Timber
 import javax.inject.Inject

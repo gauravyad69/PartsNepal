@@ -68,20 +68,30 @@
             </div>
             <div class="modal-body">
                 <form [formGroup]="editUserFormGroup">
-                    <div class="form-group">
+                    <div [ngClass]="{'form-group': true, 'has-error': editUserForm.name.invalid && isSubmitted}">
                         <label for="fullName" class="col-form-label">Full Name:</label>
-                        <input type="text" class="form-control" id="fullName" formControlName="name">
-                        <small *ngIf="editUserForm.name.invalid && isSubmitted" class="d-block text-danger">
-                            Name is required
-                        </small>
+                        <input type="text" class="form-control" id="fullName" formControlName="name"
+                            [class.is-invalid]="editUserForm.name.invalid && isSubmitted">
+                        @if ((editUserForm.name?.errors?.['required'] ?? false) && (isSubmitted ?? false)) {
+                            <small class="d-block text-danger">
+                                Name is required
+                            </small>
+                        }
                     </div>
-                    <div class="form-group">
+                    <div [ngClass]="{'form-group': true, 'has-error': editUserForm.email.invalid && isSubmitted}">
                         <label for="emailAddress" class="col-form-label">Email Address:</label>
-                        <input type="email" class="form-control" id="emailAddress" formControlName="email">
-                        <small *ngIf="editUserForm.email.invalid && isSubmitted" class=" d-block text-danger">
-                            <span *ngIf="editUserForm.email.errors?.required">Email is required</span>
-                            <span *ngIf="editUserForm.email.errors?.email">Email is invalid</span>
-                        </small>
+                        <input type="email" class="form-control" id="emailAddress" formControlName="email"
+                            [class.is-invalid]="editUserForm.email.invalid && isSubmitted">
+                        @if ((editUserForm.email?.errors?.['required'] ?? false) && (isSubmitted ?? false)) {
+                            <small class="d-block text-danger">
+                                Email is required
+                            </small>
+                        }
+                        @if ((editUserForm.email?.errors?.['email'] ?? false) && (isSubmitted ?? false)) {
+                            <small class="d-block text-danger">
+                                Please enter a valid email
+                            </small>
+                        }
                     </div>
                     <div class="form-group">
                         <label for="userRole" class="col-form-label">Role:</label>

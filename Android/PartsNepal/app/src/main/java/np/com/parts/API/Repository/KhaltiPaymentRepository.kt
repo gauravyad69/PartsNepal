@@ -73,7 +73,6 @@ class KhaltiPaymentRepository @Inject constructor(
                                     )
                                     if (ver) {
                                         withContext(Dispatchers.Main) {
-                                            Toast.makeText(context, "Payment Verified, Updating Status", Toast.LENGTH_SHORT).show()
                                             khalti.close()
                                         }
                                     }
@@ -85,6 +84,7 @@ class KhaltiPaymentRepository @Inject constructor(
                     },
                     onMessage = { payload, _ ->
                         Timber.d("Khalti message: ${payload.message}")
+                        Timber.d("Khalti message: ${payload.event}")
                     },
                     onReturn = { _ ->
                         Timber.d("Payment canceled or dialog dismissed")

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    style="@style/background"
     tools:context=".Screens.NavScreens.ProfileFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -46,7 +47,7 @@
                         android:layout_gravity="center"
                         android:scaleType="centerCrop"
                         app:shapeAppearanceOverlay="@style/CircleImageView"
-                        tools:src="@tools:sample/avatars"/>
+                        tools:src="@drawable/ic_profile"/>
 
                     <TextView
                         android:id="@+id/userName"
@@ -54,9 +55,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="16dp"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins_medium"
+                        style="@style/headlineTextStyle"
                         tools:text="John Doe"/>
 
                     <TextView
@@ -77,8 +76,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="4dp"
                         android:textAlignment="center"
-                        android:fontFamily="@font/poppins_regular"
-                        android:textSize="14sp"
+                        style="@style/textStyle"
                         tools:text="+9779876543210" />
 
                     <com.google.android.material.button.MaterialButton
@@ -88,7 +86,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="16dp"
                         android:text="Edit Profile"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                        style="@style/ButtonOutline"/>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -109,10 +107,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        style="@style/headline3TextStyle"
                         android:text="Account Settings"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins_medium"
                         android:layout_marginBottom="16dp"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -121,8 +117,10 @@
                         android:layout_height="wrap_content"
                         android:text="My Orders"
                         android:textAlignment="textStart"
-                        android:drawableTint="@color/background_main"
+                        android:drawableTint="@color/black"
                         android:drawableEnd="@drawable/ic_right_arrow"
+                        android:fontFamily="@font/monasans_medium"
+                        android:textSize="14dp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -131,8 +129,10 @@
                         android:layout_height="wrap_content"
                         android:text="Shipping Addresses"
                         android:textAlignment="textStart"
-                        android:drawableTint="@color/background_main"
+                        android:drawableTint="@color/black"
                         android:drawableEnd="@drawable/ic_right_arrow"
+                        android:fontFamily="@font/monasans_medium"
+                        android:textSize="14dp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -141,7 +141,9 @@
                         android:layout_height="wrap_content"
                         android:text="Payment Methods"
                         android:textAlignment="textStart"
-                        android:drawableTint="@color/background_main"
+                        android:drawableTint="@color/black"
+                        android:fontFamily="@font/monasans_medium"
+                        android:textSize="14dp"
                         android:drawableEnd="@drawable/ic_right_arrow"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
@@ -165,9 +167,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Preferences"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins_medium"
+                        style="@style/headline3TextStyle"
                         android:layout_marginBottom="16dp"/>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -175,6 +175,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Notifications"
+                        style="@style/textStyle"
                         android:padding="8dp"/>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -182,6 +183,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Dark Mode"
+                        style="@style/textStyle"
                         android:padding="8dp"/>
 
                 </LinearLayout>
@@ -206,7 +208,9 @@
                         android:layout_height="wrap_content"
                         android:text="Help &amp; Support"
                         android:textAlignment="textStart"
-                        android:drawableTint="@color/background_main"
+                        android:fontFamily="@font/monasans_medium"
+                        android:textSize="14dp"
+                        android:drawableTint="@color/black"
                         android:drawableEnd="@drawable/ic_right_arrow"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
@@ -217,6 +221,8 @@
                         android:text="Logout"
                         android:textColor="@color/design_default_color_error"
                         android:textAlignment="textStart"
+                        android:fontFamily="@font/monasans_medium"
+                        android:textSize="14dp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                 </LinearLayout>
@@ -255,7 +261,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/EditTextBoxPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/firstNameInput"
@@ -270,7 +276,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/EditTextBoxPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/lastNameInput"
@@ -285,7 +291,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/EditTextBoxPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailInput"
@@ -300,7 +306,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/EditTextBoxPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phoneInput"
@@ -329,25 +335,26 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancelButton"
+                    style="@style/ButtonOutline"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:text="Cancel"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                    android:layout_weight="1"
+                    android:text="Cancel" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/updateButton"
+                    style="@style/Button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:text="Save"/>
+                    android:layout_weight="1"
+                    android:text="Save" />
             </LinearLayout>
 
             <!-- Progress and Error indicators -->

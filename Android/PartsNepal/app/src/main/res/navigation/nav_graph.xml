@@ -55,6 +55,9 @@
         <action
             android:id="@+id/action_profileFragment_to_paymentFragment"
             app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
 
@@ -244,10 +247,7 @@
         android:id="@+id/orderConfirmationFragment"
         android:name="np.com.parts.Screens.OrderScreens.OrderConfirmationFragment"
         android:label="Order Confirmation">
-        
-        <argument
-            android:name="orderId"
-            app:argType="string" />
+
             
         <argument
             android:name="orderNumber"
@@ -256,9 +256,6 @@
         <action
             android:id="@+id/action_orderConfirmationFragment_to_ordersFragment"
             app:destination="@id/ordersFragment">
-            <argument
-                android:name="orderId"
-                app:argType="string" />
 
             <argument
                 android:name="orderNumber"

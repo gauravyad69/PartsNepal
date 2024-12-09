@@ -1,86 +1,80 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { HotToastService } from '@ngneat/hot-toast';
-import { CartItem } from '../../pages/models/cart';
-import { WishItem} from '../../pages/models/wishlist';
-import { CartService } from '../../pages/services/cart.service';
 import { WishlistService } from '../../pages/services/wishlist.service';
+import { CartService } from '../../pages/services/cart.service';
+import { WishItem } from '../../pages/models/wishlist';
+import { CartItem } from '../../pages/models/cart';
+import { ConfirmModelComponent } from '../confirm-model/confirm-model.component';
 import { ProductModel } from '../../pages/models/product.model';
+
 @Component({
   selector: 'app-wishlist',
   templateUrl: './wishlist.component.html',
-  styleUrls: ['./wishlist.component.css']
+  styleUrls: ['./wishlist.component.css'],
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ConfirmModelComponent
+  ]
 })
 export class WishlistComponent implements OnInit {
   wishCount = 0;
+  opanWishlist: boolean = false;
+  isVisable: boolean = false;
+  wishList!: WishItem[];
+  deleteProductId!: number;
   opanWishList: boolean = false;
   WishItems!: WishItem[];
-  cartList!: CartItem[];
-  isVisable: boolean = false;
-  deleteProductId!: number;
-  constructor
-  (
+
+  constructor(
     private _wishlistService: WishlistService,
     private _cartService: CartService,
-    private _toast:HotToastService,
-    private router: Router,
+    private _toast: HotToastService,
+    private router: Router
+  ) { }
 
-  ){}
-    
-  openWishList() {
-    this.opanWishList = true;
-    document.body.style.overflowY ="hidden";
+  openWishlist() {
+    this.getWishList();
+    this.opanWishlist = true;
+    document.body.style.overflowY = "hidden";
   }
-    
 
   closeSidebar() {
-    this.opanWishList = false;
-    document.body.style.overflowY ="auto";
+    this.opanWishlist = false;
+    document.body.style.overflowY = "auto";
   }
 
   getWishList() {
-    this._wishlistService.wishList$.subscribe((cart) => {
-      this.WishItems = cart.items!;
+    this._wishlistService.wishList$.subscribe((wishlist) => {
+      this.wishList = wishlist.items!;
     });
   }
-  
-
-  getCartList() {
-    this._cartService.cart$.subscribe((cart) => {
-      this.cartList = cart.items!;
-    });
-  }
-
 
   deleteWishItem() {
     this._wishlistService.deleteWishItem(this.deleteProductId);
     this.closeCofirmModal();
     this._toast.error('Product removed from wishlist',
-    {
-      position: 'top-left'
-    });
+      {
+        position: 'top-left'
+      });
   }
 
-
-  productInCartList(product: ProductModel){
-    const cartItemExist = this.cartList.find((item) => item.product?.basic?.productId === product.basic?.productId);
-    return cartItemExist;
-  }
-
-  addProductToCart(item: any) {
-    console.log(item)
+  addToCart(item: WishItem) {
     const cartItem: CartItem = {
-      product: item,
+      product: item.product,
       quantity: 1
     };
     this._cartService.setCartItem(cartItem);
-    
     this._toast.success('Product added to cart successfully',
-    {
-      position: 'top-left'
-    });
+      {
+        position: 'top-left'
+      });
   }
-  
+
   navigateToProductDetails(productId: number) {
     this.closeSidebar();
     this.router.navigate(['/products', productId]);
@@ -88,19 +82,21 @@ export class WishlistComponent implements OnInit {
 
   openCofirmModal(productId: number) {
     this.isVisable = true;
-    this.deleteProductId = productId
+    this.deleteProductId = productId;
   }
 
   closeCofirmModal() {
     this.isVisable = false;
   }
-
-  ngOnInit(): void {
-    this._wishlistService.wishList$.subscribe((wishList) => {
-      this.wishCount = wishList?.items?.length ?? 0;
-    });
-    this.getCartList();
-    this.getWishList();
+  productInCartList(product: ProductModel){
+    const cartItemExist = this.WishItems.find((item) => item.product?.basic?.productId === product.basic?.productId);
+    return cartItemExist;
   }
 
+  ngOnInit(): void {
+    this._wishlistService.wishList$.subscribe((wishlist) => {
+      this.wishCount = wishlist?.items?.length ?? 0;
+    });
+    this.getWishList();
+  }
 }

@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="user" />
+            <certificates src="system" />
+        </trust-anchors>
+    </debug-overrides>
+
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+
+        </trust-anchors>
+    </base-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">192.168.0.*</domain>
@@ -13,5 +28,13 @@
         <domain includeSubdomains="true">a.khalti.com</domain>
         <domain includeSubdomains="true">khalti.com</domain>
         <domain includeSubdomains="true">https://a.khalti.com</domain>
+        <domain includeSubdomains="true">https://partsapi.auracoin.tech</domain>
+        <domain includeSubdomains="true">partsapi.auracoin.tech</domain>
+        <domain includeSubdomains="true">https://auracoin.tech</domain>
+        <domain includeSubdomains="true">auracoin.tech</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
 =    </domain-config>
 </network-security-config>

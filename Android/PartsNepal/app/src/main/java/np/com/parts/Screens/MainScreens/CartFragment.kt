@@ -21,7 +21,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.formatted
-import np.com.parts.API.NetworkModule
 import np.com.parts.Adapter.CartAdapter
 import np.com.parts.R
 import np.com.parts.ViewModels.CartAction
@@ -73,6 +72,9 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bottomNavigationView = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomBar)
+        bottomNavigationView.visibility=View.VISIBLE
 
         setupRecyclerView()
         setupClickListeners()

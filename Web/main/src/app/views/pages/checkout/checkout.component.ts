@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { CartItem } from '../models/cart';
-import { CartService } from '../services/cart.service';
+import { Component } from '@angular/core';
+import { CommonModule} from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+
 @Component({
     selector: 'app-checkout',
     templateUrl: './checkout.component.html',
     styleUrls: ['./checkout.component.css'],
+    standalone: true,
+    imports: [CommonModule, RouterOutlet]
 })
 
-export class CheckoutComponent implements OnInit {
-
+export class CheckoutComponent {
 
     constructor() { }
-    ngOnInit(): void { }
-
 }

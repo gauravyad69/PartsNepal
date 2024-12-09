@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    style="@style/background"
     tools:context=".Screens.OrderScreens.OrderDetailsFragment">
 
 
@@ -17,7 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_chevron_left"
             app:title="Order Details"
-            app:titleTextColor="@color/white" />
+            style="@style/MyToolbarStyle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -48,8 +49,7 @@
                         android:id="@+id/orderNumberText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
+                        style="@style/headline2TextStyle"
                         tools:text="Order #12345" />
 
                     <TextView
@@ -57,6 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        style="@style/textStyle"
                         tools:text="Placed on March 15, 2024" />
 
                     <TextView
@@ -65,6 +66,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textColor="@color/blue"
+                        style="@style/textStyle"
+                        android:textStyle="bold"
                         tools:text="Processing" />
                 </LinearLayout>
 
@@ -76,15 +79,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="Order Items"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                style="@style/headline3TextStyle"
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/orderItemsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"
+
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
             <!-- Shipping Details -->
             <TextView
@@ -92,8 +97,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="Shipping Details"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                style="@style/headline3TextStyle"
+
+                />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -111,6 +117,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
+                        style="@style/textStyle"
                         tools:text="John Doe" />
 
                     <TextView
@@ -118,6 +125,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        style="@style/textStyle"
                         tools:text="+977 9812345678" />
 
                     <TextView
@@ -125,6 +133,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        style="@style/textStyle"
                         tools:text="123 Street, Ward 4\nKathmandu, Nepal" />
                 </LinearLayout>
 
@@ -136,8 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="Order Summary"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                style="@style/headline3TextStyle"/>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -159,13 +167,17 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Subtotal" />
+                            android:text="Subtotal"
+                            style="@style/textStyle"
+                            />
 
                         <TextView
                             android:id="@+id/subtotalText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            tools:text="Rs. 1,000" />
+                            tools:text="Rs. 1,000"
+                            style="@style/textStyle"
+                            />
                     </LinearLayout>
 
                     <LinearLayout
@@ -178,13 +190,17 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Shipping" />
+                            android:text="Shipping"
+                            style="@style/textStyle"
+                            />
 
                         <TextView
                             android:id="@+id/shippingText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            tools:text="Rs. 100" />
+                            tools:text="Rs. 100"
+                            style="@style/textStyle"
+                            />
                     </LinearLayout>
 
                     <View
@@ -203,14 +219,18 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Total"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            style="@style/textStyle"
+                            />
 
                         <TextView
                             android:id="@+id/totalText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
-                            tools:text="Rs. 1,100" />
+                            tools:text="Rs. 1,100"
+                            style="@style/textStyle"
+                            />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -220,8 +240,10 @@
            <Button
                android:id="@+id/pay"
                android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:text="Pay"/>
+               android:layout_height="48dp"
+               android:layout_gravity="center"
+               style="Button"
+               android:text="Finish Unpaid Order"/>
 
         </LinearLayout>
 

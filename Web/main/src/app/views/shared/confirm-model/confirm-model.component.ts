@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-confirm-model',
   templateUrl: './confirm-model.component.html',
-  styleUrls: ['./confirm-model.component.css']
+  styleUrls: ['./confirm-model.component.css'],
+  standalone: true,
+  imports: [CommonModule]
 })
-export class ConfirmModelComponent implements OnInit {
-
+export class ConfirmModelComponent {
   @Input() isVisable!: boolean;
   @Input() message!: string;
   @Input() title!: string;
@@ -17,10 +18,7 @@ export class ConfirmModelComponent implements OnInit {
   @Output() confirm = new EventEmitter<boolean>();
   @Output() cancel = new EventEmitter<boolean>();
 
-  constructor() { }
 
-  ngOnInit(): void {
-  }
 
   delete() {
     this.confirm.emit(true);
@@ -31,6 +29,5 @@ export class ConfirmModelComponent implements OnInit {
     this.isVisable = false;
     this.cancel.emit(false);
   }
-
 
 }

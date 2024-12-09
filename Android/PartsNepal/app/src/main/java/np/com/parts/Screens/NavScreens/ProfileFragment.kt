@@ -57,12 +57,11 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.paymentButton.setOnClickListener{
-            findNavController().navigate(R.id.action_profileFragment_to_paymentFragment)
+        binding.logoutButton.setOnClickListener{
+        tokenManager.clearToken()
+            Toast.makeText(requireContext(), "Logged Out", Toast.LENGTH_SHORT).show()
+            requireActivity().finishAffinity()
         }
-binding.logoutButton.setOnClickListener{
-tokenManager.clearToken()
-}
         binding.editProfileButton.setOnClickListener {
             binding.editProfileCard.visibility = View.VISIBLE
             // Optionally animate the card appearance
@@ -72,11 +71,9 @@ tokenManager.clearToken()
                 .setDuration(300)
                 .start()
         }
-
         binding.ordersButton.setOnClickListener {
             findNavController().navigate(R.id.action_profileFragment_to_ordersFragment)
         }
-
         binding.cancelButton.setOnClickListener {
             binding.editProfileCard.animate()
                 .alpha(0f)
@@ -86,7 +83,12 @@ tokenManager.clearToken()
                 }
                 .start()
         }
-        viewModel.loadUserProfile()
+        if (tokenManager.hasToken()){
+            viewModel.loadUserProfile()
+        }else{
+            findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
+        }
+
         setupUpdateButton()
         setupObserversForUpdate()
 

@@ -1,5 +1,4 @@
-
-<div class="empty-wishlist" *ngIf="isWishItemsEmpty">
+<div class="empty-wishlist" *ngIf="isWishItemsEmpty ?? false">
     <div class="empty-wishlist__icon">
         <svg class="empty-img-default" width="184" height="152" viewBox="0 0 184 152"
             xmlns="http://www.w3.org/2000/svg">
@@ -35,8 +34,6 @@
         heart icon on the product page.</p>
     <a routerLink="/" class="btn btn-warning">Continue Shopping</a>
 </div>
-
-
 
 <div *ngIf="!isWishItemsEmpty">
     <article class="card card-product-list" *ngFor="let item of WishItems">
@@ -99,3 +96,7 @@
 <app-confirm-model (confirm)="deleteWishItem()" (cancel)="closeCofirmModal()" [isVisable]="isVisable"
     [title]="'Cofirm this action'" [message]="'Are your sure to remove product from wishlist ?'" [confirmBtnText]="'ok'"
     [cancelBtnText]="'Cancel'"></app-confirm-model>
+
+<div class="col-12" *ngIf="(isSubmitted ?? false) && (authError ?? false)">
+    <small class="d-block text-danger">{{ authMessage }}</small>
+</div>

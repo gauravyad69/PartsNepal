@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/themebackground_main"
+    style="@style/background"
     tools:context=".Screens.StartingScreens.LoginFragment">
 
+
     <LinearLayout
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_gravity="center"
@@ -28,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/EditTextBoxPrimary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailPhoneInput"
@@ -36,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Email or Phone Number"
                 android:inputType="textEmailAddress"
-                android:fontFamily="@font/poppins_medium"/>
+                style="@style/EditTextPrimary"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Input -->
@@ -44,27 +46,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:passwordToggleEnabled="true">
+            style="@style/EditTextBoxPrimary"
+            app:passwordToggleEnabled="true"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
+
                 android:inputType="textPassword"
-                android:fontFamily="@font/poppins_medium"/>
+                style="@style/EditTextPrimary"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Login Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/loginButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:text="Login"
-            android:padding="12dp"
             android:textAllCaps="false"
-            android:fontFamily="@font/poppins_medium"/>
+            style="@style/Button"/>
 
         <!-- Forgot Password Link -->
         <TextView
@@ -74,7 +78,7 @@
             android:text="Forgot Password?"
             android:textColor="@color/offwhite"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppins_medium"
+            style="@style/textStyle"
             android:textSize="14sp"/>
         <TextView
             android:id="@+id/registerText"
@@ -82,10 +86,9 @@
             android:layout_height="wrap_content"
             android:text="Register Instead?"
             android:textAlignment="textEnd"
-            android:textColor="@color/offwhite"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppins_medium"
-            android:textSize="14sp"/>
+            style="@style/textStyle"
+            />
 
     </LinearLayout>
 

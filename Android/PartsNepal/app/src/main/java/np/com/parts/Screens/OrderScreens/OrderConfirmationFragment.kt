@@ -111,7 +111,6 @@ class OrderConfirmationFragment : Fragment() {
     private fun navigateToOrders() {
         findNavController().navigate(
             OrderConfirmationFragmentDirections.Companion.actionOrderConfirmationFragmentToOrdersFragment(
-                orderId = args.orderId,
                 orderNumber = args.orderNumber
             )
         )

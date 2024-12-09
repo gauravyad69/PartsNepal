@@ -16,7 +16,7 @@
         </button>
     </div>
     <div class="sidebar-body">
-        <div class="empty-sidebar" *ngIf="!wishCount">
+        <div class="empty-sidebar" *ngIf="!(wishCount ?? 0)">
             <div class="empty-image">
                 <svg class="empty-img-default" width="184" height="152" viewBox="0 0 184 152"
                     xmlns="http://www.w3.org/2000/svg">
@@ -60,14 +60,14 @@
                     {{item.product?.basic?.productName}}
                 </a>
                 <h5 class="item-price">${{item.product?.basic?.pricing?.regularPrice?.amount}}</h5>
-                <button type="button" class="btn-add btn-mobile-add" [disabled]="productInCartList(item.product!)"  (click)="addProductToCart(item.product!)">
+                <button type="button" class="btn-add btn-mobile-add" [disabled]="productInCartList(item.product!)"  (click)="addToCart(item)">
                     <i class="fa-solid fa-clipboard"></i>
                 </button>
-                <button type="button" class="btn-add btn-large-add" [disabled]="productInCartList(item.product!)" (click)="addProductToCart(item.product!)">
+                <button type="button" class="btn-add btn-large-add" [disabled]="productInCartList(item.product!)" (click)="addToCart(item)">
                     <span>Added to cart</span>
                 </button>
             </div>
-            <div class="item-close-btn">
+            <div class="item-close-btn" *ngIf="(wishCount ?? 0) > 0">
                 <a href="#" (click)="$event.preventDefault(); openCofirmModal(item.product?.basic?.productId!);">
                     <svg viewBox="64 64 896 896" focusable="false" class="" data-icon="close" width="1em" height="1em"
                         fill="currentColor" aria-hidden="true">

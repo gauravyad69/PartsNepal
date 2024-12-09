@@ -23,18 +23,18 @@ import np.com.parts.databinding.ActivitySuperBinding
 import np.com.parts.ViewModels.CartViewModel
 import timber.log.Timber
 import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.activity.viewModels
 import androidx.navigation.ui.setupWithNavController
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @SuppressLint("StaticFieldLeak")
 private lateinit var navController: NavController
 private lateinit var binding: ActivitySuperBinding
 @AndroidEntryPoint
 class SuperActivity : AppCompatActivity() {
+
     private val cartViewModel: CartViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +42,8 @@ class SuperActivity : AppCompatActivity() {
         binding = ActivitySuperBinding.inflate(layoutInflater)
         setContentView(binding.root)
         enableEdgeToEdge()
+
+        setupStatusBar()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -75,44 +77,16 @@ class SuperActivity : AppCompatActivity() {
 
     }
 
-    private fun setupStatusBar(){
 
 
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            window.setDecorFitsSystemWindows(false)
-//            window.insetsController?.let { controller ->
-//                controller.hide(WindowInsets.Type.navigationBars())
-//                controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//            }
-//        } else {
-//            @Suppress("DEPRECATION")
-//            window.decorView.systemUiVisibility = (
-//                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-//                            or View.SYSTEM_UI_FLAG_FULLSCREEN
-//                    )
-//        }
-
-
-        val isDarkMode = false
-//        val isDarkMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-        val window = window
-
-        if (isDarkMode) {
-            window.statusBarColor = ContextCompat.getColor(this, R.color.background_main)
-            window.navigationBarColor = ContextCompat.getColor(this, R.color.background_main)
-
-            // Ensure text/icons on the status bar are light in dark mode
-            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
-        } else {
-            window.statusBarColor = ContextCompat.getColor(this, R.color.color_main)
-            window.navigationBarColor = ContextCompat.getColor(this, R.color.color_main)
-
-            // Ensure text/icons on the status bar are dark in light mode
-            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
-        }
-
+    private fun setupStatusBar() {
+        val isDark=false
+        window.statusBarColor = ContextCompat.getColor(
+            this,
+            if (isDark) R.color.black else R.color.white
+        )
+        WindowInsetsControllerCompat(window, window.decorView)
+            .isAppearanceLightStatusBars = !isDark
     }
 
     private fun setupBottomNavigation() {
@@ -131,7 +105,7 @@ class SuperActivity : AppCompatActivity() {
                         number = count
                         backgroundColor = ContextCompat.getColor(
                             this@SuperActivity, 
-                            R.color.status_sending
+                            R.color.primary
                         )
                         isVisible = true
                     }

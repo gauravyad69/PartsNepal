@@ -1,12 +1,19 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '../../pages/auth/services/auth.service';
 import { CartService } from '../../pages/services/cart.service';
 import { WishlistService } from '../../pages/services/wishlist.service';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { CartComponent } from '../../shared/cart/cart.component';
+import { WishlistComponent } from '../../shared/wishlist/wishlist.component';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  standalone: true,
+  imports: [CommonModule, RouterModule, CartComponent, WishlistComponent]
 })
 
 export class HeaderComponent implements OnInit {
