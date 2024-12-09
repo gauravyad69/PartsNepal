@@ -23,6 +23,7 @@ import np.com.parts.API.Models.formattedDate
 import np.com.parts.Adapter.OrderItemsAdapter
 import np.com.parts.ViewModels.OrderViewModel
 import np.com.parts.databinding.FragmentOrderDetailsBinding
+import timber.log.Timber
 import java.util.Locale
 
 /**
@@ -88,7 +89,7 @@ class OrderDetailsFragment : Fragment() {
         binding.orderItemsRecyclerView.apply {
             adapter = orderItemsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            setHasFixedSize(true)
+            setHasFixedSize(false)
         }
     }
 
@@ -147,6 +148,8 @@ class OrderDetailsFragment : Fragment() {
 
             // Update order items
             orderItemsAdapter.submitList(order.items)
+
+
 
             if(order.payment.status.equals(PaymentStatus.PENDING)){
                 pay.visibility= View.VISIBLE

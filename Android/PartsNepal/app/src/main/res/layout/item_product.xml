@@ -41,7 +41,7 @@
             android:background="?attr/selectableItemBackground"
             android:padding="4dp"
             android:src="@drawable/ic_heart"
-            app:tint="@color/blue"
+            app:tint="@color/primary"
             app:layout_constraintEnd_toEndOf="@id/productImage"
             app:layout_constraintTop_toTopOf="@id/productImage" />
 
@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Creta/Seltos Brake"
-                style="@style/product_list_heading"/>
+                style="@style/textStyle"/>
 
             <!-- Product Type -->
             <TextView
@@ -69,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:text="Brake"
-                style="@style/product_list_subheading"
+                style="@style/subheadlineTextStyle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productName" />
@@ -93,7 +93,8 @@
                 android:layout_height="wrap_content"
                 tools:text="NPR 1,500"
                 android:textAlignment="textEnd"
-                android:textColor="@color/background_main"
+                android:textColor="@color/black"
+                style="@style/headline3TextStyle"
                 android:textSize="12sp" />
 
             <!-- Sale Price -->
@@ -102,8 +103,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Rs 7,800.00"
+                style="@style/headline2TextStyle"
                 android:textAlignment="textEnd"
-                android:textColor="@color/primary_color"
+                android:textColor="@color/primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

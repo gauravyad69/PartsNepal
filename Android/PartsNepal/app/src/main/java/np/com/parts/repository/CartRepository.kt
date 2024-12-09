@@ -21,7 +21,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.Serializable
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.*
-import np.com.parts.API.NetworkModule
 import np.com.parts.database.AppDatabase
 import np.com.parts.database.CartItem
 import np.com.parts.database.SyncStatus
@@ -194,7 +193,7 @@ class CartRepository @Inject constructor(
             
             Timber.d("Converting ${items.size} cart items to line items...")
             val lineItems = items.map { cartItem ->
-                cartItem.toItemForRequest().also {
+                cartItem.toLineItem().also {
                     Timber.d("Converted cart item ${cartItem.id} to line item")
                 }
             }

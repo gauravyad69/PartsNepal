@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/themebackground_main"
+    style="@style/background"
     tools:context=".Screens.StartingScreens.RegisterFragment">
 
 
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="343dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_gravity="center"
@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/EditTextBoxPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phoneInput"
@@ -30,7 +30,8 @@
                     android:layout_height="wrap_content"
                     android:hint="Phone Number"
                     android:inputType="phone"
-                    android:fontFamily="@font/poppins_medium"/>
+                    style="@style/EditTextPrimary"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -39,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/EditTextBoxPrimary"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -48,7 +49,8 @@
                     android:layout_height="wrap_content"
                     android:hint="Password"
                     android:inputType="textPassword"
-                    android:fontFamily="@font/poppins_medium"/>
+                    style="@style/EditTextPrimary"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Confirm Password -->
@@ -56,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/EditTextBoxPrimary"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -65,7 +67,8 @@
                     android:layout_height="wrap_content"
                     android:hint="Confirm Password"
                     android:inputType="textPassword"
-                    android:fontFamily="@font/poppins_medium"/>
+                    style="@style/EditTextPrimary"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Register Button -->
@@ -76,7 +79,8 @@
                 android:text="Continue"
                 android:padding="12dp"
                 android:textAllCaps="false"
-                android:fontFamily="@font/poppins_medium"/>
+                style="@style/Button"
+                />
 
             <!-- Terms and Conditions -->
             <TextView

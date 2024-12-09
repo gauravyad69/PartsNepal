@@ -3,15 +3,10 @@ package np.com.parts.API.Repository
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.serialization.SerialName
 import np.com.parts.API.Models.ProductModel
 import np.com.parts.API.Models.BasicProductView
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import np.com.parts.API.NetworkModule
 import np.com.parts.API.PRODUCTS_PATH
-import okhttp3.internal.format
-import java.io.Serial
 import javax.inject.Inject
 
 

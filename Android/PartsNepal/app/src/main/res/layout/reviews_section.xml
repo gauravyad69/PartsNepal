@@ -25,8 +25,8 @@
                 android:id="@+id/averageRatingText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="32sp"
-                android:fontFamily="@font/inter_bold"
+                android:textSize="28sp"
+                style="@style/headlineTextStyle"
                 tools:text="4.5" />
 
             <RatingBar
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:fontFamily="@font/inter_regular"
+                style="@style/descriptiveTextStyle"
                 android:textColor="#757575"
                 tools:text="128 reviews" />
         </LinearLayout>
@@ -145,15 +145,13 @@
         tools:itemCount="3"/>
 
     <!-- Write Review Button -->
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/writeReviewButton"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/ButtonOutline"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_margin="16dp"
-        android:fontFamily="@font/inter_medium"
         android:text="Write a Review"
-        app:icon="@drawable/bgmi"
-        app:iconGravity="textStart" />
+        app:icon="@drawable/plan_starter"/>
 
 </LinearLayout>
