@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginVertical="4dp"
+android:orientation="horizontal">
+
+<ImageView
+    android:layout_width="16dp"
+    android:layout_height="16dp"
+    android:layout_marginTop="4dp"
+    android:src="@drawable/ic_chevron_right" />
+
+<TextView
+    android:id="@+id/termText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:fontFamily="@font/inter_regular"
+    android:textColor="#757575"
+    tools:text="Product must be in original condition" />
+</LinearLayout>

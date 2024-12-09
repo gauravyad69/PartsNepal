@@ -8,71 +8,185 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import np.com.parts.system.Models.FullUserDetails
-import np.com.parts.system.Models.OrderModel
+import np.com.parts.system.Models.*
+import org.bson.conversions.Bson
 import org.litote.kmongo.getCollection
+import java.security.MessageDigest
+import java.util.*
 
 class UserService(private val database: MongoDatabase) {
-    private lateinit var collection: MongoCollection<FullUserDetails>
+    private val collection: MongoCollection<FullUserDetails>
 
     init {
-        try {
-            database.createCollection("users")
-        } catch (e: MongoCommandException) {
-            // Collection already exists, ignore the error
-        }
         collection = database.getCollection<FullUserDetails>("users")
-
-        // Create indexes for better query performance
-        collection.createIndex(Indexes.ascending("user.userId"))
-        collection.createIndex(Indexes.ascending("user.email"))
-        collection.createIndex(Indexes.text("user.username"))
-        collection.createIndex(Indexes.ascending("accountStatus"))
+        recreateIndexes()
     }
 
-    // Create a new user
+    private fun recreateIndexes() {
+        try {
+            // First, drop all existing indexes
+            collection.dropIndexes()
+            // Create fresh indexes with correct paths
+            collection.createIndexes(
+                listOf(
+                    IndexModel(
+                        Indexes.ascending("user.userId"),
+                        IndexOptions().unique(true).name("userId_unique")
+                    ),
+                    IndexModel(
+                        Indexes.ascending("user.phoneNumber"),
+                        IndexOptions().unique(true).name("phone_unique")
+                    ),
+                    IndexModel(
+                        Indexes.ascending("user.username"),
+                        IndexOptions().unique(true).name("username_unique")
+                    )
+                )
+            )
+            println("Successfully recreated all indexes")
+        } catch (e: Exception) {
+            println("Error recreating indexes: ${e.message}")
+            throw e
+        }
+    }
+
+    suspend fun getUserByUsername(username: String): FullUserDetails? = withContext(Dispatchers.IO) {
+        collection.find(Filters.eq("user.username", username)).firstOrNull()
+    }
+
     suspend fun createUser(user: FullUserDetails): Boolean = withContext(Dispatchers.IO) {
         try {
-            collection.insertOne(user)
+            // Find the highest userId
+            val lastUser = collection.find()
+                .sort(Sorts.descending("user.userId"))
+                .limit(1)
+                .firstOrNull()
+
+            val newId = (lastUser?.user?.userId?.value ?: 0) + 1
+            println("Generated new user ID: $newId")
+
+            // Create updated user with new ID BEFORE checking duplicates
+            val updatedUser = user.copy(
+                user = user.user.copy(
+                    userId = UserId(newId)
+                )
+            )
+
+            // Check for duplicates after setting the ID
+            val duplicateChecks = mutableListOf<Bson>(
+                Filters.eq("user.phoneNumber", updatedUser.user.phoneNumber),
+                Filters.eq("user.username", updatedUser.user.username)
+            )
+            
+            updatedUser.user.email?.let { email ->
+                duplicateChecks.add(Filters.eq("user.email", email))
+            }
+
+            val existingUser = collection.find(Filters.or(duplicateChecks)).firstOrNull()
+            if (existingUser != null) {
+                println("Duplicate user found with username: ${existingUser.user.username}")
+                return@withContext false
+            }
+
+            collection.insertOne(updatedUser)
+            println("User inserted successfully with ID: $newId")
             true
         } catch (e: MongoWriteException) {
-            if (e.error.category == ErrorCategory.DUPLICATE_KEY) {
-                false // system already exists
-            } else {
-                throw e // Rethrow other errors
-            }
+            println("MongoDB Write Error: ${e.message}")
+            false
+        } catch (e: Exception) {
+            println("Unexpected error during user creation: ${e.message}")
+            throw e
         }
     }
 
-    // Read a user by userId
-    suspend fun getUserById(userId: Int): FullUserDetails? = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("user.userId", userId)).firstOrNull()
+    // Authentication related methods
+    suspend fun loginWithPhoneAndPassword(phoneNumber: PhoneNumber, password: String): FullUserDetails? =
+        withContext(Dispatchers.IO) {
+            val user = getUserByPhone(phoneNumber)
+            user?.let {
+                if (it.credentials.hashedPassword == hashPassword(password)) {
+                    // Update last active and login history
+                    updateLoginActivity(it.user.userId)
+                    it
+                } else null
+            }
+        }
+
+    suspend fun loginWithGoogle(email: Email): FullUserDetails? = withContext(Dispatchers.IO) {
+        getUserByEmail(email)?.also { user ->
+            updateLoginActivity(user.user.userId)
+        }
     }
 
-    // Read a user by email
-    suspend fun getUserByEmail(email: String): FullUserDetails? = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("user.email", email)).firstOrNull()
+    suspend fun updateLoginActivity(userId: UserId) {
+        val currentTime = System.currentTimeMillis()
+        collection.updateOne(
+            Filters.eq("user.userId", userId),
+            Updates.combine(
+                Updates.set("engagement.lastActive", currentTime),
+                Updates.push("engagement.loginHistory", currentTime)
+            )
+        )
     }
 
-    // Read all users with optional pagination
-    suspend fun getAllUsers(skip: Int = 0, limit: Int = 50): List<FullUserDetails> = withContext(Dispatchers.IO) {
+    fun hashPassword(password: String): String {
+        val bytes = password.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return Base64.getEncoder().encodeToString(digest)
+    }
+
+    // Read operations
+    suspend fun getUserById(userId: UserId): UserModel? = withContext(Dispatchers.IO) {
+        println("Searching for user with ID: ${userId.value}")  // Debug log
+        val result = collection.find(Filters.eq("user.userId", userId.value)).firstOrNull()
+        println("Database result: $result")  // Debug log
+        result?.user  // Return just the UserModel part
+    }
+
+    suspend fun getUserPhoneNumberById(userId: UserId): PhoneNumber? = withContext(Dispatchers.IO) {
+        println("Searching for user with ID: ${userId.value}")  // Debug log
+        val result = collection.find(Filters.eq("user.userId", userId.value)).firstOrNull()
+        println("Database result: $result")  // Debug log
+        result?.user?.phoneNumber  // Return just the phone number part
+    }
+
+
+    suspend fun getUserByEmail(email: Email?): FullUserDetails? = withContext(Dispatchers.IO) {
+        email?.let {
+            collection.find(Filters.eq("user.email", email)).firstOrNull()
+        }
+    }
+
+    suspend fun getUserByPhone(phoneNumber: PhoneNumber?): FullUserDetails? = withContext(Dispatchers.IO) {
+        phoneNumber?.let {
+            collection.find(Filters.eq("user.phoneNumber", phoneNumber)).firstOrNull()
+        }
+    }
+
+    suspend fun getAllUsers(
+        skip: Int = 0,
+        limit: Int = 50,
+        sortBy: String = "lastModifiedAt",
+        ascending: Boolean = false
+    ): List<FullUserDetails> = withContext(Dispatchers.IO) {
         collection.find()
+            .sort(if (ascending) Sorts.ascending(sortBy) else Sorts.descending(sortBy))
             .skip(skip)
             .limit(limit)
             .toList()
     }
 
-    // Search users by username
-    suspend fun searchUsers(query: String): List<FullUserDetails> = withContext(Dispatchers.IO) {
-        collection.find(Filters.text(query)).toList()
-    }
-
-    // Update specific user fields
-    suspend fun updateUserFields(userId: Int, updates: Map<String, Any>): Boolean = withContext(Dispatchers.IO) {
+    // Update operations
+    suspend fun updateUser(userId: UserId, updates: Map<String, Any>): Boolean = withContext(Dispatchers.IO) {
         val updateOperations = updates.map { (field, value) ->
             Updates.set(field, value)
         }
-        val combinedUpdate = Updates.combine(updateOperations)
+        val combinedUpdate = Updates.combine(
+            Updates.combine(updateOperations),
+            Updates.set("lastModifiedAt", System.currentTimeMillis())
+        )
         val result = collection.updateOne(
             Filters.eq("user.userId", userId),
             combinedUpdate
@@ -80,80 +194,140 @@ class UserService(private val database: MongoDatabase) {
         result.modifiedCount > 0
     }
 
-    // Add order to user's history
-    suspend fun addOrder(userId: Int, order: OrderModel): Boolean = withContext(Dispatchers.IO) {
+    suspend fun updateAccountStatus(userId: UserId, status: AccountStatus): Boolean = withContext(Dispatchers.IO) {
         val result = collection.updateOne(
             Filters.eq("user.userId", userId),
             Updates.combine(
-                Updates.push("orders", order),
-                Updates.inc("totalOrders", 1)
+                Updates.set("accountStatus", status),
+                Updates.set("lastModifiedAt", System.currentTimeMillis())
             )
         )
         result.modifiedCount > 0
     }
 
-    // Add review to user's history
-    suspend fun addReview(userId: Int, review: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun updatePreferences(userId: UserId, preferences: UserPreferences): Boolean = withContext(Dispatchers.IO) {
         val result = collection.updateOne(
             Filters.eq("user.userId", userId),
             Updates.combine(
-                Updates.push("reviewHistory", review),
-                Updates.inc("totalReviews", 1)
+                Updates.set("preferences", preferences),
+                Updates.set("lastModifiedAt", System.currentTimeMillis())
             )
         )
         result.modifiedCount > 0
     }
 
-    // Update user engagement score
-    suspend fun updateEngagementScore(userId: Int, score: Int): Boolean = withContext(Dispatchers.IO) {
+    // Order and Review operations
+    suspend fun addOrder(userId: UserId, order: OrderRef): Boolean = withContext(Dispatchers.IO) {
         val result = collection.updateOne(
             Filters.eq("user.userId", userId),
-            Updates.set("engagementScore", score)
+            Updates.combine(
+                Updates.push("orders.orderHistory", order),
+                Updates.inc("orders.totalOrders", 1),
+                Updates.inc("orders.totalSpent", order.amount),
+                Updates.set("lastModifiedAt", System.currentTimeMillis())
+            )
         )
         result.modifiedCount > 0
     }
 
-    // Update account status
-    suspend fun updateAccountStatus(userId: Int, status: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun addReview(userId: UserId, review: ReviewRef): Boolean = withContext(Dispatchers.IO) {
         val result = collection.updateOne(
             Filters.eq("user.userId", userId),
-            Updates.set("accountStatus", status)
+            Updates.combine(
+                Updates.push("reviews.reviewHistory", review),
+                Updates.inc("reviews.totalReviews", 1),
+                Updates.set("lastModifiedAt", System.currentTimeMillis())
+            )
         )
         result.modifiedCount > 0
     }
 
-    // Delete a user
-    suspend fun deleteUser(userId: Int): Boolean = withContext(Dispatchers.IO) {
+    // Query operations
+    suspend fun getUsersByStatus(status: AccountStatus): List<FullUserDetails> = withContext(Dispatchers.IO) {
+        collection.find(Filters.eq("accountStatus", status)).toList()
+    }
+
+    suspend fun getUsersByAccountType(accountType: AccountType): List<FullUserDetails> = withContext(Dispatchers.IO) {
+        collection.find(Filters.eq("user.accountType", accountType)).toList()
+    }
+
+    suspend fun searchUsers(query: String): List<FullUserDetails> = withContext(Dispatchers.IO) {
+        collection.find(Filters.text(query)).toList()
+    }
+
+    suspend fun getUsersByEngagementScore(minScore: Int, maxScore: Int): List<FullUserDetails> =
+        withContext(Dispatchers.IO) {
+            collection.find(
+                Filters.and(
+                    Filters.gte("engagement.engagementScore", minScore),
+                    Filters.lte("engagement.engagementScore", maxScore)
+                )
+            ).toList()
+        }
+
+    suspend fun getInactiveUsers(inactiveThresholdMs: Long): List<FullUserDetails> = withContext(Dispatchers.IO) {
+        val thresholdTime = System.currentTimeMillis() - inactiveThresholdMs
+        collection.find(Filters.lt("engagement.lastActive", thresholdTime)).toList()
+    }
+
+    // Delete operation
+    suspend fun deleteUser(userId: UserId): Boolean = withContext(Dispatchers.IO) {
         val result = collection.deleteOne(Filters.eq("user.userId", userId))
         result.deletedCount > 0
     }
 
-    // Get users by account status
-    suspend fun getUsersByStatus(status: String): List<FullUserDetails> = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("accountStatus", status)).toList()
-    }
+    suspend fun updateProfile(userId: UserId, update: UpdateProfileRequest): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val updates = mutableListOf<Bson>()
+            
+            // Add non-null fields to updates
+            update.firstName?.let { updates.add(Updates.set("user.firstName", it)) }
+            update.lastName?.let { updates.add(Updates.set("user.lastName", it)) }
+            update.username?.let {
+                // Check if username is already taken by another user
+                val existingUser = getUserByUsername(it)
+                if (existingUser != null && existingUser.user.userId != userId) {
+                    return@withContext false
+                }
+                updates.add(Updates.set("user.username", it))
+            }
+            
+            // Handle email update with validation
+            update.email?.let { emailStr ->
+                val email = Email(emailStr)
+                val existingUser = getUserByEmail(email)
+                if (existingUser != null && existingUser.user.userId != userId) {
+                    return@withContext false
+                }
+                updates.add(Updates.set("user.email", email))
+            }
+            
+            // Handle phone update with validation
+            update.phoneNumber?.let { phoneStr ->
+                val phone = PhoneNumber(phoneStr)
+                val existingUser = getUserByPhone(phone)
+                if (existingUser != null && existingUser.user.userId != userId) {
+                    return@withContext false
+                }
+                updates.add(Updates.set("user.phoneNumber", phone))
+            }
+            
+            // Add last modified timestamp
+            updates.add(Updates.set("lastModifiedAt", System.currentTimeMillis()))
+            
+            if (updates.isEmpty()) {
+                return@withContext true
+            }
 
-    // Get business accounts
-    suspend fun getBusinessAccounts(): List<FullUserDetails> = withContext(Dispatchers.IO) {
-        collection.find(Filters.eq("user.isBusinessAccount", true)).toList()
-    }
-
-    // Update user preferences
-    suspend fun updatePreferences(userId: Int, preferences: Map<String, String>): Boolean = withContext(Dispatchers.IO) {
-        val result = collection.updateOne(
-            Filters.eq("user.userId", userId),
-            Updates.set("preferences", preferences)
-        )
-        result.modifiedCount > 0
-    }
-
-    // Get users by engagement score range
-    suspend fun getUsersByEngagementScore(minScore: Int, maxScore: Int): List<FullUserDetails> = withContext(Dispatchers.IO) {
-        collection.find(
-            Filters.and(
-                Filters.gte("engagementScore", minScore),
-                Filters.lte("engagementScore", maxScore)
+            val result = collection.updateOne(
+                Filters.eq("user.userId", userId),
+                Updates.combine(updates)
             )
-        ).toList()
+            
+            result.modifiedCount > 0
+        } catch (e: Exception) {
+            println("Error updating profile: ${e.message}")
+            false
+        }
     }
 }

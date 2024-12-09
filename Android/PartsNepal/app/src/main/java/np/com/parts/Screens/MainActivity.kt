@@ -1,13 +1,19 @@
 package np.com.parts.Screens
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.navigation.ui.NavigationUI.setupWithNavController
+import np.com.parts.API.TokenManager
 import np.com.parts.R
-import np.com.parts.Screens.NewUserScreens.SplashFragment
-import np.com.parts.Screens.OtherScreens.ProductFragment
+import np.com.parts.Screens.StartingScreens.LoginFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,16 +24,6 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets }
-
-
-        val fragment = ProductFragment() // Replace 'YourFragment' with your fragment class
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-
-        fragmentTransaction.replace(R.id.main, fragment) // Replace 'fragment_container' with your container's ID
-        fragmentTransaction.addToBackStack(null) // Optional: Adds to the back stack
-        fragmentTransaction.commit()
-
 
     }
 }

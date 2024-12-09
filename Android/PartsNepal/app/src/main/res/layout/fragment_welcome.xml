@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:theme="@style/themeMainBackground"
-    tools:context=".Screens.NewUserScreens.WelcomeFragment">
+    android:theme="@style/themebackground_main"
+    tools:context=".Screens.StartingScreens.WelcomeFragment">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             style="@style/logoImgOnScreen"
             android:keepScreenOn="true"
-            android:src="@drawable/ic_falcon_bird_shape" />
+            android:src="@drawable/plan_premium" />
 
        <TextView
            android:layout_height="wrap_content"

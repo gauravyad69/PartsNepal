@@ -51,6 +51,18 @@ dependencies {
 
     implementation("io.ktor:ktor-server-sessions-jvm")
 
+//    ktor-client-serialization = { group = "io.ktor", name = "ktor-client-serialization", version.ref = "ktor-version" }
+//    ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor-version" }
+//    ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio-jvm", version.ref = "ktor-version" }
+//    ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor-version" }
+//    ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor-version" }
+
+    implementation("io.ktor:ktor-client-serialization-jvm")
+    implementation("io.ktor:ktor-client-core-jvm")
+    implementation("io.ktor:ktor-client-cio-jvm")
+    implementation("io.ktor:ktor-client-logging-jvm")
+    implementation("io.ktor:ktor-client-content-negotiation-jvm")
+
 
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-auth-jwt-jvm")

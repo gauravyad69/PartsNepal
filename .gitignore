@@ -5,8 +5,20 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-!**/gradle/
-!**/.gradle/
+
+API\partsnepal-api\.idea\
+API\partsnepal-api\.gradle\
+API\partsnepal-api\build\
+API\partsnepal-api\.kotlin\
+
+API\partsnepal-api\.vscode\
+
+
+API/partsnepal-api/.idea/
+API/partsnepal-api/.gradle/
+API/partsnepal-api/build/
+API/partsnepal-api/.kotlin/
+API/partsnepal-api/.vscode/
 
 ### STS ###
 .apt_generated

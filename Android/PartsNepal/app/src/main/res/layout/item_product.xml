@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/product_list_card"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Product Image -->
+        <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <!-- Discount Chip -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/saleChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Sale"
+            style="@style/product_list_chip"
+            app:layout_constraintStart_toStartOf="@id/productImage"
+            app:layout_constraintTop_toTopOf="@id/productImage" />
+
+        <!-- Favorite Icon -->
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="4dp"
+            android:src="@drawable/ic_heart"
+            app:tint="@color/blue"
+            app:layout_constraintEnd_toEndOf="@id/productImage"
+            app:layout_constraintTop_toTopOf="@id/productImage" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productImage">
+            <!-- Product Name -->
+            <TextView
+                android:id="@+id/productName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Creta/Seltos Brake"
+                style="@style/product_list_heading"/>
+
+            <!-- Product Type -->
+            <TextView
+                android:id="@+id/productType"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="Brake"
+                style="@style/product_list_subheading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/productName" />
+
+            <!-- Stock Status -->
+            <TextView
+                android:id="@+id/stockStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:drawableStart="@drawable/ic_check"
+                android:drawableTint="@color/blue"
+                android:drawablePadding="4dp"
+                android:text="In stock"
+                android:textColor="@color/blue"
+                android:textSize="14sp" />
+
+            <!-- Original Price -->
+            <TextView
+                android:id="@+id/regularPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="NPR 1,500"
+                android:textAlignment="textEnd"
+                android:textColor="@color/background_main"
+                android:textSize="12sp" />
+
+            <!-- Sale Price -->
+            <TextView
+                android:id="@+id/salePrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rs 7,800.00"
+                android:textAlignment="textEnd"
+                android:textColor="@color/primary_color"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- Add to Cart Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addToCartButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="Add To Cart" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

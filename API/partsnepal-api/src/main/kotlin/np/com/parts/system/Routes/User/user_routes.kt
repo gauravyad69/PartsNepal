@@ -8,7 +8,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import np.com.parts.system.Models.OrderModel
+import np.com.parts.system.Models.*
 
 fun Route.authenticatedUserRoutes(userService: UserService) {
         route("/users") {
@@ -16,15 +16,21 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             get("/profile") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = principal!!.payload.getClaim("userId").asString().toInt()
+                    if (principal == null) {
+                        call.respond(HttpStatusCode.Unauthorized, "Not authenticated")
+                        return@get
+                    }
 
+                    val userId = UserId(principal.payload.getClaim("userId").asInt())
                     val user = userService.getUserById(userId)
+                    
                     if (user != null) {
                         call.respond(HttpStatusCode.OK, user)
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "system not found")
+                        call.respond(HttpStatusCode.NotFound, "User not found")
                     }
                 } catch (e: Exception) {
+                    application.log.error("Error in /users/profile", e)
                     call.respond(HttpStatusCode.InternalServerError, "Error fetching user profile")
                 }
             }
@@ -33,17 +39,42 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             put("/profile") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = principal!!.payload.getClaim("userId").asString().toInt()
-                    val updates = call.receive<Map<String, Any>>()
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
+                    val updateRequest = call.receive<UpdateProfileRequest>()
+                    
+                    if (!updateRequest.isValid()) {
+                        call.respond(
+                            HttpStatusCode.BadRequest,
+                            ErrorResponse(
+                                message = "Invalid update data",
+                                code = "INVALID_DATA"
+                            )
+                        )
+                        return@put
+                    }
 
-                    val updated = userService.updateUserFields(userId, updates)
+                    val updated = userService.updateProfile(userId, updateRequest)
                     if (updated) {
-                        call.respond(HttpStatusCode.OK, "Profile updated successfully")
+                        // Get updated user profile
+                        val updatedUser = userService.getUserById(userId)
+                        call.respond(HttpStatusCode.OK, updatedUser!!)
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "system not found")
+                        call.respond(
+                            HttpStatusCode.NotFound,
+                            ErrorResponse(
+                                message = "User not found",
+                                code = "USER_NOT_FOUND"
+                            )
+                        )
                     }
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Error updating profile")
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        ErrorResponse(
+                            message = "Error updating profile",
+                            code = "UPDATE_ERROR"
+                        )
+                    )
                 }
             }
 
@@ -51,8 +82,8 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             post("/orders") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = principal!!.payload.getClaim("userId").asString().toInt()
-                    val order = call.receive<OrderModel>()
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
+                    val order = call.receive<OrderRef>()
 
                     val added = userService.addOrder(userId, order)
                     if (added) {
@@ -69,14 +100,14 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             put("/preferences") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = principal!!.payload.getClaim("userId").asString().toInt()
-                    val preferences = call.receive<Map<String, String>>()
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
+                    val preferences = call.receive<UserPreferences>()
 
                     val updated = userService.updatePreferences(userId, preferences)
                     if (updated) {
                         call.respond(HttpStatusCode.OK, "Preferences updated successfully")
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "system not found")
+                        call.respond(HttpStatusCode.NotFound, "User not found")
                     }
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, "Error updating preferences")
@@ -87,14 +118,14 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
             post("/reviews") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = principal!!.payload.getClaim("userId").asString().toInt()
-                    val review = call.receive<String>()
+                    val userId = UserId(principal!!.payload.getClaim("userId").asInt())
+                    val review = call.receive<ReviewRef>()
 
                     val added = userService.addReview(userId, review)
                     if (added) {
                         call.respond(HttpStatusCode.OK, "Review added successfully")
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "system not found")
+                        call.respond(HttpStatusCode.NotFound, "User not found")
                     }
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, "Error adding review")

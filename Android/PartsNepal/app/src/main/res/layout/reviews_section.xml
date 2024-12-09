@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Review Summary Section -->
+    <LinearLayout
+        android:id="@+id/reviewSummarySection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- Average Rating Display -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/averageRatingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:fontFamily="@font/inter_bold"
+                tools:text="4.5" />
+
+            <RatingBar
+                android:id="@+id/averageRatingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:stepSize="0.1"
+                tools:rating="4.5" />
+
+            <TextView
+                android:id="@+id/totalReviewsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter_regular"
+                android:textColor="#757575"
+                tools:text="128 reviews" />
+        </LinearLayout>
+
+        <!-- Rating Distribution -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- 5 star -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="5"
+                    android:textSize="12sp" />
+
+                <ProgressBar
+                    android:id="@+id/fiveStarProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_weight="1"
+                    android:progressTint="@color/design_default_color_primary"
+                    tools:progress="70" />
+
+                <TextView
+                    android:id="@+id/fiveStarCount"
+                    android:layout_width="24dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:textSize="12sp"
+                    tools:text="70" />
+            </LinearLayout>
+
+            <!-- 4 star -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="4"
+                    android:textSize="12sp" />
+
+                <ProgressBar
+                    android:id="@+id/fourStarProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_weight="1"
+                    android:progressTint="@color/design_default_color_primary"
+                    tools:progress="20" />
+
+                <TextView
+                    android:id="@+id/fourStarCount"
+                    android:layout_width="24dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:textSize="12sp"
+                    tools:text="20" />
+            </LinearLayout>
+
+            <!-- Continue with 3, 2, 1 star with same pattern -->
+            <!-- (Previous star ratings 3-1 remain the same with added fontFamily) -->
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <!-- Reviews List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/reviewsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:nestedScrollingEnabled="false"
+        tools:itemCount="3"/>
+
+    <!-- Write Review Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/writeReviewButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:fontFamily="@font/inter_medium"
+        android:text="Write a Review"
+        app:icon="@drawable/bgmi"
+        app:iconGravity="textStart" />
+
+</LinearLayout>
