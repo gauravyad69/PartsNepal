@@ -47,3 +47,7 @@ out/
 
 ### VS Code ###
 .vscode/
+/Web/main/.angular
+/Web/main/.angular/cache
+/Web/main/node_modules
+/Android/PartsNepal/.kotlin
