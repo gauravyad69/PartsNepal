@@ -5,27 +5,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 import np.com.parts.API.Auth.AuthError
 import np.com.parts.API.Repository.AuthRepository
-import np.com.parts.API.NetworkModule
 import np.com.parts.API.Models.AccountType
 import np.com.parts.R
-import np.com.parts.Utils.RandomTextGenerator
+import np.com.parts.app_utils.RandomTextGenerator
 import np.com.parts.databinding.FragmentRegisterBinding
 import timber.log.Timber
-import java.util.UUID
-import kotlin.random.Random
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RegisterFragment : Fragment() {
+
+    @Inject
+    lateinit var client: HttpClient
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
-    private lateinit var authRepository: AuthRepository
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +42,6 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        authRepository= AuthRepository(NetworkModule.provideHttpClient(), requireContext())
         binding.registerButton.setOnClickListener {
             registerUser()
         }

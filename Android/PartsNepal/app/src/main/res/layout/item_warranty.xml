@@ -17,7 +17,7 @@ android:orientation="horizontal">
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
-    android:fontFamily="@font/inter_regular"
+    style="@style/textStyle"
     android:textColor="#757575"
     tools:text="Product must be in original condition" />
 </LinearLayout>

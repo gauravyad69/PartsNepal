@@ -4,19 +4,18 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.CreateOrderRequest
 import np.com.parts.API.Models.OrderModel
 import np.com.parts.API.Models.OrderSummary
-import np.com.parts.API.NetworkModule
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class OrderRepository(    private val client: HttpClient = NetworkModule.provideHttpClient()
-) {
+@Singleton
+class OrderRepository @Inject constructor(private val client: HttpClient) {
 
     // Get all orders for the current user
     suspend fun getUserOrders(skip: Int = 0, limit: Int = 50): Result<List<OrderModel>> {

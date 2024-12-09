@@ -10,20 +10,29 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.API.Auth.AuthError
 import np.com.parts.API.Repository.AuthRepository
-import np.com.parts.API.NetworkModule
+import np.com.parts.API.TokenManager
 import np.com.parts.R
 import np.com.parts.databinding.FragmentLoginBinding
 import timber.log.Timber
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
+
+
+    @Inject
+    lateinit var tokenManager: TokenManager
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var authRepository: AuthRepository
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,10 +46,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        authRepository= AuthRepository(
-            NetworkModule.provideHttpClient(),
-            requireContext()
-        )
 
         binding.loginButton.setOnClickListener {
             loginUser()

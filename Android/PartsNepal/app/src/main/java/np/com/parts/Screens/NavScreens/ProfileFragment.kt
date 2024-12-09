@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.SmoothBottomBar
 import np.com.parts.API.Models.AccountType
@@ -20,16 +21,21 @@ import np.com.parts.API.Models.UserModel
 import np.com.parts.API.TokenManager
 import np.com.parts.R
 import np.com.parts.databinding.FragmentProfileBinding
+import javax.inject.Inject
 
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
 
+
+    @Inject
+    lateinit var tokenManager: TokenManager
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -51,12 +57,11 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.paymentButton.setOnClickListener{
-            findNavController().navigate(R.id.action_profileFragment_to_paymentFragment)
+        binding.logoutButton.setOnClickListener{
+        tokenManager.clearToken()
+            Toast.makeText(requireContext(), "Logged Out", Toast.LENGTH_SHORT).show()
+            requireActivity().finishAffinity()
         }
-binding.logoutButton.setOnClickListener{
-    TokenManager.getInstance(requireContext()).clearToken()
-}
         binding.editProfileButton.setOnClickListener {
             binding.editProfileCard.visibility = View.VISIBLE
             // Optionally animate the card appearance
@@ -66,11 +71,9 @@ binding.logoutButton.setOnClickListener{
                 .setDuration(300)
                 .start()
         }
-
         binding.ordersButton.setOnClickListener {
             findNavController().navigate(R.id.action_profileFragment_to_ordersFragment)
         }
-
         binding.cancelButton.setOnClickListener {
             binding.editProfileCard.animate()
                 .alpha(0f)
@@ -80,7 +83,12 @@ binding.logoutButton.setOnClickListener{
                 }
                 .start()
         }
-        viewModel.loadUserProfile()
+        if (tokenManager.hasToken()){
+            viewModel.loadUserProfile()
+        }else{
+            findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
+        }
+
         setupUpdateButton()
         setupObserversForUpdate()
 

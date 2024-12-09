@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    style="@style/background"
     tools:context=".Screens.OrderScreens.OrderConfirmationFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -45,16 +46,20 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
                 android:text="Thank You!"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                style="@style/headlineTextStyle"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:textAlignment="center"
                 android:text="Your order has been placed successfully"
-                android:textSize="16sp"/>
+                style="@style/headline2TextStyle"
+                />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -71,8 +76,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Order Details"
-                        android:textStyle="bold"
-                        android:textSize="18sp"/>
+                        style="@style/headline2TextStyle"
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -84,6 +89,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Order Number:"
+                            style="@style/textStyle"
                             android:textColor="?android:textColorSecondary"/>
 
                         <TextView
@@ -91,6 +97,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
+                            style="@style/textStyle"
                             android:textStyle="bold"
                             tools:text="ORD-12345"/>
                     </LinearLayout>
@@ -105,6 +112,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Date:"
+                            style="@style/textStyle"
                             android:textColor="?android:textColorSecondary"/>
 
                         <TextView
@@ -112,6 +120,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
+                            style="@style/textStyle"
                             tools:text="21 Nov 2024"/>
                     </LinearLayout>
 
@@ -125,6 +134,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total Amount:"
+                            style="@style/textStyle"
                             android:textColor="?android:textColorSecondary"/>
 
                         <TextView
@@ -133,6 +143,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:textStyle="bold"
+                            style="@style/textStyle"
                             tools:text="Rs. 15,000"/>
                     </LinearLayout>
 
@@ -146,6 +157,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Payment Method:"
+                            style="@style/textStyle"
                             android:textColor="?android:textColorSecondary"/>
 
                         <TextView
@@ -153,6 +165,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
+                            style="@style/textStyle"
                             tools:text="Cash on Delivery"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -163,6 +176,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                style="@style/Button"
                 android:text="Track Order"/>
 
             <com.google.android.material.button.MaterialButton
@@ -170,7 +184,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/ButtonOutline"
                 android:text="Continue Shopping"/>
 
         </LinearLayout>

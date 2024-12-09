@@ -15,30 +15,32 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collectLatest
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.formatted
-import np.com.parts.API.NetworkModule
 import np.com.parts.Adapter.CartAdapter
 import np.com.parts.R
 import np.com.parts.ViewModels.CartAction
 import np.com.parts.ViewModels.CartState
 import np.com.parts.ViewModels.CartViewModel
 import np.com.parts.databinding.FragmentCartBinding
-import np.com.parts.utils.SyncStatus
-import timber.log.Timber
+import np.com.parts.app_utils.SyncStatus
+import dagger.hilt.android.AndroidEntryPoint
+import io.ktor.client.HttpClient
+import javax.inject.Inject
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
+@AndroidEntryPoint
 class CartFragment : Fragment() {
 
+    @Inject
+    lateinit var client: HttpClient
 
     private var _binding: FragmentCartBinding? = null
 
@@ -70,6 +72,9 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bottomNavigationView = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomBar)
+        bottomNavigationView.visibility=View.VISIBLE
 
         setupRecyclerView()
         setupClickListeners()
@@ -194,7 +199,7 @@ class CartFragment : Fragment() {
             binding.checkoutButton.isEnabled = false
             
             try {
-                val response = NetworkModule.provideHttpClient().get("$BASE_URL/protected")
+                val response = client.get("$BASE_URL/protected")
                 
                 when (response.status) {
                     HttpStatusCode.Unauthorized -> {

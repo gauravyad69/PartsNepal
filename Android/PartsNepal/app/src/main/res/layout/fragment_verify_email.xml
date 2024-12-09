@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/themebackground_main"
+    style="@style/background"
     tools:context=".Screens.StartingScreens.VerifyEmailFragment">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
@@ -36,26 +36,25 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_bold"
+            style="@style/headlineTextStyle"
             android:text="Verification"
-            android:textSize="48sp" />
+            android:textSize="48sp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_bold"
             android:text="Required"
             android:textSize="40sp"
-            android:translationY="-15dp" />
+            style="@style/headline2TextStyle"
+            />
 
         <TextView
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:fontFamily="@font/inter_medium"
             android:text="Your email is not verified, Please verify your account to continue\n"
-
-            android:textSize="18sp" />
+            style="@style/headline2TextStyle" />
     </LinearLayout>
 
 
@@ -63,7 +62,7 @@
         android:id="@+id/btnSend"
         style="@style/Button"
         android:layout_width="300dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_gravity="center"
         android:text="Send Verification Email"
         app:layout_constraintBottom_toTopOf="@+id/forceRecheck"

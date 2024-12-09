@@ -44,7 +44,7 @@ class ProductService(private val database: MongoDatabase) {
                 IndexModel(Indexes.ascending("basic.productId"), IndexOptions().unique(true)),
                 IndexModel(Indexes.ascending("basic.productSKU"), IndexOptions().unique(true)),
                 IndexModel(Indexes.text("basic.productName")),
-                IndexModel(Indexes.ascending("basic.productType")),
+                IndexModel(Indexes.ascending("basic.categoryId")),
 
                 // Inventory indexes
                 IndexModel(Indexes.ascending("basic.inventory.stock")),
@@ -252,19 +252,19 @@ class ProductService(private val database: MongoDatabase) {
     }
 
     // Get products by type
-    suspend fun getProductsByType(
-        productType: String,
+    suspend fun getProductsByCategory(
+        categoryId: Int,
         page: Int = 0,
         pageSize: Int = 20
-    ): Flow<ProductModel> = flow {
+    ): List<BasicProductInfo> {
         val products = withContext(Dispatchers.IO) {
-            productCollection.find(Filters.eq("basic.productType", productType))
+            productCollection.find(Filters.eq("basic.categoryId", categoryId))
                 .skip(page * pageSize)
                 .limit(pageSize)
                 .toList()
         }
 
-        products.forEach { emit(it) }
+       return products.map { it.basic }
     }
 
     // Get products on sale

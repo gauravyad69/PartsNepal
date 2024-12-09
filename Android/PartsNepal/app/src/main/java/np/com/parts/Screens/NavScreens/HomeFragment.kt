@@ -23,14 +23,14 @@ import np.com.parts.databinding.FragmentHomeBinding
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.client.request.get
 import np.com.parts.API.BASE_URL
-import np.com.parts.API.NetworkModule
 import np.com.parts.Items.BasicProductItem
 import np.com.parts.Items.ProgressItem
 import timber.log.Timber
 
-
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
 
@@ -67,19 +67,7 @@ class HomeFragment : Fragment() {
         retainInstance = true
 
 
-        val client= NetworkModule.provideHttpClient()
 
-        lifecycleScope.launch {
-
-
-            val response = client.get("$BASE_URL/protected")
-            val code=response.status.value
-            Timber.e("Failed to get protected")
-
-            if (code==404){
-                findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
-            }
-        }
 
 
         bottomNavigationView.visibility=View.VISIBLE

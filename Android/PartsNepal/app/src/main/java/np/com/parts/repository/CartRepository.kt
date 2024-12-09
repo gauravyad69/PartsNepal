@@ -1,5 +1,7 @@
+@file:SuppressLint("UnsafeOptInUsageError")
 package np.com.parts.repository
 
+import android.annotation.SuppressLint
 import android.database.sqlite.SQLiteException
 import io.ktor.client.*
 import io.ktor.client.request.post
@@ -19,12 +21,13 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.Serializable
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.*
-import np.com.parts.API.NetworkModule
 import np.com.parts.database.AppDatabase
 import np.com.parts.database.CartItem
 import np.com.parts.database.SyncStatus
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.concurrent.timer
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -35,9 +38,10 @@ sealed class CartError : Exception() {
     data class ValidationError(val errors: Map<String, String>) : CartError()
     data class UnknownError(override val message: String) : CartError()
 }
-class CartRepository(
+@Singleton
+class CartRepository @Inject constructor(
     private val database: AppDatabase,
-    private val client: HttpClient = NetworkModule.provideHttpClient()
+    private val client: HttpClient
 ) {
     private val cartDao = database.cartDao()
 

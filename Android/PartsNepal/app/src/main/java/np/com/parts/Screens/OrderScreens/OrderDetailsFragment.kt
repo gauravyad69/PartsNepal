@@ -1,6 +1,5 @@
 package np.com.parts.Screens.OrderScreens
 
-import OrderViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,19 +14,23 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.API.Models.OrderModel
 import np.com.parts.API.Models.PaymentStatus
 import np.com.parts.API.Models.formatted
 import np.com.parts.API.Models.formattedDate
 import np.com.parts.Adapter.OrderItemsAdapter
+import np.com.parts.ViewModels.OrderViewModel
 import np.com.parts.databinding.FragmentOrderDetailsBinding
+import timber.log.Timber
 import java.util.Locale
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
+@AndroidEntryPoint
 class OrderDetailsFragment : Fragment() {
 
     private var _binding: FragmentOrderDetailsBinding? = null
@@ -86,7 +89,7 @@ class OrderDetailsFragment : Fragment() {
         binding.orderItemsRecyclerView.apply {
             adapter = orderItemsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            setHasFixedSize(true)
+            setHasFixedSize(false)
         }
     }
 
@@ -145,6 +148,8 @@ class OrderDetailsFragment : Fragment() {
 
             // Update order items
             orderItemsAdapter.submitList(order.items)
+
+
 
             if(order.payment.status.equals(PaymentStatus.PENDING)){
                 pay.visibility= View.VISIBLE

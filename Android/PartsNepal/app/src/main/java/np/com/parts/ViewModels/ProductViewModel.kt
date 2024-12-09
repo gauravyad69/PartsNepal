@@ -3,6 +3,7 @@ package np.com.parts.ViewModels
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,9 +13,11 @@ import kotlinx.coroutines.withContext
 import np.com.parts.API.Repository.ProductRepository
 import np.com.parts.API.Models.BasicProductView
 import np.com.parts.API.Models.ProductModel
+import javax.inject.Inject
 
-class ProductViewModel : ViewModel() {
-    private val productRepository=ProductRepository()
+@HiltViewModel
+class ProductViewModel @Inject constructor(    private val productRepository: ProductRepository
+) : ViewModel() {
     private var recyclerViewState: Parcelable? = null
     private var currentPage = 1
     private var isLastPage = false

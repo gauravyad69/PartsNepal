@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-   android:theme="@style/themebackground_main"
+   android:theme="@style/background"
     tools:context=".Screens.StartingScreens.LoginFragment">
 
     <LinearLayout
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_gravity="center"
@@ -26,8 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Account"
-            android:fontFamily="@font/poppins_medium"
-            android:textSize="24sp"
+            style="@style/headlineTextStyle"
             android:layout_marginBottom="24dp"/>
 
         <!-- First Name -->
@@ -35,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/EditTextPrimary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/firstNameInput"
@@ -43,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:hint="First Name"
                 android:inputType="textPersonName"
-                android:fontFamily="@font/poppins_medium"/>
+                style="@style/EditTextPrimary"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Last Name -->
@@ -51,15 +50,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
+            style="@style/EditTextPrimary">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/lastNameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Last Name"
                 android:inputType="textPersonName"
-                android:fontFamily="@font/poppins_medium"/>
+                style="@style/EditTextPrimary"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Email -->
@@ -67,15 +65,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
+            style="@style/EditTextPrimary">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email (Optional)"
+                android:hint="Email"
                 android:inputType="textEmailAddress"
-                android:fontFamily="@font/poppins_medium"/>
+                style="@style/EditTextPrimary"/>
         </com.google.android.material.textfield.TextInputLayout>
         <!-- Account Type -->
         <com.google.android.material.textfield.TextInputLayout
@@ -90,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 android:hint="Account Type"
-                android:fontFamily="@font/poppins_medium"/>
+                style="@style/EditTextPrimary"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -102,7 +99,8 @@
             android:text="Register"
             android:padding="12dp"
             android:textAllCaps="false"
-            android:fontFamily="@font/poppins_medium"/>
+            style="@style/Button"
+            />
 
 
 

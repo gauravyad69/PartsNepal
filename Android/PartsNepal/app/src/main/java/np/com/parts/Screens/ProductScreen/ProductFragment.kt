@@ -34,8 +34,9 @@ import np.com.parts.ViewModels.CartViewModel
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 import java.text.NumberFormat
 import kotlin.math.roundToInt
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ProductFragment : Fragment() {
     private val hideHandler = Handler(Looper.myLooper()!!
     )
@@ -271,7 +272,7 @@ class ProductFragment : Fragment() {
                                 findNavController().navigate(R.id.action_productFragment_to_cartFragment)
                             }
                             // Optional: Custom styling
-                            setActionTextColor(resources.getColor(R.color.status_success, null))
+                            setActionTextColor(resources.getColor(R.color.primary, null))
                             show()
                         }
                     }
