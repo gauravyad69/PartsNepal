@@ -272,7 +272,7 @@ class ProductFragment : Fragment() {
                                 findNavController().navigate(R.id.action_productFragment_to_cartFragment)
                             }
                             // Optional: Custom styling
-                            setActionTextColor(resources.getColor(R.color.status_success, null))
+                            setActionTextColor(resources.getColor(R.color.primary, null))
                             show()
                         }
                     }

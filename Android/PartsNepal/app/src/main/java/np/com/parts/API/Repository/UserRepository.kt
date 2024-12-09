@@ -5,13 +5,11 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import np.com.parts.API.BASE_URL
-import np.com.parts.API.Models.FullUserDetails
 import np.com.parts.API.Models.OrderRef
 import np.com.parts.API.Models.ReviewRef
 import np.com.parts.API.Models.UpdateProfileRequest
 import np.com.parts.API.Models.UserModel
 import np.com.parts.API.Models.UserPreferences
-import np.com.parts.API.NetworkModule
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton

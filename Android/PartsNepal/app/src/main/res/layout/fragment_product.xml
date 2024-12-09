@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:theme="@style/themebackground_main"
+    style="@style/background"
     tools:context=".Screens.ProductScreen.ProductFragment">
 
     <ScrollView
@@ -33,7 +33,6 @@
                 android:layout_height="400dp"
                 android:layout_columnSpan="2"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
                 android:layout_margin="8dp"
                 android:clipChildren="true"
                 android:clipToPadding="true">
@@ -44,8 +43,8 @@
                     android:layout_height="400dp"
                     app:imageScaleType="centerCrop"
                     app:showNavigationButtons="false"
-                    app:carouselBackground="@drawable/background_card"
-                    android:background="@drawable/background_card"
+                    app:showTopShadow="false"
+
                     android:scaleType="centerCrop"/>
             </androidx.cardview.widget.CardView>
 
@@ -58,7 +57,7 @@
                 android:layout_columnSpan="2"
                 android:layout_marginTop="8dp"
                 android:textAlignment="textEnd"
-                android:fontFamily="@font/inter_bold"
+                style="@style/headline3TextStyle"
                 android:text="$299.99" />
 
             <TextView
@@ -66,10 +65,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
-                android:fontFamily="@font/inter_bold"
-                android:textSize="18sp"
+                style="@style/headline2TextStyle"
                 android:textAlignment="textEnd"
-                android:backgroundTint="@color/light_blue_A400"
+                android:textColor="@color/sale"
                 android:translationY="-5dp"
                 android:text="$299.99" />
 
@@ -79,14 +77,14 @@
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
                 android:layout_gravity="fill_horizontal"
-                android:fontFamily="@font/inter_bold"
+                style="@style/descriptiveTextStyle"
                 android:text="Pro Wireless Headphones" />
 
 
             <!-- Description Section -->
             <TextView
                 android:id="@+id/descriptionTitle"
-                style="@style/product_main_subheading"
+                style="@style/headline3TextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
@@ -95,7 +93,7 @@
 
             <TextView
                 android:id="@+id/productDescription"
-                style="@style/product_main_description_text_style"
+                style="@style/descriptionTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
@@ -107,7 +105,7 @@
             <!-- Features Section -->
             <TextView
                 android:id="@+id/featuresTitle"
-                style="@style/product_main_subheading"
+                style="@style/headline3TextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
@@ -120,6 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
                 android:clickable="false"
+                style="@style/descriptionTextStyle"
                 android:nestedScrollingEnabled="false"
                 android:layout_marginTop="8dp" />
 
@@ -134,7 +133,7 @@
             <!-- Delivery Information -->
             <TextView
                 android:id="@+id/deliveryTitle"
-                style="@style/product_main_subheading"
+                style="@style/headline3TextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
@@ -178,7 +177,7 @@
             <!-- Warranty Information -->
             <TextView
                 android:id="@+id/warrantyTitle"
-                style="@style/product_main_subheading"
+                style="@style/headline3TextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
@@ -223,7 +222,7 @@
             <!-- Reviews Section -->
             <TextView
                 android:id="@+id/reviewsTitle"
-                style="@style/product_main_subheading"
+                style="@style/headline3TextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnSpan="2"
@@ -255,11 +254,14 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/addToCartButton"
+        style="@style/Button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_margin="16dp"
         android:text="Add to Cart"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
         android:id="@+id/addToCartProgress"
@@ -277,7 +279,7 @@
         android:layout_height="48dp"
         android:src="@drawable/ic_check_circle"
         android:visibility="gone"
-        app:tint="@color/status_success"
+        app:tint="@color/success"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

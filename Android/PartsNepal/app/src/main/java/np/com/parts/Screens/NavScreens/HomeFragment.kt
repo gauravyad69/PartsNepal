@@ -26,7 +26,6 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.client.request.get
 import np.com.parts.API.BASE_URL
-import np.com.parts.API.NetworkModule
 import np.com.parts.Items.BasicProductItem
 import np.com.parts.Items.ProgressItem
 import timber.log.Timber

@@ -1,5 +1,7 @@
+@file:SuppressLint("UnsafeOptInUsageError")
 package np.com.parts.repository
 
+import android.annotation.SuppressLint
 import android.database.sqlite.SQLiteException
 import io.ktor.client.*
 import io.ktor.client.request.post
@@ -19,7 +21,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.Serializable
 import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.*
-import np.com.parts.API.NetworkModule
 import np.com.parts.database.AppDatabase
 import np.com.parts.database.CartItem
 import np.com.parts.database.SyncStatus

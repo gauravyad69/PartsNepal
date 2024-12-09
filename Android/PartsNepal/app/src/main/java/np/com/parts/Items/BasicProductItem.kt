@@ -22,7 +22,7 @@ class BasicProductItem(val product: BasicProductView) : AbstractBindingItem<Item
     override fun bindView(binding: ItemProductBinding, payloads: List<Any>) {
         binding.apply {
             productName.text = product.basic.productName
-            productType.text = product.basic.productType
+            productType.text = product.basic.categoryId.toString()
 
             // Regular price
             regularPrice.text = formatPrice(

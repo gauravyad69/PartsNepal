@@ -17,8 +17,7 @@
             android:id="@+id/deliveryOptionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_bold"
-            android:textSize="16sp"
+            style="@style/headline3TextStyle"
             tools:text="Standard Delivery" />
 
         <LinearLayout
@@ -38,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:fontFamily="@font/inter_regular"
+                style="@style/textStyle"
                 tools:text="Estimated delivery: 3-5 days" />
         </LinearLayout>
 
@@ -59,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:fontFamily="@font/inter_regular"
+                style="@style/textStyle"
                 tools:text="Shipping Cost: NPR 150" />
         </LinearLayout>
     </LinearLayout>

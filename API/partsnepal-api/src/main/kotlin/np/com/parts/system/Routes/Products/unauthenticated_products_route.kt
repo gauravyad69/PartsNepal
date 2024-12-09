@@ -98,6 +98,8 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
             }
         }
 
+
+
         // GET - Retrieve a specific product by ID
         get("/{productId}") {
             try {
@@ -124,6 +126,37 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
             }
         }
 
+              // GET - Retrieve a specific product by ID
+        get("/category/{categoryId}") {
+            try {
+                val categoryId = call.parameters["categoryId"]?.toIntOrNull()
+                    ?: return@get call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid product ID", "INVALID_PRODUCT_ID")
+                    )
+
+                val page = call.parameters["page"]?.toIntOrNull() ?: 0
+                val pageSize = call.parameters["pageSize"]?.toIntOrNull() ?: 10
+
+                val product = productService.getProductsByCategory(categoryId, page = page, pageSize)
+                if (product != null) {
+                    call.respond(HttpStatusCode.OK, ProductResponse(data = product))
+                } else {
+                    call.respond(
+                        HttpStatusCode.NotFound,
+                        ErrorResponse("Product not found", "PRODUCT_NOT_FOUND_WITH_CATEGORY_$categoryId")
+                    )
+                }
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    ErrorResponse("Error retrieving product", "CATEGORY_PRODUCT_RETRIEVAL_ERROR", "$e")
+                )
+            }
+        }
+
+
+
         // GET - Search products with advanced filtering
         get("/search") {
             try {
@@ -136,8 +169,8 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
                 call.parameters["minPrice"]?.toLongOrNull()?.let {
                     filters["basic.pricing.regularPrice.amount"] = it
                 }
-                call.parameters["productType"]?.let {
-                    filters["basic.productType"] = it
+                call.parameters["categoryId"]?.let {
+                    filters["basic.categoryId"] = it
                 }
                 call.parameters["onSale"]?.toBoolean()?.let {
                     filters["basic.pricing.isOnSale"] = it
@@ -162,6 +195,8 @@ fun Route.unauthenticatedProductRoutes(productService: ProductService) {
                 )
             }
         }
+
+
 
         // GET - Retrieve products on sale
         get("/on-sale") {

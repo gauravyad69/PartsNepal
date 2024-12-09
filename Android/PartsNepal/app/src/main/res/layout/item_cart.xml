@@ -41,42 +41,18 @@
                 android:textStyle="bold"
                 tools:text="Rs. 15,000"/>
 
-            <LinearLayout
+            <com.yonder.basketlayout.BasketLayoutView
+                android:id="@+id/basketView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp">
-
-                <ImageButton
-                    android:id="@+id/decreaseButton"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_remove"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
-
-                <TextView
-                    android:id="@+id/quantityText"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    tools:text="1"/>
-
-                <ImageButton
-                    android:id="@+id/increaseButton"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_add"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
-            </LinearLayout>
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:rippleColor="@color/primary"
+                app:cardElevation="0dp"
+                app:strokeColor="#dddddd"
+                android:layout_marginTop="4dp"
+                app:strokeWidth="1dp" />
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/removeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_delete"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"/>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView> 

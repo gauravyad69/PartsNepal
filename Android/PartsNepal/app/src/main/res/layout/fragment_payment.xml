@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
+    style="@style/background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Screens.MainScreens.PaymentFragment">
 
@@ -16,8 +15,28 @@
         android:theme="@style/ThemeOverlay.PartsNepal.FullscreenContainer"
       -->
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Payment"
+            app:navigationIcon="@drawable/ic_chevron_left"
+            style="@style/MyToolbarStyle" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
 
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center">
 
 
     <!-- Header Text -->
@@ -26,10 +45,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Payment Methods"
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:layout_marginBottom="12dp"
-        android:fontFamily="@font/inter_medium"
+        style="@style/headlineTextStyle"
         android:gravity="center"/>
 
     <!-- Single layout for all payment methods -->
@@ -40,6 +57,7 @@
         android:columnCount="2"
         android:orientation="horizontal"
         android:padding="8dp"
+        android:layout_gravity="center"
         android:background="?android:attr/selectableItemBackground"
         android:columnOrderPreserved="false">
 
@@ -175,5 +193,17 @@
 
     </GridLayout>
 
-
+    <com.parniyan.parniyandotloading.LoadingView
+        android:id="@+id/loadingView"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        app:dotCount="5"
+        app:dotRadius="8dp"
+        app:dotSpacing="100dp"
+        app:dotMaxSize="32dp"
+        app:dotMinSize="6dp"
+        android:visibility="gone"
+        app:dotColors="@array/loading_dot_colors" />
 </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -28,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity="center"
             android:padding="16dp">
 
             <com.google.android.material.card.MaterialCardView
@@ -45,19 +47,21 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Shipping Address"
-                        android:textStyle="bold"
-                        android:textSize="18sp"/>
+                        style="@style/headline2TextStyle"
+                        />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        style="@style/EditTextBoxPrimary"
+                        >
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/fullNameInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            style="@style/EditTextPrimary"
                             android:hint="Full Name"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,13 +69,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
+                        style="@style/EditTextBoxPrimary"
+                        >
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/phoneInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Phone Number"
+                            style="@style/EditTextPrimary"
                             android:inputType="phone"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,12 +84,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
+                        style="@style/EditTextBoxPrimary"
+                        >
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/streetInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            style="@style/EditTextPrimary"
                             android:hint="Street Address"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,13 +105,14 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginEnd="4dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
+                            style="@style/EditTextBoxPrimary"
+                            >
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/wardInput"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="Ward Number"
+                                style="@style/EditTextPrimary"
                                 android:inputType="number"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,12 +121,13 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="4dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
+                            style="@style/EditTextBoxPrimary"
+                            >
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/cityInput"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                style="@style/EditTextPrimary"
                                 android:hint="City"/>
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
@@ -132,7 +140,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/provinceLayout"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/EditTextBoxPrimary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Province">
@@ -143,8 +151,7 @@
                                 android:layout_height="wrap_content"
                                 android:hint="Select Province"
                                 android:padding="12dp"
-                                android:textColor="@color/black"
-                                android:textSize="16sp"
+                                style="@style/EditTextPrimary"
                                 app:spinner_arrow_gravity="end"
                                 app:spinner_arrow_padding="8dp"
                                 app:spinner_divider_color="@color/gray"
@@ -157,7 +164,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/districtLayout"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/EditTextBoxPrimary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
@@ -169,8 +176,7 @@
                                 android:layout_height="wrap_content"
                                 android:hint="Select District"
                                 android:padding="12dp"
-                                android:textColor="@color/black"
-                                android:textSize="16sp"
+                                style="@style/EditTextPrimary"
                                 app:spinner_arrow_gravity="end"
                                 app:spinner_arrow_padding="8dp"
                                 app:spinner_divider_color="@color/gray"
@@ -183,7 +189,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/municipalityLayout"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/EditTextBoxPrimary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
@@ -195,8 +201,7 @@
                                 android:layout_height="wrap_content"
                                 android:hint="Select Municipality"
                                 android:padding="12dp"
-                                android:textColor="@color/black"
-                                android:textSize="16sp"
+                                style="@style/EditTextPrimary"
                                 app:spinner_arrow_gravity="end"
                                 app:spinner_arrow_padding="8dp"
                                 app:spinner_divider_color="@color/gray"
@@ -213,12 +218,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
+                        style="@style/EditTextBoxPrimary"
+                        >
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/landmarkInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            style="@style/EditTextPrimary"
                             android:hint="Landmark (Optional)"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -240,6 +246,7 @@
                         android:layout_height="wrap_content"
                         android:text="Payment Method"
                         android:textStyle="bold"
+                        style="@style/headline2TextStyle"
                         android:textSize="18sp"/>
 
                     <RadioGroup
@@ -253,19 +260,25 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Cash on Delivery"
-                            android:checked="true"/>
+                            android:checked="true"
+                            style="@style/textStyle"
+                            />
 
                         <RadioButton
                             android:id="@+id/khaltiRadio"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Khalti"/>
+                            android:text="Khalti"
+                            style="@style/textStyle"
+                            />
 
                         <RadioButton
                             android:id="@+id/esewaRadio"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="eSewa"/>
+                            android:text="eSewa"
+                            style="@style/textStyle"
+                            />
                     </RadioGroup>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -274,13 +287,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/EditTextBoxPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/notesInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Order Notes (Optional)"
+                    style="@style/EditTextPrimary"
                     android:minLines="2"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -299,8 +313,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Order Summary"
-                        android:textStyle="bold"
-                        android:textSize="18sp"/>
+                        style="@style/headline2TextStyle"
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -312,12 +326,15 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            style="@style/textStyle"
                             android:text="Subtotal"/>
 
                         <TextView
                             android:id="@+id/subtotalText"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            style="@style/textStyle"
+                            />
                     </LinearLayout>
 
                     <LinearLayout
@@ -330,13 +347,17 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Discount"/>
+                            android:text="Discount"
+                            style="@style/textStyle"
+                            />
 
                         <TextView
                             android:id="@+id/discountText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/blue"/>
+                            android:textColor="@color/primary"
+                            style="@style/textStyle"
+                            />
                     </LinearLayout>
 
                     <LinearLayout
@@ -349,12 +370,16 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Shipping Fee"/>
+                            android:text="Shipping Fee"
+                            style="@style/textStyle"
+                            />
 
                         <TextView
                             android:id="@+id/shippingText"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            style="@style/textStyle"
+                            />
                     </LinearLayout>
 
                     <View
@@ -373,23 +398,26 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Total"
+                            style="@style/textStyle"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/totalText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold"
+                            style="@style/textStyle"
+                            />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/placeOrderButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="Place Order"
-                android:padding="16dp"/>
+                style="@style/Button"/>
 
         </LinearLayout>
 

@@ -4,6 +4,8 @@ ktor:
             - np.com.parts.ApplicationKt.module
     deployment:
         port: 9090
+    production:
+        port: 5644
 jwt:
   secret: "SKAVIN^69"
   issuer: "parts.com.np"

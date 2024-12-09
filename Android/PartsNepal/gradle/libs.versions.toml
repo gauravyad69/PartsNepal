@@ -71,7 +71,6 @@ firebase-dataconnect = { group = "com.google.firebase", name = "firebase-datacon
 whynot-imagecarousel = { group = "org.imaginativeworld.whynotimagecarousel", name = "whynotimagecarousel", version = "2.1.0" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version = "0.5.0" }
-airbnb-paris = { group = "com.airbnb.android", name = "paris", version = "2.0.0" }
 mikepenz-fastadapter = { group = "com.mikepenz", name = "fastadapter", version.ref = "fastAdapter" }
 mikepenz-fastadapter-binding = { group = "com.mikepenz", name = "fastadapter-extensions-binding", version.ref = "fastAdapter" }
 mikepenz-fastadapter-scroll = { group = "com.mikepenz", name = "fastadapter-extensions-scroll", version.ref = "fastAdapter" }
