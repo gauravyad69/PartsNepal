@@ -217,7 +217,6 @@ class CheckoutFragment : Fragment() {
                 landmark = binding.landmarkInput.text?.toString()?.trim()
             ),
             method = ShippingMethod.STANDARD,
-            cost = Money(0)
         )
 
         val paymentMethod = when (binding.paymentMethodGroup.checkedRadioButtonId) {

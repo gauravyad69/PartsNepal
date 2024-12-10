@@ -12,8 +12,8 @@ data class KhaltiPaymentRequestAsClient(
     val purchase_order_id: String,
     val purchase_order_name: String,
     val customer_info: KhaltiCustomerInfoAsClient,
-    val amount_breakdown: List<KhaltiAmountBreakdownAsClient>,
-    val product_details: List<KhaltiProductDetailAsClient>,
+    val amount_breakdown: List<KhaltiAmountBreakdownAsClient>?= emptyList(),
+    val product_details: List<KhaltiProductDetailAsClient>?= emptyList(),
     val merchant_username: String = "Parts Nepal",
     val merchant_extra: String ="Car auto parts shop - parts.com.np"
 )

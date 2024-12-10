@@ -141,7 +141,7 @@ class AuthenticationService(
             }
 
             return user?.let {
-                if (user.accountStatus == AccountStatus.ACTIVE) {
+                if (user.accountStatus == AccountStatus.ACTIVE || user.accountStatus == AccountStatus.PENDING_VERIFICATION ) {
                     Result.success(AuthResponse(
                         token = generateToken(user.user),
                         user = user.user.userId.value,

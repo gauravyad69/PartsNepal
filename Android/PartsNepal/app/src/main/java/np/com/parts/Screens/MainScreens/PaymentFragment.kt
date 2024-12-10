@@ -114,6 +114,9 @@ class PaymentFragment : Fragment() {
             binding.loadingView.visibility=View.GONE
             binding.payKhalti.visibility=View.VISIBLE
         }
+        if (checker==2){
+            findNavController().navigateUp()
+        }
         if(checker==1){
             checker=0
             binding.loadingView.visibility=View.GONE
