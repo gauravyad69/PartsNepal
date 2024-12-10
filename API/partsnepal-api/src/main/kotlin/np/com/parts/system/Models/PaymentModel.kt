@@ -6,8 +6,8 @@ import org.bson.types.ObjectId
 
 @Serializable
 data class KhaltiPaymentRequestAsClient(
-    val return_url: String = "https://example.com/payment/",
-    val website_url: String="https://example.com/",
+    val return_url: String = "https://partsapi.auracoin.tech/payment-success",
+    val website_url: String="https://partsapi.auracoin.tech/payment-success",
     val amount: Int,
     val purchase_order_id: String,
     val purchase_order_name: String,

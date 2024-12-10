@@ -28,6 +28,7 @@ import io.ktor.client.request.get
 import np.com.parts.API.BASE_URL
 import np.com.parts.Items.BasicProductItem
 import np.com.parts.Items.ProgressItem
+import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -48,6 +49,8 @@ class HomeFragment : Fragment() {
     private lateinit var footerAdapter: ItemAdapter<ProgressItem>
     private lateinit var shimmerAdapter: ShimmerAdapter
 
+    private val list = mutableListOf<CarouselItem>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,7 +70,17 @@ class HomeFragment : Fragment() {
         retainInstance = true
 
 
+        binding.carousel.registerLifecycle(lifecycle)
 
+
+//        val listOfImages = product.details.features.images ?: emptyList()
+//        listOfImages.forEach { picture ->
+//            picture.url.let {
+//                list.add(CarouselItem(it))
+//            }
+//        }
+//
+//        carousel.setData(list)
 
 
         bottomNavigationView.visibility=View.VISIBLE

@@ -28,7 +28,7 @@ fun Application.module() {
 
     configureAuthRoutes(userService = userService)
     val orderService = OrderService(connection, userService = userService, cartService = cartService)
-
+    val pasteService = PasteService(connection)
     val paymentService = PaymentService(connection, orderService, userService)
 
 //    // Setup test data if in development environment
@@ -51,7 +51,7 @@ fun Application.module() {
 //    }
 
     routing {
-    applicationRoutes(productsService, orderService, userService,  cartService, paymentService)
+    applicationRoutes(productsService, orderService, userService,  cartService, paymentService, pasteService)
 
     }
 }
