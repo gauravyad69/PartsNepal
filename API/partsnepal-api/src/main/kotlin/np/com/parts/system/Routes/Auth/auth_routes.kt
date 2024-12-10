@@ -81,4 +81,6 @@ fun Application.configureAuthRoutes(userService: UserService) {
             }
         }
     }
+
+
 }

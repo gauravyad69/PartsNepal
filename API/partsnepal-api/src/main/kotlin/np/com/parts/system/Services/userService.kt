@@ -145,6 +145,14 @@ class UserService(private val database: MongoDatabase) {
         result?.user  // Return just the UserModel part
     }
 
+    suspend fun getFullUserById(userId: UserId): FullUserDetails? = withContext(Dispatchers.IO) {
+        println("Searching for user with ID: ${userId.value}")  // Debug log
+        val result = collection.find(Filters.eq("user.userId", userId.value)).firstOrNull()
+        println("Database result: $result")  // Debug log
+        result  // Return just the UserModel part
+    }
+
+
     suspend fun getUserPhoneNumberById(userId: UserId): PhoneNumber? = withContext(Dispatchers.IO) {
         println("Searching for user with ID: ${userId.value}")  // Debug log
         val result = collection.find(Filters.eq("user.userId", userId.value)).firstOrNull()

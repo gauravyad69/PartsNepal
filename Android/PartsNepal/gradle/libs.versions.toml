@@ -24,6 +24,8 @@ fastAdapter = "5.7.0"
 room_version = "2.6.1"
 activity-ktx = "1.8.2"
 nav_version = "2.7.7"
+googleGmsGoogleServices = "4.4.2"
+firebaseAuth = "23.1.0"
 
 
 
@@ -76,6 +78,7 @@ mikepenz-fastadapter-binding = { group = "com.mikepenz", name = "fastadapter-ext
 mikepenz-fastadapter-scroll = { group = "com.mikepenz", name = "fastadapter-extensions-scroll", version.ref = "fastAdapter" }
 mikepenz-fastadapter-util = { group = "com.mikepenz", name = "fastadapter-extensions-utils", version.ref = "fastAdapter" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version = "1.1.0-alpha06" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 
 
 
@@ -85,5 +88,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "nav_version" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 
 

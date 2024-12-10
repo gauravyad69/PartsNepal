@@ -77,14 +77,7 @@ class AuthenticationService(
             }
 
             // Validate email if provided
-            val email = request.email?.let {
-                try {
-                    Email(it)
-                } catch (e: Exception) {
-                    println("Email validation failed: ${e.message}")
-                    return Result.failure(Exception("Invalid email format"))
-                }
-            }
+            val email = Email(request.email)
 
             val user = UserModel(
                 userId = UserId(0),

@@ -28,7 +28,7 @@
                     android:id="@+id/phoneInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Phone Number"
+                    android:hint="Phone Number (+977)"
                     android:inputType="phone"
                     style="@style/EditTextPrimary"
                     />

@@ -6,7 +6,8 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")  // Add this line
+    id("kotlin-kapt")
+    alias(libs.plugins.google.gms.google.services)  // Add this line
 
 }
 
@@ -67,6 +68,7 @@ dependencies {
     implementation("com.github.javafaker:javafaker:1.0.2")
     // Replace existing Hilt dependencies with these
     implementation("com.google.dagger:hilt-android:2.52")
+    implementation(libs.firebase.auth)
     kapt("com.google.dagger:hilt-android-compiler:2.52")  // Change ksp to kapt
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0")  // Change ksp to kapt

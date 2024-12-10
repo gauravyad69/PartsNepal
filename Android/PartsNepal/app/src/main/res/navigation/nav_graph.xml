@@ -38,7 +38,11 @@
         android:id="@+id/verifyEmailFragment"
         android:name="np.com.parts.Screens.StartingScreens.VerifyEmailFragment"
         android:label="VerifyEmailFragment"
-        tools:layout="@layout/fragment_verify_email"/>
+        tools:layout="@layout/fragment_verify_email">
+        <action
+            android:id="@+id/action_verifyEmailFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 
 
 
