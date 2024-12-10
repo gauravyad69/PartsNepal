@@ -29,6 +29,7 @@ data class KhaltiCustomerInfoAsClient(
 data class KhaltiAmountBreakdownAsClient(
     val label: String,
     val amount: Int
+
 )
 @Serializable
 data class KhaltiProductDetailAsClient(

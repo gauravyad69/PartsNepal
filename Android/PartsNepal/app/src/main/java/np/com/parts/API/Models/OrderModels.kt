@@ -20,6 +20,7 @@ data class LineItem(
 data class OrderSummary(
     val subtotal: Money,
     val discount: Money? = null,
+    val discountCode: String? = null,
     val shippingCost: Money = Money(0),
     val tax: Money? = null,
     val total: Money
@@ -119,7 +120,6 @@ enum class PaymentMethod {
 data class ShippingDetails(
     val address: ShippingAddress,
     val method: ShippingMethod,
-    val cost: Money
 )
 
 @Serializable
@@ -153,6 +153,7 @@ data class CreateOrderRequest(
     val items: List<LineItem>,
     val paymentMethod: PaymentMethod,
     val shippingDetails: ShippingDetails,
+    val discountCode: String? = null,
     val notes: String? = null,
     val source: OrderSource = OrderSource.MOBILE_APP
 )

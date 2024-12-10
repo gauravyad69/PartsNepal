@@ -87,7 +87,8 @@ class TestDataSetup(
             orderService.createOrder(order.customer.id, CreateOrderRequest(
                 items = order.items,
                 paymentMethod = order.payment.method,
-                shippingDetails = order.shippingDetails
+                shippingDetails = order.shippingDetails,
+                discountCode = "FREE200"
             ))
         }
     }
@@ -216,7 +217,7 @@ class TestDataSetup(
                 )
             ),
             method = ShippingMethod.STANDARD,
-            cost = Money(100)
+
         ),
         status = OrderStatus.valueOf(status),
         source = OrderSource.MOBILE_APP,

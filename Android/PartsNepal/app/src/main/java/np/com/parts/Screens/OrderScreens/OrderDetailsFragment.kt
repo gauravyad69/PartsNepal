@@ -144,6 +144,7 @@ class OrderDetailsFragment : Fragment() {
                 subtotalText.text = subtotal.formatted()
                 shippingText.text = shippingCost.formatted()
                 totalText.text = total.formatted()
+                discountText.text = discount?.formatted()
             }
 
             // Update order items

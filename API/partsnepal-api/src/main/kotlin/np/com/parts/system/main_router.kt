@@ -17,6 +17,7 @@ import np.com.parts.system.Routes.Products.authenticatedProductRoutes
 import np.com.parts.system.Routes.Products.unauthenticatedProductRoutes
 import np.com.parts.system.Routes.Cart.cartRoutes
 import np.com.parts.system.Routes.Cart.khaltiRoutes
+import np.com.parts.system.Routes.Orders.adminDiscountRoutes
 import np.com.parts.system.Routes.User.adminUserRoutes
 import np.com.parts.system.Routes.User.authenticatedUserRoutes
 import np.com.parts.system.Services.*
@@ -42,6 +43,7 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
         authenticatedProductRoutes(productService)
 
         authenticatedOrderRoutes(orderService)
+        adminDiscountRoutes(orderService)
         adminOrderRoutes(orderService)
 
         authenticatedUserRoutes(userService)

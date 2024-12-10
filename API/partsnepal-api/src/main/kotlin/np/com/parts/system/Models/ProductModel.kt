@@ -161,6 +161,10 @@ fun Long.toFormattedDate(): String {
         .format(java.time.Instant.ofEpochMilli(this))
 }
 
+fun Long.toSeconds(): Long {
+    return this / 1000
+}
+
 fun String.toTimestamp(): Long {
     return java.time.Instant.parse(this).toEpochMilli()
 }

@@ -27,7 +27,7 @@ fun Application.module() {
     val cartService = CartService(connection, productsService)
 
     configureAuthRoutes(userService = userService)
-    val orderService = OrderService(connection, userService = userService, cartService = cartService, productsService)
+    val orderService = OrderService(connection, userService = userService, cartService = cartService)
 
     val paymentService = PaymentService(connection, orderService, userService)
 

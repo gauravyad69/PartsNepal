@@ -129,7 +129,7 @@ data class ReviewRef(
 @Serializable
 data class OrderRef(
     val orderId: String,
-    val amount: Double,
+    val amount: Long,
     val createdAt: Long
 )
 

@@ -125,6 +125,7 @@ class CheckoutViewModel @Inject constructor(private val cartRepository: CartRepo
     fun placeOrder(
         shippingDetails: ShippingDetails,
         paymentMethod: PaymentMethod,
+        discountCode: String? = null,
         notes: String? = null
     ) {
         // Use NonCancellable for critical operations
@@ -138,7 +139,7 @@ class CheckoutViewModel @Inject constructor(private val cartRepository: CartRepo
                 val request = try {
                     Timber.d("Calling cartRepository.createOrder...")
                     withContext(NonCancellable) {
-                        cartRepository.createOrder(shippingDetails, paymentMethod, notes)
+                        cartRepository.createOrder(shippingDetails, paymentMethod, discountCode, notes)
                     }.also {
                         cartRepository.clearCart()
                         Timber.d("Order request created successfully: $it")

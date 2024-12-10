@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "960338108584",
+    "project_id": "partsnepal69",
+    "storage_bucket": "partsnepal69.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960338108584:android:bf465e875fd6610dd5e29d",
+        "android_client_info": {
+          "package_name": "np.com.parts"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQ3UQFiLzslGicyxLlggdP0IkuQfeveXk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

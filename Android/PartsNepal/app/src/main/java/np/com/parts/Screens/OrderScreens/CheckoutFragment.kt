@@ -230,6 +230,7 @@ class CheckoutFragment : Fragment() {
         viewModel.placeOrder(
             shippingDetails = shippingDetails,
             paymentMethod = paymentMethod,
+            discountCode = binding.discountCodeInput.text?.toString()?.trim(),
             notes = binding.notesInput.text?.toString()?.trim()
         )
     }

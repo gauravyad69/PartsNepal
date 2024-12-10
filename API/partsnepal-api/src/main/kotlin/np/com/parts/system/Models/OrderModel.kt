@@ -105,7 +105,6 @@ enum class PaymentMethod {
 data class ShippingDetails(
     val address: ShippingAddress,
     val method: ShippingMethod,
-    val cost: Money
 )
 
 @Serializable
@@ -138,6 +137,7 @@ enum class ShippingMethod {
 data class OrderSummary(
     val subtotal: Money,
     val discount: Money? = null,
+    val discountCode: String? = null,
     val shippingCost: Money = Money(0),
     val tax: Money? = null,
     val total: Money
@@ -170,7 +170,37 @@ data class CreateOrderRequest(
     val items: List<LineItem>,
     val paymentMethod: PaymentMethod,
     val shippingDetails: ShippingDetails,
+    val discountCode: String?,
     val notes: String? = null,
     val source: OrderSource = OrderSource.MOBILE_APP
 )
 // ... (continue with other order-related models)
+
+
+@Serializable
+data class DiscountModel(
+    @SerialName("_id")
+    val id: String = ObjectId().toString(),
+    val discountCode: String,
+    val discountAmount: DiscountModelAmount,
+    val discountDetails: DiscountModelDetails,
+    val orderDate: Long = System.currentTimeMillis(),
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val version: Int = 1
+)
+
+@Serializable
+data class DiscountModelAmount(
+    val minimumAmount: Money,
+    val maximumAmount: Money,
+    val forShipping: Money,
+    val forSubtotal: Money,
+)
+@Serializable
+data class DiscountModelDetails(
+    val discountTitle: String,
+    val discountDescription: String,
+    val validity: Long,
+    val notes: String? = null,
+    val applicableTo: List<String>?=null,
+)
