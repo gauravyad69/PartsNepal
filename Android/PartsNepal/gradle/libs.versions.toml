@@ -45,8 +45,6 @@ androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", ve
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "nav_version" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "nav_version" }
 media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
-#navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
-#navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 smoothbottombar = { group = "com.github.ibrahimsn98", name = "SmoothBottomBar", version.ref = "smoothbottombar" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 coil = { group = "io.coil-kt", name = "coil", version = "2.5.0" }
@@ -66,7 +64,6 @@ ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor-version" }
 ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor-version" }
 timber = { group = "com.jakewharton.timber", name = "timber", version = "5.0.1" }
-java-websocket = { module="org.java-websocket:Java-WebSocket", version = "1.5.2" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor-version" }
 androidx-lifecycle-viewmodel-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-android", version.ref = "lifecycleViewmodelAndroid" }
 firebase-dataconnect = { group = "com.google.firebase", name = "firebase-dataconnect", version.ref = "firebaseDataconnect" }

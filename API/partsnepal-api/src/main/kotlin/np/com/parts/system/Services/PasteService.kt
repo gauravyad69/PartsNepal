@@ -50,6 +50,11 @@ class PasteService(private val database: MongoDatabase) {
         return collection.findOneById(id)
     }
 
+    fun getAllPaste(): List<Paste> {
+        return collection.find().toList()
+    }
+
+
 
     suspend fun updateTitle(id: String, newTitle: String): Boolean{
         val paste = collection.findOneById(id) // Find the document

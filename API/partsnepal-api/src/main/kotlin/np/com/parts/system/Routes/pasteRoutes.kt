@@ -17,6 +17,18 @@ fun Route.pastebinApi(pasteService: PasteService) {
             call.respond(HttpStatusCode.Created, paste)
         }
 
+        // Retrieve all pastes
+        get {
+
+            val paste = pasteService.getAllPaste()
+            if (paste != null) {
+                call.respond(paste)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Paste not found")
+            }
+        }
+
+
         // Retrieve a paste by ID
         get("/{id}") {
             val id = call.parameters["id"]

@@ -82,6 +82,7 @@ class CartFragment : Fragment() {
         observeEvents()
 
 
+
     }
 
     private fun setupRecyclerView() {
@@ -115,6 +116,7 @@ class CartFragment : Fragment() {
                         is CartEvent.QuantityUpdated -> showSnackbar("Quantity updated")
                         is CartEvent.SyncEvent -> handleSyncEvent(event)
                     }
+
                 }
             }
         }

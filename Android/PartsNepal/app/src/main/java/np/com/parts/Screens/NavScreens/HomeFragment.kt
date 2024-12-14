@@ -28,6 +28,7 @@ import io.ktor.client.request.get
 import np.com.parts.API.BASE_URL
 import np.com.parts.Items.BasicProductItem
 import np.com.parts.Items.ProgressItem
+import np.com.parts.ViewModels.MiscViewModel
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 import timber.log.Timber
 
@@ -48,6 +49,8 @@ class HomeFragment : Fragment() {
     private lateinit var itemAdapter: ItemAdapter<BasicProductItem>
     private lateinit var footerAdapter: ItemAdapter<ProgressItem>
     private lateinit var shimmerAdapter: ShimmerAdapter
+
+    private val miscViewModel: MiscViewModel by viewModels()
 
     private val list = mutableListOf<CarouselItem>()
 
@@ -70,17 +73,8 @@ class HomeFragment : Fragment() {
         retainInstance = true
 
 
-        binding.carousel.registerLifecycle(lifecycle)
 
 
-//        val listOfImages = product.details.features.images ?: emptyList()
-//        listOfImages.forEach { picture ->
-//            picture.url.let {
-//                list.add(CarouselItem(it))
-//            }
-//        }
-//
-//        carousel.setData(list)
 
 
         bottomNavigationView.visibility=View.VISIBLE
@@ -88,6 +82,8 @@ class HomeFragment : Fragment() {
         setupObservers()
         setupListeners()
         setupShimmer()
+        setupObserversForMisc()
+
 
         viewModel.loadBasicProducts()
 
@@ -172,7 +168,7 @@ class HomeFragment : Fragment() {
                     
                     if (products.isNotEmpty()) {
                         binding.shimmerLayout.root.visibility = View.GONE
-                        binding.recyclerView.visibility = View.VISIBLE
+                        binding.swipeRefreshLayout.visibility = View.VISIBLE
                     }
                 }
             }
@@ -196,10 +192,10 @@ class HomeFragment : Fragment() {
                     if (isLoading && viewModel.basicProducts.value.isEmpty()) {
                         // Show shimmer only for initial load when no items are present
                         binding.shimmerLayout.root.visibility = View.VISIBLE
-                        binding.recyclerView.visibility = View.GONE
+                        binding.swipeRefreshLayout.visibility = View.GONE
                     } else {
                         binding.shimmerLayout.root.visibility = View.GONE
-                        binding.recyclerView.visibility = View.VISIBLE
+                        binding.swipeRefreshLayout.visibility = View.VISIBLE
                     }
                 }
             }
@@ -215,6 +211,50 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
+    private fun setupObserversForMisc() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                miscViewModel.homePageCarrousel.collect { items ->
+
+                    val listOfImages = items ?: emptyList()
+                    listOfImages.forEach { items ->
+                            list.add(CarouselItem(items.imageUrl, caption = items.caption))
+                    }
+
+//                    binding.carousel.setData(list)
+
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                miscViewModel.loading.collect { isLoading ->
+                    if (isLoading) {
+                        binding.progressBar2.visibility=View.VISIBLE
+//                        binding.carousel.visibility=View.GONE
+                    } else {
+                        binding.progressBar2.visibility=View.GONE
+//                        binding.carousel.visibility=View.VISIBLE
+                    }
+                }
+            }
+        }
+
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                miscViewModel.error.collect { error ->
+                    error?.let {
+                        Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+
+    }
+
 
     private fun setupListeners() {
         // Remove the old listener setup and use the one in setupRecyclerView()
