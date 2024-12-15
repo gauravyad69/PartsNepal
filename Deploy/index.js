@@ -108,6 +108,44 @@ async function buildAndRunJava() {
     }
 }
 
+// Add this near the top of index.js
+async function setupCloudflaredTunnel() {
+    try {
+        const tunnelToken = 'eyJhIjoiNDMwZTc0ZmU3NTZlY2E1ODBhZTQ4N2Q0Mzk3ZjJiZWQiLCJ0IjoiZDc3MDgxYWYtNjFmNi00MWEwLTkyYWMtZDJmMjMyNmY4Y2NjIiwicyI6Ik4yUTNNVE13T1RZdFpEUXdOaTAwTVRZeExUazRZamt0TjJSaFlUSXdZMlV6TW1JNSJ9'; // Replace with your token
+        const tunnelProcess = exec(`cloudflared tunnel run --token ${tunnelToken}`);
+        
+        const tunnelToken2 = 'eyJhIjoiNDMwZTc0ZmU3NTZlY2E1ODBhZTQ4N2Q0Mzk3ZjJiZWQiLCJ0IjoiNTJkOThjYjYtNTUzZC00MTJkLTliMzQtNDg1YzQ0YjkyMTlhIiwicyI6Ik1qUmtOV0l5TkRjdE5XTTJNaTAwWmpnM0xUZzJNV1l0WkRreU1HWXhNREUxTmpGbCJ9'; // Replace with your token
+        const tunnelProcess2 = exec(`cloudflared tunnel run --token ${tunnelToken2}`);
+        
+
+
+        tunnelProcess.stdout.on('data', (data) => {
+            console.log('Cloudflared:', data);
+            buildLogs.push({
+                timestamp: new Date(),
+                type: 'cloudflared',
+                message: data
+            });
+        });
+
+        tunnelProcess.stderr.on('data', (data) => {
+            console.error('Cloudflared Error:', data);
+            buildLogs.push({
+                timestamp: new Date(),
+                type: 'error',
+                message: `Cloudflared: ${data}`
+            });
+        });
+    } catch (error) {
+        console.error('Cloudflared setup error:', error);
+        buildLogs.push({
+            timestamp: new Date(),
+            type: 'error',
+            message: `Cloudflared setup error: ${error.message}`
+        });
+    }
+}
+
 // Routes
 app.get('/', (req, res) => {
     const page = parseInt(req.query.page) || 1;
