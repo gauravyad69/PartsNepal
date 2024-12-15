@@ -31,7 +31,7 @@ async function checkGitChanges() {
         const { stdout: pwdOutput } = await execPromise('pwd');
         console.log(pwdOutput);
         // Navigate to the repository directory
-        const repoPath = 'autovio_app/PartsNepal/API/partsnepal-api/';
+        const repoPath = '/home/partscom/autovio_app/PartsNepal/API/partsnepal-api/';
         process.chdir(repoPath);
         const { stdout: pwdOutput2 } = await execPromise('pwd');
         console.log(pwdOutput2);
@@ -61,7 +61,7 @@ async function buildAndRunJava() {
         applicationStatus.currentStatus = 'building';
         
         // Navigate to Java project directory
-        const javaProjectPath = 'autovio_app/PartsNepal/API/partsnepal-api/';
+        const javaProjectPath = '/home/partscom/autovio_app/PartsNepal/API/partsnepal-api/';
         process.chdir(javaProjectPath);
         console.log(javaProjectPath);
         const { stdout: pwdOutput } = await execPromise('pwd');
