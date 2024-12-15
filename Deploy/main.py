@@ -179,16 +179,7 @@ def background_tasks():
 background_thread = threading.Thread(target=background_tasks, daemon=True)
 background_thread.start()
 
-# Add new route for health status
-@app.route('/manage/health')
-def health():
-    success, health_data = health_checker.check_java_app_health()
-    return {
-        "healthy": success,
-        "details": health_data
-    }
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0')
