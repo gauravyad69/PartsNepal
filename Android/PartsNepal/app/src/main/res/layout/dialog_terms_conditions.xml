@@ -12,8 +12,8 @@
     <WebView
         android:id="@+id/webviewForTerms"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9" />
+        android:layout_height="500dp"
+        android:minHeight="400dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

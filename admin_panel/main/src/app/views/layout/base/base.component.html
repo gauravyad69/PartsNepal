@@ -1,0 +1,19 @@
+<div class="main-wrapper">
+
+  <div class="content">
+    <app-header></app-header>
+    
+    @if (isLoading) {
+        <div class="spinner-wrapper">
+            <!-- loader content -->
+        </div>
+    }
+    @if (!(isLoading)) {
+        <div contentAnimate>
+            <router-outlet (activate)="onActivate($event)"></router-outlet>
+        </div>
+    }
+    
+    <app-footer></app-footer>
+  </div>
+</div>

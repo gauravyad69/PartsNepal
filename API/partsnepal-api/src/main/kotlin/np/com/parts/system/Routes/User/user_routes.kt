@@ -142,13 +142,11 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
                         ?: return@patch call.respond(HttpStatusCode.BadRequest, "Status is required")
 
                     if (status=="ACTIVE"){
-                        var updated = userService.updateAccountStatus(userId, status = AccountStatus.ACTIVE)
-                        call.respond(HttpStatusCode.OK, "Updated Status")
-
-
+                        val updated = userService.updateAccountStatus(userId, status = AccountStatus.ACTIVE)
+                        call.respond(HttpStatusCode.OK, "Updated Status, $updated")
 
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "User not found")
+                        call.respond(HttpStatusCode.BadRequest, "can only set to active")
                     }
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, "Error updating preferences")
@@ -172,6 +170,29 @@ fun Route.authenticatedUserRoutes(userService: UserService) {
                         call.respond(HttpStatusCode.OK, Creds(user.user.email!!, user.credentials.hashedPassword!!))
                     } else {
                         call.respond(HttpStatusCode.NotFound, "User not found")
+                    }
+                } catch (e: Exception) {
+                    application.log.error("Error in GET /users/email", e)
+                    call.respond(HttpStatusCode.InternalServerError, "Error fetching user email")
+                }
+            }
+
+
+            get("/status") {
+                try {
+                    val principal = call.principal<JWTPrincipal>()
+                    if (principal == null) {
+                        call.respond(HttpStatusCode.Unauthorized, "Not authenticated")
+                        return@get
+                    }
+
+                    val userId = UserId(principal.payload.getClaim("userId").asInt())
+                    val status = userService.getUserAccountStatusById(userId)
+
+                    if (status != null) {
+                        call.respond(HttpStatusCode.OK, status)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound, "User not found or some other error")
                     }
                 } catch (e: Exception) {
                     application.log.error("Error in GET /users/email", e)

@@ -169,7 +169,7 @@ class RegisterFragment : Fragment() {
         webviewByTerms.settings.javaScriptEnabled = false
 
         // Load a URL
-        webviewByTerms.loadUrl("https://www.example.com")
+        webviewByTerms.loadUrl(url)
 
         // Handle navigation within the WebView
         webviewByTerms.webViewClient = WebViewClient()

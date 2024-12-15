@@ -226,6 +226,33 @@ class AuthRepository @Inject constructor(
     }
 
 
+    suspend fun getAccountStatus(): Result<String> {
+        try {
+            val response = client.get("$BASE_URL/users/status")
+            val body = response.body<AccountStatus>()
+            when (response.status.value) {
+                HttpStatusCode.OK.value -> {
+                    Result.success(body.name)
+                }
+                HttpStatusCode.Unauthorized.value -> {
+                    Result.failure<Exception>(Exception("Unauthorized request"))
+                }
+                else -> {
+                    val error = response.body<ErrorResponse>()
+                    AuthResult.Error(
+                        AuthError.UNKNOWN_ERROR,
+                        error.message
+                    )
+                }
+            }
+            return if (response.status== HttpStatusCode.OK) Result.success(body.name) else Result.failure(Exception("Failed"))
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to update account status")
+            return Result.failure(e)
+        }
+    }
+
+
     fun logout() {
         tokenManager.clearToken()
     }

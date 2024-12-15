@@ -61,7 +61,9 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        binding.helpButton.setOnClickListener{
+            Toast.makeText(requireContext(), "Whatsapp-+977 9852034331", Toast.LENGTH_SHORT).show()
+        }
         binding.privacyPolicyButton.setOnClickListener{
             showLibraryDialog(true)
         }
@@ -216,7 +218,7 @@ class ProfileFragment : Fragment() {
         webviewByTerms.settings.javaScriptEnabled = false
 
         // Load a URL
-        webviewByTerms.loadUrl("https://www.example.com")
+        webviewByTerms.loadUrl(url)
 
         // Handle navigation within the WebView
         webviewByTerms.webViewClient = WebViewClient()

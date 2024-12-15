@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Application Logs</title>
+    <style>
+        .logs-panel {
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+        .log-entry {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .date-selector {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logs-panel">
+        <div class="date-selector">
+            <form method="GET">
+                <input type="date" name="date" value="{{ current_date }}">
+                <button type="submit">View Logs</button>
+            </form>
+        </div>
+
+        <div class="logs-content">
+            {% for log in logs.items %}
+            <div class="log-entry {{ log.level }}">
+                <span class="time">{{ log.timestamp }}</span>
+                <span class="message">{{ log.message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if logs.has_prev or logs.has_next %}
+        <div class="pagination">
+            {% if logs.has_prev %}
+            <a href="{{ url_for('logs', page=logs.prev_num, date=current_date) }}">Previous</a>
+            {% endif %}
+            
+            {% if logs.has_next %}
+            <a href="{{ url_for('logs', page=logs.next_num, date=current_date) }}">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

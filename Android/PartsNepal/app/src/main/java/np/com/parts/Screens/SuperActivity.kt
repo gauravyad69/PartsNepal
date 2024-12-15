@@ -2,6 +2,7 @@ package np.com.parts.Screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -25,6 +26,8 @@ import androidx.navigation.findNavController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
+import np.com.parts.API.Models.AccountStatus
+import np.com.parts.API.Repository.AuthRepository
 import np.com.parts.API.TokenManager
 import np.com.parts.Screens.StartingScreens.VerifyEmailFragment
 import javax.inject.Inject
@@ -39,6 +42,9 @@ class SuperActivity : AppCompatActivity() {
 
     @Inject
     lateinit var tokenManager: TokenManager
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,9 +80,15 @@ class SuperActivity : AppCompatActivity() {
 
 
         if (tokenManager.hasToken()){
-            val isVerified = Firebase.auth.currentUser?.isEmailVerified
-            if (isVerified!=true){
-                startFragment(VerifyEmailFragment())
+            lifecycleScope.launch{
+                val accountStatus = authRepository.getAccountStatus()
+                if (accountStatus.getOrDefault("ACTIVE")=="PENDING_VERIFICATION"){
+                    startFragment(VerifyEmailFragment())
+                }
+
+                if (accountStatus.getOrDefault("ACTIVE")== "SUSPENDED"){
+                    Toast.makeText(this@SuperActivity, "Your Account has been suspended, please contact support", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

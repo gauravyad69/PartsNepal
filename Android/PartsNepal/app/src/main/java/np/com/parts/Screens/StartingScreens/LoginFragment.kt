@@ -79,8 +79,11 @@ class LoginFragment : Fragment() {
                 when (val result = authRepository.login(identifier, password, isPhoneLogin)) {
                     is AuthRepository.AuthResult.Success -> {
                         // Login successful
-                        NavHostFragment.findNavController(this@LoginFragment)
-                            .navigate(R.id.action_loginFragment_to_homeFragment)
+                        Toast.makeText(requireContext(), "Login Successful!", Toast.LENGTH_SHORT).show()
+                        requireActivity().finish() // Close the current activity
+                        requireActivity().startActivity(requireActivity().intent)
+//                        NavHostFragment.findNavController(this@LoginFragment)
+//                            .navigate(R.id.action_loginFragment_to_homeFragment)
                     }
                     is AuthRepository.AuthResult.Error -> {
                         // Handle specific error cases
