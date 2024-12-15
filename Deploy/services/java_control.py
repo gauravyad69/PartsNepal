@@ -5,7 +5,7 @@ import psutil
 from datetime import datetime
 
 class JavaAppController:
-    def __init__(self, app_path, java_class="com.example.Application"):
+    def __init__(self, app_path, java_class="np.com.parts.ApplicationKt"):
         self.app_path = app_path
         self.java_class = java_class
         self.process = None

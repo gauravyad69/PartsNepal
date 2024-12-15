@@ -108,6 +108,33 @@ def status():
                              app_running=app_running)
     except Exception as e:
         return f"Error: {str(e)}", 500
+    
+@app.route('/manage/logs')
+def logs():
+    try:
+        # Get Python logs from stderr.log
+        python_logs = []
+        try:
+            with open('stderr.log', 'r') as f:
+                python_logs = f.readlines()
+        except Exception as e:
+            python_logs = [f"Error reading Python logs: {str(e)}"]
+
+        # Get Java logs directly from the running application
+        java_logs = []
+        try:
+            response = requests.get(f"{app.config.get('JAVA_APP_URL')}/logs")
+            if response.status_code == 200:
+                java_logs = response.json()
+        except Exception as e:
+            java_logs = [{"timestamp": datetime.now(), "level": "ERROR", 
+                         "message": f"Error fetching Java logs: {str(e)}"}]
+
+        return render_template('logs.html',
+                             python_logs=python_logs,
+                             java_logs=java_logs)
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
 # Start background tasks
 background_thread = threading.Thread(target=background_tasks, daemon=True)
