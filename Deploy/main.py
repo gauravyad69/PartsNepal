@@ -36,12 +36,14 @@ health_checker = HealthChecker(app.config['JAVA_APP_URL'],
 
 # Database Models
 class Log(db.Model):
+    __tablename__ = 'log'
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     message = db.Column(db.Text, nullable=False)
     level = db.Column(db.String(20), nullable=False)
 
 class StatusEvent(db.Model):
+    __tablename__ = 'status_event'
     id = db.Column(db.Integer, primary_key=True)
     event_type = db.Column(db.String(50), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -179,7 +181,16 @@ def background_tasks():
 background_thread = threading.Thread(target=background_tasks, daemon=True)
 background_thread.start()
 
-if __name__ == '__main__':
+def init_db():
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            print("Database tables created successfully")
+        except Exception as e:
+            print(f"Error creating database tables: {e}")
+
+# Initialize database
+init_db()
+
+if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
