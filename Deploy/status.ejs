@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Application Status</title>
+    <style>
+        .status-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Application Status</h1>
+    
+    <div class="status-item">
+        <strong>Current Status:</strong> <%= status.currentStatus %>
+    </div>
+    
+    <div class="status-item">
+        <strong>Last Git Pull:</strong> <%= status.lastGitPull ? new Date(status.lastGitPull).toLocaleString() : 'Never' %>
+    </div>
+    
+    <div class="status-item">
+        <strong>Last Build Time:</strong> <%= status.lastBuildTime ? new Date(status.lastBuildTime).toLocaleString() : 'Never' %>
+    </div>
+    
+    <% if (status.lastError) { %>
+        <div class="status-item error">
+            <strong>Last Error:</strong>
+            <pre><%= status.lastError %></pre>
+        </div>
+    <% } %>
+</body>
+</html>
