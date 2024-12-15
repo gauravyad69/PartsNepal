@@ -8,7 +8,6 @@ import subprocess
 import requests
 from services.java_control import JavaAppController
 from services.git_service import GitService
-from services.log_collector import LogCollector
 import threading
 import time
 
@@ -24,6 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['REPO_PATH'] = os.getenv('REPO_PATH', '/home/partscom/autovio_app/PartsNepal/API/partsnepal-api')
 app.config['ADMIN_PASSWORD'] = '4~i**cp0GsT;'  # Hardcoded admin password
+app.config['JAVA_APP_URL'] = os.getenv('JAVA_APP_URL', 'http://localhost:9090')
 
 db = SQLAlchemy(app)
 
@@ -44,24 +44,23 @@ class Log(db.Model):
     level = db.Column(db.String(20), nullable=False)
 
 # Initialize services
+java_controller = None
+git_service = None
+
 try:
     java_controller = JavaAppController(os.path.join(app.config['REPO_PATH'], 'API/partsnepal-api'))
-    git_service = GitService(app.config['REPO_PATH'])
-    log_collector = LogCollector(app.config['JAVA_APP_URL'])
 except Exception as e:
-    print(f"Error initializing services: {e}")
+    print(f"Error initializing Java controller: {e}")
+
+try:
+    git_service = GitService(app.config['REPO_PATH'])
+except Exception as e:
+    print(f"Error initializing Git service: {e}")
 
 def background_tasks():
     with app.app_context():
         while True:
-            try:
-                # Collect logs
-                success, logs_data = log_collector.fetch_logs()
-                if success:
-                    log_collector.store_logs(db, Log, logs_data)
-            except Exception as e:
-                print(f"Background task error: {str(e)}")
-            time.sleep(60)
+            time.sleep(60)  # Sleep for 60 seconds between checks
 
 @app.route('/manage/status', methods=['GET', 'POST'])
 def status():
@@ -71,7 +70,7 @@ def status():
             return redirect(url_for('status'))
 
         action = request.form.get('action')
-        if action == 'start':
+        if action == 'start' and java_controller:
             success, message = java_controller.start()
             status = 'success' if success else 'failure'
             db.session.add(StatusEvent(
@@ -79,7 +78,7 @@ def status():
                 status=status,
                 details=message
             ))
-        elif action == 'stop':
+        elif action == 'stop' and java_controller:
             success, message = java_controller.stop()
             status = 'success' if success else 'failure'
             db.session.add(StatusEvent(
@@ -87,7 +86,7 @@ def status():
                 status=status,
                 details=message
             ))
-        elif action == 'rebuild':
+        elif action == 'rebuild' and git_service:
             success, message = git_service.pull_changes()
             status = 'success' if success else 'failure'
             db.session.add(StatusEvent(
@@ -101,14 +100,14 @@ def status():
 
     try:
         latest_events = StatusEvent.query.order_by(StatusEvent.timestamp.desc()).limit(5).all()
-        app_running = java_controller.is_running()
+        app_running = java_controller.is_running() if java_controller else False
         
         return render_template('status.html', 
                              events=latest_events, 
                              app_running=app_running)
     except Exception as e:
         return f"Error: {str(e)}", 500
-    
+
 @app.route('/manage/logs')
 def logs():
     try:
@@ -123,7 +122,7 @@ def logs():
         # Get Java logs directly from the running application
         java_logs = []
         try:
-            response = requests.get(f"{app.config.get('JAVA_APP_URL')}/logs")
+            response = requests.get(f"{app.config['JAVA_APP_URL']}/logs")
             if response.status_code == 200:
                 java_logs = response.json()
         except Exception as e:
