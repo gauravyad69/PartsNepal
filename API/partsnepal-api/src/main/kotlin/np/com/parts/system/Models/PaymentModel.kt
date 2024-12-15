@@ -6,14 +6,14 @@ import org.bson.types.ObjectId
 
 @Serializable
 data class KhaltiPaymentRequestAsClient(
-    val return_url: String = "https://example.com/payment/",
-    val website_url: String="https://example.com/",
+    val return_url: String = "https://partsapi.auracoin.tech/payment-success",
+    val website_url: String="https://partsapi.auracoin.tech/payment-success",
     val amount: Int,
     val purchase_order_id: String,
     val purchase_order_name: String,
     val customer_info: KhaltiCustomerInfoAsClient,
-    val amount_breakdown: List<KhaltiAmountBreakdownAsClient>,
-    val product_details: List<KhaltiProductDetailAsClient>,
+    val amount_breakdown: List<KhaltiAmountBreakdownAsClient>?= emptyList(),
+    val product_details: List<KhaltiProductDetailAsClient>?= emptyList(),
     val merchant_username: String = "Parts Nepal",
     val merchant_extra: String ="Car auto parts shop - parts.com.np"
 )
@@ -29,6 +29,7 @@ data class KhaltiCustomerInfoAsClient(
 data class KhaltiAmountBreakdownAsClient(
     val label: String,
     val amount: Int
+
 )
 @Serializable
 data class KhaltiProductDetailAsClient(

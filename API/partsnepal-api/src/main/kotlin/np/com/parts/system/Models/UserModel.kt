@@ -76,7 +76,7 @@ data class UserEngagement(
 data class UserModel(
     val userId: UserId,
     val username: String,
-    val email: Email? = null,
+    val email: Email,
     val firstName: String,
     val lastName: String,
     val phoneNumber: PhoneNumber,

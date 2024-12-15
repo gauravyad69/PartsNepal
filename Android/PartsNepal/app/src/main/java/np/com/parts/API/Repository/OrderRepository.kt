@@ -89,4 +89,17 @@ class OrderRepository @Inject constructor(private val client: HttpClient) {
         }
     }
 
+    suspend fun checkForDiscount(discountCode: String): Result<OrderSummary> {
+        return try {
+            val response = client.get("$BASE_URL/discount") {
+                contentType(ContentType.Application.Json)
+                parameter("code", discountCode)
+            }
+            Result.success(response.body())
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get cart summary")
+            Result.failure(e)
+        }
+    }
+
 }

@@ -1,10 +1,14 @@
 package np.com.parts.Screens.NavScreens
 
+import android.app.AlertDialog
 import np.com.parts.ViewModels.UserProfileViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -56,6 +60,17 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.helpButton.setOnClickListener{
+            Toast.makeText(requireContext(), "Whatsapp-+977 9852034331", Toast.LENGTH_SHORT).show()
+        }
+        binding.privacyPolicyButton.setOnClickListener{
+            showLibraryDialog(true)
+        }
+
+        binding.termsAndConditionsButton.setOnClickListener{
+            showLibraryDialog(false)
+        }
 
         binding.logoutButton.setOnClickListener{
         tokenManager.clearToken()
@@ -172,6 +187,44 @@ class ProfileFragment : Fragment() {
     private fun showError(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
+
+    fun showLibraryDialog(privacypolicy: Boolean) {
+        var url = ""
+        if (privacypolicy==true){
+            url="https://gauravyad69.github.io/misc/partsnepal/privacy.html"
+        }else{
+            url="https://gauravyad69.github.io/misc/partsnepal/terms.html"
+        }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_terms_conditions, null)
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        val stayButton = dialogView.findViewById<Button>(R.id.button_stay)
+        val quitButton = dialogView.findViewById<Button>(R.id.button_quit)
+        val webviewByTerms = dialogView.findViewById<WebView>(R.id.webviewForTerms)
+        stayButton.setOnClickListener {
+            // Close the dialog and stay in the app
+            alertDialog.dismiss()
+        }
+
+        quitButton.setOnClickListener {
+            // Quit the app or handle the quit logic
+            requireActivity().finishAffinity()
+        }
+
+        webviewByTerms.settings.javaScriptEnabled = false
+
+        // Load a URL
+        webviewByTerms.loadUrl(url)
+
+        // Handle navigation within the WebView
+        webviewByTerms.webViewClient = WebViewClient()
+        alertDialog.show()
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -1,9 +1,13 @@
 package np.com.parts.Screens.StartingScreens
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +33,8 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
 
+    var isAgreed = false
+
     @Inject
     lateinit var authRepository: AuthRepository
 
@@ -43,7 +49,21 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.registerButton.setOnClickListener {
+
+
+            binding.termsandcondition.setOnClickListener{
+                showLibraryDialog(false)
+            }
+
+            binding.privacypolicy.setOnClickListener{
+                showLibraryDialog(true)
+            }
+
             registerUser()
+
+
+
+
         }
     }
 
@@ -119,6 +139,43 @@ class RegisterFragment : Fragment() {
     }
 
 
+     fun showLibraryDialog(privacypolicy: Boolean) {
+         var url = ""
+         if (privacypolicy==true){
+              url="https://gauravyad69.github.io/misc/partsnepal/privacy.html"
+         }else{
+             url="https://gauravyad69.github.io/misc/partsnepal/terms.html"
+         }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_terms_conditions, null)
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        val stayButton = dialogView.findViewById<Button>(R.id.button_stay)
+        val quitButton = dialogView.findViewById<Button>(R.id.button_quit)
+        val webviewByTerms = dialogView.findViewById<WebView>(R.id.webviewForTerms)
+        stayButton.setOnClickListener {
+            // Close the dialog and stay in the app
+            alertDialog.dismiss()
+        }
+
+        quitButton.setOnClickListener {
+            // Quit the app or handle the quit logic
+            requireActivity().finishAffinity()
+        }
+
+        webviewByTerms.settings.javaScriptEnabled = false
+
+        // Load a URL
+        webviewByTerms.loadUrl(url)
+
+        // Handle navigation within the WebView
+        webviewByTerms.webViewClient = WebViewClient()
+        alertDialog.show()
+    }
+
 
 //    // Helper functions
 //    private fun showLoading(isLoading: Boolean) {
@@ -161,3 +218,4 @@ class RegisterFragment : Fragment() {
         _binding = null
     }
 }
+

@@ -2,6 +2,7 @@ package np.com.parts.API.Models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.text.NumberFormat
 
 @Serializable
 data class Money(
@@ -36,5 +37,9 @@ enum class DiscountType {
 }
 
 fun Money.formatted(): String {
-    return "Rs. ${java.text.NumberFormat.getNumberInstance().format(amount)}"
-} 
+    return "Rs. ${java.text.NumberFormat.getNumberInstance().format(amount/100)}"
+}
+
+fun formatPrice(amount: Long, currency: String): String {
+    return "$currency ${NumberFormat.getNumberInstance().format(amount/100)}"
+}

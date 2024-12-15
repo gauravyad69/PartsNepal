@@ -38,7 +38,11 @@
         android:id="@+id/verifyEmailFragment"
         android:name="np.com.parts.Screens.StartingScreens.VerifyEmailFragment"
         android:label="VerifyEmailFragment"
-        tools:layout="@layout/fragment_verify_email"/>
+        tools:layout="@layout/fragment_verify_email">
+        <action
+            android:id="@+id/action_verifyEmailFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 
 
 
@@ -176,6 +180,9 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_verifyEmailFragment"
+            app:destination="@id/verifyEmailFragment" />
     </fragment>
     <fragment
         android:id="@+id/otherFragment"

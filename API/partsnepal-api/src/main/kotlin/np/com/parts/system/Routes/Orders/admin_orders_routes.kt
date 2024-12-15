@@ -10,6 +10,8 @@ import np.com.parts.system.Models.*
 import np.com.parts.system.Services.OrderService
 import org.bson.conversions.Bson
 import com.mongodb.client.model.Filters
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import kotlinx.serialization.Serializable
 
 // Request models for admin operations
@@ -46,7 +48,7 @@ fun Route.adminOrderRoutes(orderService: OrderService) {
                     toDate = call.parameters["toDate"]?.toLongOrNull(),
                     customerId = call.parameters["customerId"]?.toIntOrNull()
                 )
-                
+
                 val skip = call.parameters["skip"]?.toIntOrNull() ?: 0
                 val limit = call.parameters["limit"]?.toIntOrNull() ?: 50
 
@@ -171,6 +173,105 @@ fun Route.adminOrderRoutes(orderService: OrderService) {
         }
     }
 }
+
+fun Route.adminDiscountRoutes(orderService: OrderService) {
+    route("/admin/discount") {
+        post {
+            try {
+                val principal = call.principal<JWTPrincipal>()
+                val userid = principal!!.payload.getClaim("userId").asInt()
+                val request = call.receive<DiscountModel>()
+
+                // Ensure the order is created for the authenticated user
+//                val order = orderRequest.toOrderModel(customerId)
+                val created = orderService.createDiscountCode(userid,request)
+
+                if (created.isSuccess) {
+                    call.respond(HttpStatusCode.Created, created.getOrNull()?:"Code Created Successfully, But couldn't retrieved it")
+                } else {
+                    call.respond(HttpStatusCode.Conflict, "Code already exists")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error creating Code: ${e.message}")
+            }
+        }
+        // GET - Get all orders with filtering and pagination
+        get {
+            try {
+
+
+                val discountCodes = orderService.getAllDiscountCodes()
+                call.respond(HttpStatusCode.OK, discountCodes)
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid : ${e.message}")
+            } catch (e: Exception) {
+                application.log.error("Error fetching orders", e)
+                call.respond(HttpStatusCode.InternalServerError, "Error fetching discount code: ${e.message}")
+            }
+        }
+
+        // GET - Get specific order
+        get("{code}") {
+            try {
+                val code = call.parameters["code"]
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "code is required")
+
+                val details = orderService.getDiscountCodeDetailsByCode(code)
+                if (details != null) {
+                    call.respond(HttpStatusCode.OK, details)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "code not found")
+                }
+            } catch (e: Exception) {
+                application.log.error("Error fetching code details", e)
+                call.respond(HttpStatusCode.InternalServerError, "Error fetching discount code details: ${e.message}")
+            }
+        }
+
+        // PATCH - Update order status
+        patch("{code}") {
+            try {
+                val code = call.parameters["code"]
+                    ?: return@patch call.respond(HttpStatusCode.BadRequest, "code number is required")
+
+                val request = call.receive<DiscountModel>()
+
+                val result = orderService.updateDiscountCode(request)
+
+                result.fold(
+                    onSuccess = { result ->
+                        call.respond(HttpStatusCode.OK, result)
+                    },
+                    onFailure = { error ->
+                        when (error) {
+                            is NoSuchElementException -> call.respond(HttpStatusCode.NotFound, "Code not found")
+                            else -> call.respond(HttpStatusCode.BadRequest, error.message ?: "Failed to update code")
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                application.log.error("Error updating code details", e)
+                call.respond(HttpStatusCode.InternalServerError, "Error updating code details: ${e.message}")
+            }
+        }
+
+
+        // DELETE - Cancel order
+        delete("{code}") {
+            try {
+                val code = call.parameters["code"]
+                    ?: return@delete call.respond(HttpStatusCode.BadRequest, "Order number is required")
+
+                val result = orderService.deleteDiscountCodeDetails(code)
+
+            } catch (e: Exception) {
+                application.log.error("Error deleting code", e)
+                call.respond(HttpStatusCode.InternalServerError, "Error deleting code: ${e.message}")
+            }
+        }
+    }
+}
+
 
 private fun buildMongoFilters(filters: OrderFilters): List<Bson> {
     return buildList {

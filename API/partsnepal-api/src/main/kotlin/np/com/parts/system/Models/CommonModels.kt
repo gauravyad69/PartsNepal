@@ -11,10 +11,12 @@ interface BaseModel {
 
 @Serializable
 data class Money(
-    val amount: Long,
+    var amount: Long,
     val currency: String = "NPR"
 ) {
     fun formatted(): String = "Rs. ${java.text.NumberFormat.getNumberInstance().format(amount)}"
+
+
 }
 
 @Serializable
@@ -85,3 +87,8 @@ fun OrderModel.formattedTotal(): String = summary.total.formatted()
 fun OrderModel.formattedDate(): String =
     java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
         .format(java.util.Date(orderDate))
+
+fun Long.toKhaltiAmount(): Int {
+    var amount= Money(this).amount
+    return amount.toInt()
+}

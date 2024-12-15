@@ -54,33 +54,31 @@ class PaymentService(
         try {
             println("Starting Khalti For $userId with ${paymentRequestModel}")
 
-
             val customerInfo = userService.getUserById(UserId(userId))!!
             val orderInfo= orderService.getOrderByNumber(paymentRequestModel.purchase_order_name)
 
-            val requestBody=
-                KhaltiPaymentRequestAsClient(
-                    amount = orderInfo!!.items.sumOf { it.totalPrice.amount.toInt() },
+            val requestBody=KhaltiPaymentRequestAsClient(
+                    amount = orderInfo!!.summary.total.amount.toInt(),
                     purchase_order_id = orderInfo.orderNumber,
                     purchase_order_name = paymentRequestModel.purchase_order_name,
-                    amount_breakdown = orderInfo.items.map { items ->
-                        KhaltiAmountBreakdownAsClient(
-                            label = items.name,
-                            amount = (items.unitPrice.amount.toInt()*items.quantity )
-                        )
-                    },
+//                    amount_breakdown = orderInfo.items.map { items ->
+//                        KhaltiAmountBreakdownAsClient(
+//                            label = items.name,
+//                            amount = (items.unitPrice.amount*items.quantity ).toKhaltiAmount()
+//                        )
+//                    },
                     customer_info = KhaltiCustomerInfoAsClient(
                         customerInfo.fullName,
-                        customerInfo.email!!.value ?: "fj",
+                        customerInfo.email.value ?: "error@gmail.com",
                         customerInfo.phoneNumber.value
                     ),
                     product_details = orderInfo.items.map { item ->
                     KhaltiProductDetailAsClient(
                         identity = item.id,
                         name = item.name,
-                        total_price = item.totalPrice.amount.toInt(), // Assuming each item has price and quantity
+                        total_price = item.totalPrice.amount.toKhaltiAmount(), // Assuming each item has price and quantity
                         quantity = item.quantity,
-                        unit_price = item.unitPrice.amount.toInt()
+                        unit_price = item.unitPrice.amount.toKhaltiAmount()
                     )
                 }
 
@@ -91,10 +89,10 @@ class PaymentService(
 //                header("Authorization", "key 0d189d52c15041d781b0907abf346724")
                 setBody(requestBody)
             }
-            val responseText = response.bodyAsText()
-            println("Raw Response: $responseText")
+//            val responseText = response.bodyAsText()
+//            println("Raw Response: $responseText")
 
-            println("Response: $response")
+//            println("Response: $response")
 
                 val body = response.body<KhaltiPaymentResponse>()
             println("body: $body")
@@ -139,8 +137,8 @@ class PaymentService(
 //                header("Authorization", "key 0d189d52c15041d781b0907abf346724")
                 setBody(requestBody)
             }
-            val responseText = response.bodyAsText()
-            println("Raw Response: $responseText")
+//            val responseText = response.bodyAsText()
+//            println("Raw Response: $responseText")
 
             val temu = response.body<VerificationResponse>()
 
@@ -168,11 +166,11 @@ class PaymentService(
                 val newTransaction = PaidTransactions(
                     pidx = pidx,
                     items = orderInfo.items,
-                    amount = orderInfo.items.sumOf { it.totalPrice.amount.toInt() },
+                    amount = orderInfo.summary.total.amount.toKhaltiAmount(),
                     amount_breakdown = orderInfo.items.map { items ->
                         KhaltiAmountBreakdownAsClient(
                             label = items.name,
-                            amount = (items.unitPrice.amount.toInt() * items.quantity)
+                            amount = (items.unitPrice.amount * items.quantity).toKhaltiAmount()
                         )
                     }
                 )
@@ -254,7 +252,7 @@ class PaymentService(
                 val newTransaction = PaidTransactions(
                     pidx = pidx,
                     items = orderInfo.items,
-                    amount = orderInfo.items.sumOf { it.totalPrice.amount.toInt() },
+                    amount = orderInfo.summary.total.amount.toInt(),
                     amount_breakdown = orderInfo.items.map { items ->
                         KhaltiAmountBreakdownAsClient(
                             label = items.name,

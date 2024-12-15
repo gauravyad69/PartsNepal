@@ -35,6 +35,7 @@ import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 import java.text.NumberFormat
 import kotlin.math.roundToInt
 import dagger.hilt.android.AndroidEntryPoint
+import np.com.parts.API.Models.formatPrice
 
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
@@ -117,10 +118,6 @@ class ProductFragment : Fragment() {
         _binding = null
     }
 
-
-    private fun formatPrice(amount: Long, currency: String): String {
-        return "$currency ${NumberFormat.getNumberInstance().format(amount)}"
-    }
 
     private fun setupRecyclerView() {
         // Setup RecyclerView

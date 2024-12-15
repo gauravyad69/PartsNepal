@@ -31,6 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
+                style="@style/textStyle"
                 tools:text="Product Name"/>
 
             <TextView
@@ -38,6 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                style="@style/textStyle"
                 android:textStyle="bold"
                 tools:text="Rs. 15,000"/>
 
@@ -48,6 +50,7 @@
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="16dp"
                 app:rippleColor="@color/primary"
+                android:layout_gravity="end"
                 app:cardElevation="0dp"
                 app:strokeColor="#dddddd"
                 android:layout_marginTop="4dp"

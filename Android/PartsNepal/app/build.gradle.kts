@@ -1,3 +1,4 @@
+import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -6,11 +7,18 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")  // Add this line
+    id("kotlin-kapt")
+    alias(libs.plugins.google.gms.google.services)  // Add this line
 
 }
 
+val keystoreProperties = Properties().apply {
+    load(file("keystore.properties").inputStream())
+}
+
 android {
+
+
     namespace = "np.com.parts"
     compileSdk = 34
 
@@ -18,17 +26,31 @@ android {
         applicationId = "np.com.parts"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
+
+    }
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -67,6 +89,7 @@ dependencies {
     implementation("com.github.javafaker:javafaker:1.0.2")
     // Replace existing Hilt dependencies with these
     implementation("com.google.dagger:hilt-android:2.52")
+    implementation(libs.firebase.auth)
     kapt("com.google.dagger:hilt-android-compiler:2.52")  // Change ksp to kapt
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0")  // Change ksp to kapt
@@ -75,6 +98,9 @@ dependencies {
     implementation ("com.github.skydoves:powerspinner:1.2.7")
     implementation ("com.github.yusufonderd:BasketLayout:1.0")
     implementation ("com.github.parniyan7:DotLoading:4.0.0")
+
+    //for showing terms and conditions
+    implementation("com.github.mukeshsolanki:MarkdownView-Android:2.0.0")
 
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)

@@ -1,20 +1,26 @@
 package np.com.parts.API.Repository
 
+import android.annotation.SuppressLint
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import android.content.Context
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.errors.IOException
+import kotlinx.serialization.Serializable
 import np.com.parts.API.Auth.AuthError
 import np.com.parts.API.Auth.AuthResponse
 import np.com.parts.API.Auth.ErrorResponse
 import np.com.parts.API.Auth.LoginRequest
 import np.com.parts.API.Auth.RegisterRequest
 import np.com.parts.API.BASE_URL
+import np.com.parts.API.Models.AccountStatus
 import np.com.parts.API.Models.AccountType
+import np.com.parts.API.Models.Email
 import np.com.parts.API.TokenManager
 import timber.log.Timber
 import java.util.Timer
@@ -159,6 +165,94 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    suspend fun getEmail(): Result<Creds>{
+        try {
+
+            val response = client.get("$BASE_URL/users/email")
+
+            when (response.status.value) {
+                HttpStatusCode.OK.value -> {
+
+                }
+                HttpStatusCode.Unauthorized.value -> {
+                    val error = response.body<ErrorResponse>()
+                    AuthResult.Error(
+                        AuthError.INVALID_CREDENTIALS,
+                        error.message
+                    )
+                }
+                else -> {
+                    val error = response.body<ErrorResponse>()
+                    AuthResult.Error(
+                        AuthError.UNKNOWN_ERROR,
+                        error.message
+                    )
+                }
+            }
+            return Result.success(response.body<Creds>())
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get email")
+            return Result.failure(e)
+        }
+    }
+
+    suspend fun updateAccountStatus(): Result<kotlin.Boolean> {
+        try {
+
+            val response = client.patch("$BASE_URL/users/status"){
+                parameter("status", AccountStatus.ACTIVE)
+            }
+
+            when (response.status.value) {
+                HttpStatusCode.OK.value -> {
+                    Result.success(true)
+                }
+                HttpStatusCode.Unauthorized.value -> {
+                    Result.success(false)
+                }
+                else -> {
+                    val error = response.body<ErrorResponse>()
+                    AuthResult.Error(
+                        AuthError.UNKNOWN_ERROR,
+                        error.message
+                    )
+                }
+            }
+            return if (response.status== HttpStatusCode.OK) Result.success(true) else Result.success(false)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to update account status")
+            return Result.failure(e)
+        }
+    }
+
+
+    suspend fun getAccountStatus(): Result<String> {
+        try {
+            val response = client.get("$BASE_URL/users/status")
+            val body = response.body<AccountStatus>()
+            when (response.status.value) {
+                HttpStatusCode.OK.value -> {
+                    Result.success(body.name)
+                }
+                HttpStatusCode.Unauthorized.value -> {
+                    Result.failure<Exception>(Exception("Unauthorized request"))
+                }
+                else -> {
+                    val error = response.body<ErrorResponse>()
+                    AuthResult.Error(
+                        AuthError.UNKNOWN_ERROR,
+                        error.message
+                    )
+                }
+            }
+            return if (response.status== HttpStatusCode.OK) Result.success(body.name) else Result.failure(Exception("Failed"))
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to update account status")
+            return Result.failure(e)
+        }
+    }
+
+
     fun logout() {
         tokenManager.clearToken()
     }
@@ -167,3 +261,10 @@ class AuthRepository @Inject constructor(
         private const val TAG = "AuthRepository"
     }
 }
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
+data class Creds(
+    val email: Email,
+    val cred: String,
+)

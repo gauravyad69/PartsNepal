@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -142,10 +143,12 @@ class OtherFragment : Fragment() {
                             // Short delay to show the success message
                             delay(500)
 
+
                             // Navigate to home
-                            findNavController().navigate(
-                                R.id.action_otherFragment_to_homeFragment
-                            )
+//                            findNavController().navigate(
+//                                R.id.action_otherFragment_to_homeFragment)
+                            requireActivity().finish() // Close the current activity
+                            requireActivity().startActivity(requireActivity().intent) // Start the activity again
                         } else {
                             showError("Failed to update profile")
                         }

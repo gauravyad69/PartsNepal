@@ -62,9 +62,9 @@ fun Application.configureAuthRoutes(userService: UserService) {
                         onFailure = { error ->
                                 val (status, code) = when {
                                 error.message?.contains("Invalid credentials") == true ->
-                HttpStatusCode.Unauthorized to "INVALID_CREDENTIALS"
-                error.message?.contains("Account is") == true ->
-                HttpStatusCode.Forbidden to "ACCOUNT_INACTIVE"
+                        HttpStatusCode.Unauthorized to "INVALID_CREDENTIALS"
+                        error.message?.contains("Account is") == true ->
+                        HttpStatusCode.Forbidden to "ACCOUNT_INACTIVE"
                             else -> HttpStatusCode.InternalServerError to "LOGIN_ERROR"
                         }
                 call.respond(
@@ -81,4 +81,6 @@ fun Application.configureAuthRoutes(userService: UserService) {
             }
         }
     }
+
+
 }

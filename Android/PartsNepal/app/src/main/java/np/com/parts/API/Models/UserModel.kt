@@ -1,5 +1,8 @@
+@file:SuppressLint("UnsafeOptInUsageError")
+
 package np.com.parts.API.Models
 
+import android.annotation.SuppressLint
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,7 +34,7 @@ value class PhoneNumber(val value: String)
 data class UserModel(
     val userId: UserId,
     val username: String,
-    val email: Email? = null,
+    val email: Email,
     val firstName: String,
     val lastName: String,
     val phoneNumber: PhoneNumber,
@@ -129,7 +132,7 @@ data class ReviewRef(
 @Serializable
 data class OrderRef(
     val orderId: String,
-    val amount: Double,
+    val amount: Long,
     val createdAt: Long
 )
 

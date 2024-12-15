@@ -80,6 +80,9 @@ class CartFragment : Fragment() {
         setupClickListeners()
         observeState()
         observeEvents()
+
+
+
     }
 
     private fun setupRecyclerView() {
@@ -113,6 +116,7 @@ class CartFragment : Fragment() {
                         is CartEvent.QuantityUpdated -> showSnackbar("Quantity updated")
                         is CartEvent.SyncEvent -> handleSyncEvent(event)
                     }
+
                 }
             }
         }
@@ -144,10 +148,36 @@ class CartFragment : Fragment() {
     private fun updateUI(state: CartState) {
         binding.apply {
             progressBar.isVisible = state is CartState.Loading
-            emptyStateLayout.isVisible = state is CartState.Empty
-            cartItemsRecyclerView.isVisible = state is CartState.Success
-            orderSummaryCard.isVisible = state is CartState.Success
 
+
+            when (state){
+                is CartState.Success -> {
+                    holderOfCart.isVisible = true
+                    emptyStateLayout.isVisible=false
+
+                }
+                is CartState.Error -> {
+                    emptyStateLayout.isVisible = true
+                    holderOfCart.isVisible=false
+                    textViewState.text="An Error Occurred"
+                }
+                is CartState.Empty -> {
+                    emptyStateLayout.isVisible = true
+                    textViewState.text="Your Cart Is Empty"
+
+                }
+                else -> Unit
+
+            }
+
+
+
+
+
+            if (state is CartState.Error) {
+                textViewState.text="An Error Occurred"
+                emptyStateLayout.isVisible=true
+            }
             when (state) {
                 is CartState.Success -> {
                     cartAdapter.submitList(state.items)

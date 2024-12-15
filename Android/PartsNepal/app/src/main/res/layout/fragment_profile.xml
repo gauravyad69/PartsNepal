@@ -133,6 +133,7 @@
                         android:drawableEnd="@drawable/ic_right_arrow"
                         android:fontFamily="@font/monasans_medium"
                         android:textSize="14dp"
+                        android:enabled="false"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -144,6 +145,7 @@
                         android:drawableTint="@color/black"
                         android:fontFamily="@font/monasans_medium"
                         android:textSize="14dp"
+                        android:enabled="false"
                         android:drawableEnd="@drawable/ic_right_arrow"
                         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
@@ -176,6 +178,7 @@
                         android:layout_height="wrap_content"
                         android:text="Notifications"
                         style="@style/textStyle"
+                        android:enabled="false"
                         android:padding="8dp"/>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -184,6 +187,8 @@
                         android:layout_height="wrap_content"
                         android:text="Dark Mode"
                         style="@style/textStyle"
+                        android:enabled="false"
+
                         android:padding="8dp"/>
 
                 </LinearLayout>
@@ -207,6 +212,30 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Help &amp; Support"
+                        android:textAlignment="textStart"
+                        android:fontFamily="@font/monasans_medium"
+                        android:textSize="14dp"
+                        android:drawableTint="@color/black"
+                        android:drawableEnd="@drawable/ic_right_arrow"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/termsAndConditionsButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Terms and Conditons"
+                        android:textAlignment="textStart"
+                        android:fontFamily="@font/monasans_medium"
+                        android:textSize="14dp"
+                        android:drawableTint="@color/black"
+                        android:drawableEnd="@drawable/ic_right_arrow"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/privacyPolicyButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Privacy Policy"
                         android:textAlignment="textStart"
                         android:fontFamily="@font/monasans_medium"
                         android:textSize="14dp"

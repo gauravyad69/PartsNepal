@@ -77,14 +77,7 @@ class AuthenticationService(
             }
 
             // Validate email if provided
-            val email = request.email?.let {
-                try {
-                    Email(it)
-                } catch (e: Exception) {
-                    println("Email validation failed: ${e.message}")
-                    return Result.failure(Exception("Invalid email format"))
-                }
-            }
+            val email = Email(request.email)
 
             val user = UserModel(
                 userId = UserId(0),
@@ -148,7 +141,7 @@ class AuthenticationService(
             }
 
             return user?.let {
-                if (user.accountStatus == AccountStatus.ACTIVE) {
+                if (user.accountStatus == AccountStatus.ACTIVE || user.accountStatus == AccountStatus.PENDING_VERIFICATION ) {
                     Result.success(AuthResponse(
                         token = generateToken(user.user),
                         user = user.user.userId.value,

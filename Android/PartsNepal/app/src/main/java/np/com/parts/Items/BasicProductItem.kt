@@ -10,6 +10,7 @@ import coil.load
 import np.com.parts.R
 import np.com.parts.databinding.ItemProductBinding
 import np.com.parts.API.Models.BasicProductView
+import np.com.parts.API.Models.formatPrice
 import java.text.NumberFormat
 
 class BasicProductItem(val product: BasicProductView) : AbstractBindingItem<ItemProductBinding>() {
@@ -60,7 +61,4 @@ class BasicProductItem(val product: BasicProductView) : AbstractBindingItem<Item
         }
     }
 
-    private fun formatPrice(amount: Long, currency: String): String {
-        return "$currency ${NumberFormat.getNumberInstance().format(amount)}"
-    }
 }

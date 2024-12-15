@@ -38,6 +38,7 @@
 
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/holderOfCart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -71,8 +72,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Order Summary"
-                        android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        style="@style/headline3TextStyle"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -84,12 +84,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            style="@style/textStyle"
                             android:text="Subtotal"/>
 
                         <TextView
                             android:id="@+id/subtotalText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            style="@style/textStyle"
                             tools:text="Rs. 15,000"/>
                     </LinearLayout>
 
@@ -103,12 +105,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            style="@style/textStyle"
                             android:text="Delivery Fee"/>
 
                         <TextView
                             android:id="@+id/deliveryFeeText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            style="@style/textStyle"
                             tools:text="Rs. 100"/>
                     </LinearLayout>
 
@@ -128,6 +132,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Total"
+                            style="@style/textStyle"
                             android:textStyle="bold"/>
 
                         <TextView
@@ -135,6 +140,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
+                            style="@style/textStyle"
                             tools:text="Rs. 15,100"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -146,6 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:padding="16dp"
+                style="@style/Button"
                 android:text="Proceed to Checkout"/>
 
         </LinearLayout>
@@ -167,6 +174,7 @@
             android:src="@drawable/plan_premium"/>
 
         <TextView
+            android:id="@+id/textViewState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

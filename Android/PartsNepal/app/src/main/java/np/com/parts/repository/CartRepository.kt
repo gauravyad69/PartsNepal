@@ -164,6 +164,7 @@ class CartRepository @Inject constructor(
     suspend fun createOrder(
         shippingDetails: ShippingDetails,
         paymentMethod: PaymentMethod,
+        discountCode: String? = null,
         notes: String? = null
     ): CreateOrderRequest = withContext(NonCancellable) {
         Timber.d("Creating order request...")
@@ -203,6 +204,7 @@ class CartRepository @Inject constructor(
                 paymentMethod = paymentMethod,
                 shippingDetails = shippingDetails,
                 notes = notes,
+                discountCode = discountCode,
                 source = OrderSource.MOBILE_APP
             ).also {
                 Timber.d("Created order request with ${it.items.size} items")

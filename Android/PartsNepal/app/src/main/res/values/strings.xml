@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Parts Nepal</string>
+    <string name="app_name">Autovio</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_profile">ProfileActivity</string>
-    <string name="copyright_text">©Parts Nepal All Copyrights Reserved.</string>
-    <string name="welcome_description">Parts Nepal is Nepal\'s largest online auto parts store. We offer nationwide delivery, 24/7 service, and exclusive discounts on a wide range of products.</string>
+    <string name="copyright_text">©Autovio All Copyrights Reserved.</string>
+    <string name="welcome_description">Autovio is Nepal\'s largest online auto parts store. We offer nationwide delivery, 24/7 service, and exclusive discounts on a wide range of products.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_upgrade">UpgradeActivity</string>

@@ -40,7 +40,7 @@ class DeliveryAdapter : ListAdapter<DeliveryOption, DeliveryAdapter.DeliveryView
 
             deliveryInfo?.let {
                 estimatedDays.text = "Estimated delivery: ${it.estimatedDays} days"
-                shippingCost.text = "Shipping Cost: ${it.shippingCost.currency} ${it.shippingCost.amount}"
+                shippingCost.text = "Shipping Cost: ${it.shippingCost.currency} ${it.shippingCost.amount/100}"
             }
         }
 
