@@ -7,7 +7,7 @@ const util = require('util');
 const execPromise = util.promisify(exec);
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 42069;
 
 // Store logs and status
 let buildLogs = [];
@@ -28,11 +28,13 @@ app.use(express.json());
 async function checkGitChanges() {
     try {
         applicationStatus.currentStatus = 'checking_git';
-        
+        const { stdout: pwdOutput } = await execPromise('pwd');
+        console.log(pwdOutput);
         // Navigate to the repository directory
-        const repoPath = '/path/to/your/repo';
+        const repoPath = 'autovio_app/PartsNepal/API/partsnepal-api/';
         process.chdir(repoPath);
-
+        const { stdout: pwdOutput2 } = await execPromise('pwd');
+        console.log(pwdOutput2);
         // Pull latest changes
         const { stdout: pullOutput } = await execPromise('git pull origin main');
         applicationStatus.lastGitPull = new Date();
@@ -59,8 +61,11 @@ async function buildAndRunJava() {
         applicationStatus.currentStatus = 'building';
         
         // Navigate to Java project directory
-        const javaProjectPath = 'autovio_app/PartsNepal/API/parts-nepal-api';
+        const javaProjectPath = 'autovio_app/PartsNepal/API/partsnepal-api/';
         process.chdir(javaProjectPath);
+        console.log(javaProjectPath);
+        const { stdout: pwdOutput } = await execPromise('pwd');
+        console.log(pwdOutput);
 
         // Build with Gradle
         const { stdout: buildOutput } = await execPromise('./gradlew clean build');
