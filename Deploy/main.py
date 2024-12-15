@@ -28,11 +28,11 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
 # Initialize services
-java_controller = JavaAppController(os.path.join(app.config['REPO_PATH'], 'API/parts-nepal-api'))
+java_controller = JavaAppController(os.path.join(app.config['REPO_PATH'], 'API/partsnepal-api'))
 git_service = GitService(app.config['REPO_PATH'])
 log_collector = LogCollector(app.config['JAVA_APP_URL'])
 health_checker = HealthChecker(app.config['JAVA_APP_URL'], 
-                             os.path.join(app.config['REPO_PATH'], 'API/parts-nepal-api/app.pid'))
+                             os.path.join(app.config['REPO_PATH'], 'API/partsnepal-api/app.pid'))
 
 # Database Models
 class Log(db.Model):
