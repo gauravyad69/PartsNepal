@@ -19,7 +19,11 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"mysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@"
+    f"{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
+)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JAVA_APP_URL'] = 'http://0.0.0.0:9090'
 app.config['REPO_PATH'] = os.getenv('REPO_PATH', '/home/partscom/autovio_app/PartsNepal/API/partsnepal-api')
 app.config['ADMIN_PASSWORD'] = os.getenv('ADMIN_PASSWORD', 'f6ecad38d969ec29a3280e686cf0c3f5d58d969ea86')
