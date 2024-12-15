@@ -1,8 +1,9 @@
 import sys
 import os
 
-# Add your application directory to Python path
-INTERP = os.path.expanduser("/home/partscom/virtualenv/api.parts.com.np/3.11/bin/python")
+# Update this path to match your actual virtual environment path
+INTERP = "~/virtualenv/autovio_app/PartsNepal/Deploy/3.10/bin/python"
+
 if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 
