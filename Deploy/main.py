@@ -9,7 +9,6 @@ import requests
 from services.java_control import JavaAppController
 from services.git_service import GitService
 from services.log_collector import LogCollector
-from services.health_check import HealthChecker
 import threading
 import time
 
@@ -19,7 +18,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86')
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f"mysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@"
+    f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@"
     f"{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -49,8 +48,6 @@ try:
     java_controller = JavaAppController(os.path.join(app.config['REPO_PATH'], 'API/partsnepal-api'))
     git_service = GitService(app.config['REPO_PATH'])
     log_collector = LogCollector(app.config['JAVA_APP_URL'])
-    health_checker = HealthChecker(app.config['JAVA_APP_URL'], 
-                                 os.path.join(app.config['REPO_PATH'], 'API/partsnepal-api/app.pid'))
 except Exception as e:
     print(f"Error initializing services: {e}")
 
@@ -62,20 +59,8 @@ def background_tasks():
                 success, logs_data = log_collector.fetch_logs()
                 if success:
                     log_collector.store_logs(db, Log, logs_data)
-
-                # Check health
-                health_status = health_checker.check_java_app_health()
-                if not health_status[0]:
-                    db.session.add(StatusEvent(
-                        event_type='health_check',
-                        status='unhealthy',
-                        details=str(health_status[1])
-                    ))
-                    db.session.commit()
-
             except Exception as e:
                 print(f"Background task error: {str(e)}")
-            
             time.sleep(60)
 
 @app.route('/manage/status', methods=['GET', 'POST'])
@@ -115,14 +100,12 @@ def status():
         return redirect(url_for('status'))
 
     try:
-        health_status = health_checker.check_java_app_health()
         latest_events = StatusEvent.query.order_by(StatusEvent.timestamp.desc()).limit(5).all()
         app_running = java_controller.is_running()
         
         return render_template('status.html', 
                              events=latest_events, 
-                             app_running=app_running,
-                             health_status=health_status[1])
+                             app_running=app_running)
     except Exception as e:
         return f"Error: {str(e)}", 500
 

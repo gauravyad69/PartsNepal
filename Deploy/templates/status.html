@@ -45,22 +45,6 @@
                 <button type="submit" name="action" value="rebuild">Rebuild</button>
             </form>
         </div>
-
-        <div class="health-status">
-            <h3>Health Status</h3>
-            <div class="health-details">
-                <p>Status: <span class="status-badge {{ 'running' if health_status.status == 'healthy' else 'stopped' }}">
-                    {{ health_status.status }}
-                </span></p>
-                {% if health_status.process %}
-                <p>CPU Usage: {{ health_status.process.cpu_percent }}%</p>
-                <p>Memory Usage: {{ health_status.process.memory_percent }}%</p>
-                {% endif %}
-                {% if health_status.error %}
-                <p class="error">Error: {{ health_status.error }}</p>
-                {% endif %}
-            </div>
-        </div>
     </div>
 </body>
 </html>
