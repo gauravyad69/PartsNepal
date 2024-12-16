@@ -155,7 +155,7 @@ data class BasicProductView(
 ) : BaseModel
 
 // Utility extension functions for timestamp handling
-fun Long.toFormattedDate(): String {
+fun Long.toFormattedDate(): String{
     return java.time.format.DateTimeFormatter
         .ISO_INSTANT
         .format(java.time.Instant.ofEpochMilli(this))

@@ -2,6 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnInit, ViewChild } from
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { WishlistService } from '../../services/wishlist.service';
@@ -9,9 +10,10 @@ import { HotToastService } from '@ngneat/hot-toast';
 import { ProductModel } from '../../models/product.model';
 import { CartItem } from '../../models/cart';
 import { WishItem } from '../../models/wishlist';
-import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.service';
-import { ProductComponent } from '../product/product.component';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { get, set, cloneDeep } from 'lodash';
+import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.service';
+import { PriceFormatPipe } from '../pipe/price-format.pipe';
 
 @Component({ 
   selector: 'app-product-details',
@@ -23,7 +25,9 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
     CommonModule,
     RouterModule,
     CarouselModule,
-    NgxSkeletonLoaderModule
+    NgxSkeletonLoaderModule,
+    FormsModule,
+    PriceFormatPipe
   ] 
 })
 export class ProductDetailsComponent implements OnInit {
@@ -121,8 +125,10 @@ export class ProductDetailsComponent implements OnInit {
     nav: true,
   }
 
-  product!: ProductModel
-  productId!: number
+  product?: ProductModel;
+  editedProduct?: ProductModel;
+  isEditing: boolean = false;
+  productId!: number;
   categoryId!: number
   imgNotFounded: boolean = false;
   cartList!: CartItem[];
@@ -145,10 +151,12 @@ export class ProductDetailsComponent implements OnInit {
   ) { }
 
 
-  ZoomImage(event: any) {
-    const { left, top, width, height } = event.target.getBoundingClientRect();
-    const x = ((event.pageX - left) / width) * 100;
-    const y = ((event.pageY - top) / height) * 100;
+  ZoomImage(e: MouseEvent) {
+    const zoomer = e.currentTarget as HTMLElement;
+    const offsetX = e.offsetX;
+    const offsetY = e.offsetY;
+    const x = (offsetX / zoomer.offsetWidth) * 100;
+    const y = (offsetY / zoomer.offsetHeight) * 100;
     this.backgroundPos = `${x}% ${y}%`;
   }
 
@@ -259,14 +267,85 @@ export class ProductDetailsComponent implements OnInit {
     })
   }
 
+  startEditing() {
+    this.editedProduct = cloneDeep(this.product);
+    this.isEditing = true;
+  }
+
+  cancelEditing() {
+    this.editedProduct = undefined;
+    this.isEditing = false;
+  }
+
+  updateField(path: string, value: any) {
+    if (!this.editedProduct) return;
+    set(this.editedProduct, path, value);
+  }
+
+  saveChanges() {
+    if (!this.editedProduct || !this.product) return;
+
+    const updates: Promise<any>[] = [];
+
+    // Check if basic info changed
+    if (JSON.stringify(this.product.basic) !== JSON.stringify(this.editedProduct.basic)) {
+      updates.push(
+        this._productService.updateBasicInfo(this.productId, this.editedProduct.basic).toPromise()
+      );
+    }
+
+    // Check if inventory changed
+    if (this.product.basic.inventory.stock !== this.editedProduct.basic.inventory.stock) {
+      updates.push(
+        this._productService.updateInventory(this.productId, this.editedProduct.basic.inventory.stock).toPromise()
+      );
+    }
+
+    // Check if pricing changed
+    if (JSON.stringify(this.product.basic.pricing) !== JSON.stringify(this.editedProduct.basic.pricing)) {
+      updates.push(
+        this._productService.updatePricing(this.productId, this.editedProduct.basic.pricing).toPromise()
+      );
+    }
+
+    // Check if details changed
+    if (JSON.stringify(this.product.details) !== JSON.stringify(this.editedProduct.details)) {
+      updates.push(
+        this._productService.updateDetailedInfo(this.productId, this.editedProduct.details).toPromise()
+      );
+    }
+
+    Promise.all(updates)
+      .then(() => {
+        this._toast.success('Product updated successfully');
+        this.product = cloneDeep(this.editedProduct);
+        this.isEditing = false;
+      })
+      .catch(error => {
+        this._toast.error('Failed to update product');
+        console.error('Update error:', error);
+      });
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/ImageNotFound.png';
+  }
+
   ngOnInit(): void {
     this._route.params.subscribe((params: any) => {
       const id = params['id'];
       if (id) {
         this.productId = id;
-        this.getproduct();
-        this.getCartList();
-        this.getWishList();
+        this._productService.getSingleProduct(id).subscribe({
+          next: (data) => {
+            this.product = data;
+          },
+          error: (error) => {
+            this._toast.error('Failed to load product');
+            console.error('Load error:', error);
+          }
+        });
       }
     });
   }

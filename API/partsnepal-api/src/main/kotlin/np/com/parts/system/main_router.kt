@@ -35,6 +35,7 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
 
     unauthenticatedProductRoutes(productService)
 
+
     authenticate("auth-jwt") {
         pastebinApi(pasteService)
         khaltiRoutes(paymentService)

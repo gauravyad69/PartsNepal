@@ -8,6 +8,7 @@ import { WishItem } from '../../models/wishlist';
 import { HotToastService } from '@ngneat/hot-toast';
 import { ProductModel } from '../../models/product.model';
 import { NgOptimizedImage } from '@angular/common';
+import { PriceFormatPipe } from '../pipe/price-format.pipe';
 
 @Component({
   selector: 'app-product',
@@ -19,7 +20,8 @@ import { NgOptimizedImage } from '@angular/common';
     CommonModule,
     RouterModule,
     CurrencyPipe,
-    NgOptimizedImage
+    NgOptimizedImage,
+    PriceFormatPipe
   ]
 })
 export class ProductComponent {

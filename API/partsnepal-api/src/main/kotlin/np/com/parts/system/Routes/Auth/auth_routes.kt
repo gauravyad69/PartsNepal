@@ -19,6 +19,13 @@ fun Application.configureAuthRoutes(userService: UserService) {
         audience = environment.config.property("jwt.audience").getString(),
         realm = environment.config.property("jwt.realm").getString()
     )
+
+    val adminJwtConfig = AuthenticationService.JWTConfig(
+        secret = environment.config.property("admin-jwt.secret").getString(),
+        issuer = environment.config.property("admin-jwt.issuer").getString(),
+        audience = environment.config.property("admin-jwt.audience").getString(),
+        realm = environment.config.property("admin-jwt.realm").getString()
+    )
     val authService = AuthenticationService(userService, jwtConfig)
 
     routing {

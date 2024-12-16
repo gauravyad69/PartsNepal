@@ -55,3 +55,4 @@ out/
 /Web/main/node_modules
 /Android/PartsNepal/.kotlin
 /admin_panel/main/.angular
+admin_panel/main/package-lock.json
