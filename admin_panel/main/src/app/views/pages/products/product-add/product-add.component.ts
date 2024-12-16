@@ -145,6 +145,11 @@ export class ProductAddComponent {
     this.productForm.get('details.features.images')?.setValue(validImages);
   }
 
+  private dateToUnixTimestamp(date: string | null): number | null {
+    if (!date) return null;
+    return new Date(date).getTime();
+  }
+
   onSubmit() {
     this.updateHighlights();
     this.updateImages();
@@ -158,7 +163,7 @@ export class ProductAddComponent {
     const formData = this.productForm.value;
     
     // Create the properly structured product data
-    const productData = {
+    const productData:ProductModel = {
       basic: {
         productId: formData.basic.productId,
         productSKU: formData.basic.productSKU,
@@ -177,23 +182,23 @@ export class ProductAddComponent {
           salePrice: formData.basic.pricing.salePrice.amount ? {
             amount: formData.basic.pricing.salePrice.amount * 100,
             currency: 'NPR'
-          } : undefined,
+          } : null,
           discount: formData.basic.pricing.discount.amount.amount ? {
             amount: {
               amount: formData.basic.pricing.discount.amount.amount * 100,
               currency: 'NPR'
             },
             type: formData.basic.pricing.discount.type,
-            description: formData.basic.pricing.discount.description || undefined,
-            startDate: formData.basic.pricing.discount.startDate,
-            endDate: formData.basic.pricing.discount.endDate
-          } : undefined
+            description: formData.basic.pricing.discount.description || null,
+            startDate: this.dateToUnixTimestamp(formData.basic.pricing.discount.startDate),
+            endDate: this.dateToUnixTimestamp(formData.basic.pricing.discount.endDate)
+          } : null,
         }
       },
       details: {
         productId: formData.basic.productId,
         description: formData.details.description,
-        addDate: Date.now(),
+        // addDate: Date.now(),
         features: {
           highlights: this.highlights.filter(h => h.trim() !== ''),
           images: this.imageUrls.filter(img => img.url.trim() !== '').map((img, index) => ({
@@ -205,24 +210,28 @@ export class ProductAddComponent {
           reviews: {
             items: [],
             summary: {
-              averageRating: 0,
+              averageRating: 0.0,
               totalCount: 0,
-              distribution: []
+              distribution: {}
             }
           }
         },
         delivery: {
-          options: formData.details.delivery.options || ['STANDARD_DELIVERY'],
+          options: formData.details.delivery.options || [DeliveryOption.STANDARD_DELIVERY],
           estimatedDays: formData.details.delivery.estimatedDays,
           shippingCost: {
-            amount: formData.details.delivery.shippingCost.amount * 100
+            amount: formData.details.delivery.shippingCost.amount * 100,
+            currency: 'NPR'
           }
         },
         warranty: {
           isReturnable: formData.details.warranty.isReturnable,
           returnPeriodDays: formData.details.warranty.returnPeriodDays,
           warrantyMonths: formData.details.warranty.warrantyMonths,
-          terms: []
+          terms: [
+            'Must be unused and in original packaging',
+            'Warranty covers manufacturing defects'
+          ]
         }
       }
     };

@@ -35,8 +35,8 @@ export interface InventoryInfo {
 
 export interface PricingInfo {
     regularPrice: Money;
-    salePrice?: Money;
-    discount?: Discount;
+    salePrice: Money | null;
+    discount: Discount | null;
 }
 
 export interface Money {
@@ -52,9 +52,9 @@ export enum DiscountType {
 export interface Discount {
     amount: Money;
     type: DiscountType;
-    description?: string;
-    startDate?: number;
-    endDate?: number;
+    description: string;
+    startDate: number | null;
+    endDate: number | null;
 }
 
 export enum CustomerType {
