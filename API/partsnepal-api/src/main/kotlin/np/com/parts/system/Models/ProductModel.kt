@@ -18,7 +18,7 @@ sealed interface ProductRelated {
 sealed interface IProductInfo : ProductRelated {
     val productSKU: String
     val productName: String
-    val categoryId: Int
+    val categoryId: String
 }
 
 @Serializable
@@ -39,7 +39,7 @@ data class BasicProductInfo(
     override val productId: Int,
     override val productSKU: String,
     override val productName: String,
-    override val categoryId: Int,
+    override val categoryId: String,
     val inventory: InventoryInfo,
     val pricing: PricingInfo
 ) : IProductInfo

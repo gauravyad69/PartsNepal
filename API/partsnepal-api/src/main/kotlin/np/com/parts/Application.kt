@@ -30,6 +30,7 @@ fun Application.module() {
     val orderService = OrderService(connection, userService = userService, cartService = cartService)
     val pasteService = PasteService(connection)
     val paymentService = PaymentService(connection, orderService, userService)
+    val categoryService = CategoryService(connection)
 
 //    // Setup test data if in development environment
 //    if (environment.developmentMode) {
@@ -51,7 +52,7 @@ fun Application.module() {
 //    }
 
     routing {
-    applicationRoutes(productsService, orderService, userService,  cartService, paymentService, pasteService)
+    applicationRoutes(productsService, orderService, userService,  cartService, paymentService, pasteService, categoryService)
 
     }
 }

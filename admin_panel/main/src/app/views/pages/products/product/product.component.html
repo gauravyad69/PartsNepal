@@ -35,13 +35,13 @@
                     <tr>
                         <td>
                             <small class="text-muted label">Regular Price</small>
-                            <div class="value price">{{product.basic.pricing.regularPrice.amount | priceFormat | currency:product.basic.pricing.regularPrice.currency}}</div>
+                            <div class="value price">{{product.basic.pricing.regularPrice.amount | priceFormat | currency:'NPR'}}</div>
                         </td>
                         <td>
                             <small class="text-muted label">Sale Price</small>
                             <div class="value price">
                                 @if (product.basic.pricing.salePrice?.amount) {
-                                    {{product.basic.pricing.salePrice?.amount | priceFormat | currency:product.basic.pricing.salePrice?.currency}}
+                                    {{product.basic.pricing.salePrice?.amount | priceFormat | currency:'NPR'}}
                                 } @else {
                                     <span class="text-muted">Not on sale</span>
                                 }
@@ -56,7 +56,7 @@
                                     @if (product.basic.pricing.discount.type === 'PERCENTAGE') {
                                         {{product.basic.pricing.discount.amount.amount}}%
                                     } @else {
-                                        {{product.basic.pricing.discount.amount.amount | priceFormat | currency:product.basic.pricing.discount.amount.currency}}
+                                        {{product.basic.pricing.discount.amount.amount | priceFormat | currency:'NPR'}}
                                     }
                                 } @else {
                                     <span class="text-muted">No discount</span>

@@ -13,7 +13,7 @@ export interface BasicProductInfo {
     productId: number;
     productSKU: string;
     productName: string;
-    categoryId: number;
+    categoryId: string;
     inventory: InventoryInfo;
     pricing: PricingInfo;
 }

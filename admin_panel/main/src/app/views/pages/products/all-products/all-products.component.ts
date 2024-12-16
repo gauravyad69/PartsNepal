@@ -7,7 +7,9 @@ import { HotToastService } from '@ngneat/hot-toast';
 import { ProductComponent } from '../product/product.component';
 import { FilterPipe } from '../pipe/filter.pipe';
 import { FormsModule } from '@angular/forms';
-
+import { ApiResponse } from '../../models/api-response';
+import { ProductModel } from '../../models/product.model';
+import { PriceFormatPipe } from '../pipe/price-format.pipe';
 @Component({
   selector: 'app-all-products',
   templateUrl: './all-products.component.html',
@@ -19,12 +21,13 @@ import { FormsModule } from '@angular/forms';
     NgxSkeletonLoaderModule,
     ProductComponent,
     FilterPipe,
+    PriceFormatPipe,
     FormsModule
   ]
 })
 export class AllProductsComponent implements OnInit {
   Loading: boolean = true;
-  products: any[] = [];
+  products: ProductModel[] = [];
   fliterValue: string = "Default";
   
   // Pagination
@@ -43,16 +46,20 @@ export class AllProductsComponent implements OnInit {
 
   getProducts(page: number) {
     this.Loading = true;
-    const offset = (page - 1) * this.itemsPerPage;
     
-    this._product.getProduct(offset, this.itemsPerPage).subscribe({
-      next: (data) => {
-        this.products = data;
-        this.totalItems = 178; // Replace with actual total from API
-        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    this._product.getProduct(page - 1, this.itemsPerPage).subscribe({
+      next: (response: ApiResponse<ProductModel[]>) => {
+        console.log('API Response:', response);
+        this.products = response.data;
+        console.log('Products array:', this.products);
+        this.totalItems = response.metadata?.totalItems || 0;
+        this.totalPages = response.metadata?.totalPages || 0;
+        this.currentPage = (response.metadata?.page || 0) + 1;
+        this.itemsPerPage = response.metadata?.itemsPerPage || this.itemsPerPage;
         this.Loading = false;
       },
       error: (error) => {
+        console.error('Error loading products:', error);
         this._toast.error('Failed to load products');
         this.Loading = false;
       }

@@ -20,12 +20,13 @@ import np.com.parts.system.Routes.Cart.khaltiRoutes
 import np.com.parts.system.Routes.Orders.adminDiscountRoutes
 import np.com.parts.system.Routes.User.adminUserRoutes
 import np.com.parts.system.Routes.User.authenticatedUserRoutes
+import np.com.parts.system.Routes.categoryApi
 import np.com.parts.system.Routes.pastebinApi
 import np.com.parts.system.Services.*
 import np.com.parts.system.auth.AuthenticationService
 
 
-fun Route.applicationRoutes(productService: ProductService, orderService: OrderService, userService: UserService, cartService: CartService, paymentService: PaymentService, pasteService: PasteService) {
+fun Route.applicationRoutes(productService: ProductService, orderService: OrderService, userService: UserService, cartService: CartService, paymentService: PaymentService, pasteService: PasteService, categoryService: CategoryService) {
     val jwtConfig = AuthenticationService.JWTConfig(
         secret = environment?.config!!.property("jwt.secret").getString(),
         issuer = environment?.config!!.property("jwt.issuer").getString(),
@@ -38,6 +39,7 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
 
     authenticate("auth-jwt") {
         pastebinApi(pasteService)
+        categoryApi(categoryService)
         khaltiRoutes(paymentService)
 
         cartRoutes(cartService)

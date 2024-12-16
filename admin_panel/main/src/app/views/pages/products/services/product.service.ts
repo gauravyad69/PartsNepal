@@ -12,17 +12,9 @@ import { ProductModel, BasicProductInfo, DetailedProductInfo, PricingInfo } from
 export class ProductService {
 
   constructor(private _HttpClient: HttpClient) { }
-  getProduct(page: number, pageSize: number): Observable<ProductModel[]> {
+  getProduct(page: number, pageSize: number): Observable<ApiResponse<ProductModel[]>> {
     return this._HttpClient
-      .get<ApiResponse<ProductModel[]>>(`${environment.api}/products?page=${page}&pageSize=${pageSize}`)
-      .pipe(
-        map((response: ApiResponse<ProductModel[]>) => {
-          if (!response.data) {
-            throw new Error('Invalid API response format');
-          }
-          return response.data;
-        })
-      );
+      .get<ApiResponse<ProductModel[]>>(`${environment.api}/products?page=${page}&pageSize=${pageSize}`);
   }
 
   getSingleProduct(id: number): Observable<ProductModel> {
