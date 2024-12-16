@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { CartService } from '../../services/cart.service';
 import { CheckoutService } from '../checkout.service';
 import { PaymentMethod } from '../../models/order.types';
 import { Subscription } from 'rxjs';
@@ -21,7 +20,6 @@ export class CheckoutCompleteComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private _cartService: CartService,
     private _checkoutService: CheckoutService
   ) { }
 

@@ -2,10 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { CartItem } from '../../models/cart';
-import { WishItem } from '../../models/wishlist';
-import { CartService } from '../../services/cart.service';
-import { WishlistService } from '../../services/wishlist.service';
 import { ProductService } from '../services/product.service';
 import { HotToastService } from '@ngneat/hot-toast';
 import { ProductComponent } from '../product/product.component';
@@ -29,7 +25,6 @@ import { FormsModule } from '@angular/forms';
 export class AllProductsComponent implements OnInit {
   Loading: boolean = true;
   products: any[] = [];
-  WishItems!: WishItem[];
   fliterValue: string = "Default";
   
   // Pagination
@@ -41,8 +36,6 @@ export class AllProductsComponent implements OnInit {
 
   constructor(
     private _product: ProductService,
-    private _cartService: CartService,
-    private _wishlistService: WishlistService,
     private _toast: HotToastService
   ) {
     console.log('AllProductsComponent constructed');
@@ -87,15 +80,9 @@ export class AllProductsComponent implements OnInit {
     return pages;
   }
 
-  getWishList() {
-    this._wishlistService.wishList$.subscribe((cart) => {
-      this.WishItems = cart.items!;
-    });
-  }
 
   ngOnInit(): void {
     this.getProducts(1);
-    this.getWishList();
     console.log('AllProductsComponent initialized');
   }
 }

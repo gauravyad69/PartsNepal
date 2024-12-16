@@ -6,6 +6,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class PriceFormatPipe implements PipeTransform {
   transform(value: number | undefined): number {
-    return value ?? 0;  // Return 0 if value is undefined
+    return value ? value / 100 : 0;  // Return 0 if value is undefined
   }
 }

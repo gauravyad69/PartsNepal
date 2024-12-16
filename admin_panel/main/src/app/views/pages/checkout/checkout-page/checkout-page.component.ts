@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CartService } from '../../services/cart.service';
 import { CheckoutService } from '../checkout.service';
 import { OrderSource, ShippingMethod, PaymentMethod } from '../../models/order.types';
 import { CreateOrderRequest, LineItem } from '../../models/order.model';
@@ -33,29 +32,10 @@ export class CheckoutPageComponent {
 
   constructor(
     private router: Router,
-    private _cartService: CartService,
     private formBuilder: FormBuilder,
     private _checkoutService: CheckoutService
   ) { }
 
-  getCartList() {
-    this._cartService.cart$.subscribe((cart) => {
-      this.cartList = cart.items!;
-      if (this.cartList.length == 0) this.isCartEmpty = true;
-      else this.isCartEmpty = false;
-    });
-  }
-
-  getTotalPrice() {
-    this._cartService.cart$.subscribe((cart) => {
-      this.totalPrice = 0;
-      if (cart) {
-        cart.items?.map((item) => {
-          this.totalPrice += item.product?.basic?.pricing?.regularPrice?.amount! * item.quantity!;
-        });
-      }
-    });
-  }
 
 
   initCheckoutForm() {
@@ -145,8 +125,6 @@ export class CheckoutPageComponent {
   }
 
   ngOnInit(): void {
-    this.getCartList();
-    this.getTotalPrice();
     this.initCheckoutForm();
   }
 

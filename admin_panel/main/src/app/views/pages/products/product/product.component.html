@@ -1,5 +1,5 @@
 <div class="product">
-    <div class="product-container d-flex">
+    <div class="product-container d-flex flex-column flex-md-row">
         <div class="product-image flex-shrink-0">
             <a [routerLink]="['/products', product?.basic?.productId ?? '']">
                 <img [ngSrc]="product?.basic?.inventory?.mainImage ?? 'assets/images/ImageNotFound.png'"
@@ -9,87 +9,71 @@
                      (error)="onImageError($event)">
             </a>
         </div>
-        <div class="product-content flex-grow-1 ms-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <h5 class="mb-0">{{product.basic.productName}}</h5>
-                <button type="button" class="btn-favourite btn-circle"
-                        [class.is-favourite]="productInWishList(product)"
-                        (click)="addProductToWishList(product, $event)">
-                    <i class="fa-solid fa-heart"></i>
-                </button>
-            </div>
-            
-            <table class="table table-sm">
+        <div class="product-content flex-grow-1 ms-0 ms-md-4 mt-3 mt-md-0">
+            <table class="table table-sm product-details-table">
                 <tbody>
                     <tr>
-                        <td class="fw-bold">Product ID:</td>
-                        <td>{{product.basic.productId}}</td>
-                        <td class="fw-bold">SKU:</td>
-                        <td>{{product.basic.productSKU}}</td>
-                    </tr>
-                    <tr>
-                        <td class="fw-bold">Category ID:</td>
-                        <td>{{product.basic.categoryId}}</td>
-                        <td class="fw-bold">Stock:</td>
-                        <td>{{product.basic.inventory.stock}}</td>
-                    </tr>
-                    <tr>
-                        <td class="fw-bold">Regular Price:</td>
-                        <td>{{product.basic.pricing.regularPrice.amount | priceFormat | currency:product.basic.pricing.regularPrice.currency}}</td>
-                        <td class="fw-bold">Sale Price:</td>
-                        <td>{{product.basic.pricing.salePrice?.amount | priceFormat | currency:product.basic.pricing.salePrice?.currency ?? 'Not on sale'}}</td>
-                    </tr>
-                    <tr>
-                        <td class="fw-bold">Discount:</td>
                         <td>
-                            @if (product.basic.pricing.discount) {
-                                @if (product.basic.pricing.discount.type === 'PERCENTAGE') {
-                                    {{product.basic.pricing.discount.amount.amount}}%
+                            <small class="text-muted label">Product ID</small>
+                            <div class="value">{{product.basic.productId}}</div>
+                        </td>
+                        <td>
+                            <small class="text-muted label">SKU</small>
+                            <div class="value">{{product.basic.productSKU}}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <small class="text-muted label">Category ID</small>
+                            <div class="value">{{product.basic.categoryId}}</div>
+                        </td>
+                        <td>
+                            <small class="text-muted label">Stock</small>
+                            <div class="value">{{product.basic.inventory.stock}}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <small class="text-muted label">Regular Price</small>
+                            <div class="value price">{{product.basic.pricing.regularPrice.amount | priceFormat | currency:product.basic.pricing.regularPrice.currency}}</div>
+                        </td>
+                        <td>
+                            <small class="text-muted label">Sale Price</small>
+                            <div class="value price">
+                                @if (product.basic.pricing.salePrice?.amount) {
+                                    {{product.basic.pricing.salePrice?.amount | priceFormat | currency:product.basic.pricing.salePrice?.currency}}
                                 } @else {
-                                    {{product.basic.pricing.discount.amount.amount | priceFormat | currency:product.basic.pricing.discount.amount.currency}}
+                                    <span class="text-muted">Not on sale</span>
                                 }
-                                @if (product.basic.pricing.discount.description) {
-                                    <br>
-                                    <small class="text-muted">{{product.basic.pricing.discount.description}}</small>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <small class="text-muted label">Discount</small>
+                            <div class="value">
+                                @if (product.basic.pricing.discount) {
+                                    @if (product.basic.pricing.discount.type === 'PERCENTAGE') {
+                                        {{product.basic.pricing.discount.amount.amount}}%
+                                    } @else {
+                                        {{product.basic.pricing.discount.amount.amount | priceFormat | currency:product.basic.pricing.discount.amount.currency}}
+                                    }
+                                } @else {
+                                    <span class="text-muted">No discount</span>
                                 }
-                            } @else {
-                                No discount
-                            }
+                            </div>
                         </td>
-                        <td class="fw-bold">Rating:</td>
-                        <td>{{product.details.features.reviews.summary?.averageRating ?? 0 | number:'1.1-1'}} / 5.0</td>
-                    </tr>
-                    <tr>
-                        <td class="fw-bold">Shipping Cost:</td>
-                        <td>{{product.details.delivery.shippingCost.amount | priceFormat | currency:product.details.delivery.shippingCost.currency}}</td>
-                        <td class="fw-bold">Status:</td>
                         <td>
-                            <span [class]="product.basic.inventory.isAvailable ? 'badge bg-success' : 'badge bg-danger'">
-                                {{product.basic.inventory.isAvailable ? 'Available' : 'Out of Stock'}}
-                            </span>
+                            <small class="text-muted label">Rating</small>
+                            <div class="value">{{product.details.features.reviews.summary?.averageRating ?? 0 | number:'1.1-1'}} / 5.0</div>
                         </td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Delivery:</td>
-                        <td>{{product.details.delivery.estimatedDays}} days</td>
-                        <td class="fw-bold">Options:</td>
                         <td>
-                            <span class="badge bg-info me-1" *ngFor="let option of product.details.delivery.options">
-                                {{option}}
-                            </span>
+                            <small class="text-muted label">Shipping Cost</small>
+                            <div class="value price">{{product.details.delivery.shippingCost.amount | priceFormat | currency:product.details.delivery.shippingCost.currency}}</div>
                         </td>
-                    </tr>
-                    <tr>
-                        <td class="fw-bold">Warranty:</td>
-                        <td>{{product.details.warranty.warrantyMonths}} months</td>
-                        <td class="fw-bold">Returns:</td>
-                        <td>
-                            @if (product.details.warranty.isReturnable) {
-                                Within {{product.details.warranty.returnPeriodDays}} days
-                            } @else {
-                                Not returnable
-                            }
-                        </td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>

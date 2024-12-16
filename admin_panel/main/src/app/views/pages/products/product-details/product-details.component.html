@@ -132,7 +132,7 @@
                                 <div class="col-md-4">
                                     <label class="form-label">Discount Percentage</label>
                                     <input type="number" class="form-control" 
-                                           [ngModel]="product?.basic?.pricing?.discount?.amount?.amount"
+                                           [ngModel]="product?.basic?.pricing?.discount?.amount?.amount | priceFormat"
                                            (ngModelChange)="updateField('basic.pricing.discount.amount.amount', $event)"
                                            [readonly]="!isEditing"
                                            name="discountPercentage">

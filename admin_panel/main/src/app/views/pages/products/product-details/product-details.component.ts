@@ -4,8 +4,6 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../services/product.service';
-import { CartService } from '../../services/cart.service';
-import { WishlistService } from '../../services/wishlist.service';
 import { HotToastService } from '@ngneat/hot-toast';
 import { ProductModel } from '../../models/product.model';
 import { CartItem } from '../../models/cart';
@@ -144,10 +142,8 @@ export class ProductDetailsComponent implements OnInit {
 
   constructor(
     private _productService: ProductService,
-    private _cartService: CartService,
     private _route: ActivatedRoute,
     private _toast: HotToastService,
-    private _wishlistService: WishlistService,
   ) { }
 
 
@@ -167,96 +163,6 @@ export class ProductDetailsComponent implements OnInit {
       const anyService = this.myCarousel as any;
       const carouselService = anyService.carouselService as CarouselService;
       carouselService.to(this.startPosition, 3)
-    }
-  }
-
-
-  getproduct() {
-    this._productService.getSingleProduct(this.productId).subscribe((data) => {
-      this.product = data;
-      this.categoryId = data.basic.categoryId;
-      this.getProductsByCategory(this.categoryId);
-      this.productInCartList = this.checkProductInCartList(data);
-      this.isProductInWishList = this.productInWishList(data);
-      if (data.details.features.images.length == 1) {
-        this.imgNotFounded = true
-      }
-    })
-  }
-
-  getCartList() {
-    this._cartService.cart$.subscribe((cart) => {
-      this.cartList = cart.items!;
-      if(this.product){
-        this.productInCartList = this.checkProductInCartList(this.product);
-      }
-    });
-  }
-
-  getWishList() {
-    this._wishlistService.wishList$.subscribe((cart) => {
-      this.WishItems = cart.items!;
-      if(this.product){
-        this.isProductInWishList = this.productInWishList(this.product);
-      }
-    });
-  }
-
-  checkProductInCartList(product: ProductModel) {
-    const cartItemExist = this.cartList.find((item) => item.product?.basic?.productId === product.basic?.productId);
-    this.quantity = cartItemExist?.quantity || 0
-    return cartItemExist;
-  }
-
-  productInWishList(product: ProductModel) {
-    const WishItemExist = this.WishItems.some((item) => item.product?.basic?.productId === product.basic?.productId);
-    return WishItemExist;
-  }
-
-  updateCartItemQuantity(value: number, product: any, operation: string) {
-    if (operation == "+") {
-      value++;
-    } else {
-      value--;
-    }
-    this._cartService.setCartItem(
-      {
-        product: product,
-        quantity: value,
-      },
-      true
-    );
-  }
-
-  addProductToCart(item: any) {
-    const cartItem: CartItem = {
-      product: item,
-      quantity: 1
-    };
-    this._cartService.setCartItem(cartItem);
-    this._toast.success('Product added to cart successfully',
-      {
-        position: 'top-left'
-      });
-  }
-
-  addProductToWishList(item: any) {
-    const WishItem: WishItem = {
-      product: item
-    };
-    if (this.isProductInWishList) {
-      this._wishlistService.deleteWishItem(WishItem.product?.basic?.productId!);
-      this._toast.error('Product removed from wishlist',
-        {
-          position: 'top-left'
-        });
-    }
-    else {
-      this._wishlistService.setWishItem(WishItem);
-      this._toast.success('Product added to wishlist successfully',
-        {
-          position: 'top-left'
-        });
     }
   }
 
