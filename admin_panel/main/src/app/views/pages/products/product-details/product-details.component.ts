@@ -5,13 +5,15 @@ import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../services/product.service';
 import { HotToastService } from '@ngneat/hot-toast';
-import { ProductModel } from '../../models/product.model';
+import { CategoryModelRes, ProductModel } from '../../models/product.model';
 import { CartItem } from '../../models/cart';
 import { WishItem } from '../../models/wishlist';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { get, set, cloneDeep } from 'lodash';
 import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.service';
 import { PriceFormatPipe } from '../pipe/price-format.pipe';
+import { CategoryService } from '../services/category.service';
+import { CategoryModelReq } from '../../models/product.model';
 
 @Component({ 
   selector: 'app-product-details',
@@ -137,6 +139,7 @@ export class ProductDetailsComponent implements OnInit {
   isProductInWishList: boolean = false;
   productInCartList: any;
   isLoading: boolean = true;
+  categories: CategoryModelRes[] = [];
 
 
 
@@ -144,6 +147,7 @@ export class ProductDetailsComponent implements OnInit {
     private _productService: ProductService,
     private _route: ActivatedRoute,
     private _toast: HotToastService,
+    private categoryService: CategoryService
   ) { }
 
 
@@ -239,6 +243,7 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadCategories();
     this._route.params.subscribe((params: any) => {
       const id = params['id'];
       if (id) {
@@ -254,6 +259,25 @@ export class ProductDetailsComponent implements OnInit {
         });
       }
     });
+  }
+
+  private loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        this._toast.error('Failed to load categories');
+      }
+    });
+  }
+
+  getCategoryName(categoryId: string): string {
+    const category = this.categories.find(c => c.categoryId === categoryId);
+    if (category) {
+      return `${category.categoryName}${category.subCategoryName ? ' - ' + category.subCategoryName : ''}`;
+    }
+    return 'Unknown Category';
   }
 
 }

@@ -5,6 +5,7 @@ import datetime
 from datetime import datetime
 import threading
 import time
+import requests
 
 app = Flask(__name__)
 
@@ -35,54 +36,79 @@ def run_command(command, cwd=None):
     except Exception as e:
         raise Exception(f"Error running command: {str(e)}")
 
+def get_latest_release():
+    """Get latest release from GitHub"""
+    try:
+        # You'll need to create a GitHub token with repo access
+        headers = {
+            'Authorization': f'token {os.getenv("GITHUB_TOKEN")}',
+            'Accept': 'application/vnd.github.v3+json'
+        }
+        
+        # Replace with your repo details
+        repo_url = "https://api.github.com/repos/gauravyad69/PartsNepal/releases/latest"
+        response = requests.get(repo_url, headers=headers)
+        response.raise_for_status()
+        
+        release_data = response.json()
+        for asset in release_data['assets']:
+            if asset['name'] == 'np.com.parts.api-all.jar':
+                return asset['browser_download_url']
+        raise Exception("JAR file not found in latest release")
+    except Exception as e:
+        raise Exception(f"Failed to get latest release: {str(e)}")
+
 def check_git_changes():
     """Function to check Git changes"""
     try:
         application_status['current_status'] = 'checking_git'
-        repo_path = '/home/partscom/autovio_app/PartsNepal/API/partsnepal-api/'
         
-        # Pull latest changes
-        pull_output = run_command('git pull origin main', cwd=repo_path)
-        application_status['last_git_pull'] = datetime.now()
+        # Get the download URL for the latest release
+        download_url = get_latest_release()
+        target_path = os.path.expanduser('~/app/np.com.parts.api-all.jar')
         
-        if "Already up to date" in pull_output:
-            application_status['current_status'] = 'no_changes'
-            return False
-
-        # If changes detected, build and run Java application
-        build_and_run_java()
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+        
+        # Download the file
+        response = requests.get(download_url)
+        response.raise_for_status()
+        
+        with open(target_path, 'wb') as f:
+            f.write(response.content)
+            
+        application_status['last_build_time'] = datetime.now()
+        
+        # Stop existing Java process if running
+        stop_java_process()
+        
+        # Run the new version
+        run_java_application(target_path)
         return True
 
     except Exception as error:
         application_status['current_status'] = 'error'
         application_status['last_error'] = str(error)
-        print(f'Git check error: {error}')
         return False
 
-def build_and_run_java():
-    """Function to build and run Java application"""
+def stop_java_process():
+    """Stop existing Java process if running"""
     try:
-        application_status['current_status'] = 'building'
-        java_project_path = '/home/partscom/autovio_app/PartsNepal/API/partsnepal-api/'
+        run_command("pkill -f 'java -jar.*np.com.parts.api-all.jar'")
+    except:
+        pass  # Process might not exist
 
-        # Build with Gradle
-        build_output = run_command('./gradlew clean build', cwd=java_project_path)
-        build_logs.append({
-            'timestamp': datetime.now(),
-            'type': 'build',
-            'message': build_output
-        })
-        
-        application_status['last_build_time'] = datetime.now()
-
-        # Run Java application
+def run_java_application(jar_path):
+    """Run Java application"""
+    try:
         application_status['current_status'] = 'running'
-        java_process = subprocess.Popen(
-            'java -jar build/libs/your-app.jar',
+        
+        # Start Java process
+        process = subprocess.Popen(
+            f'java -jar {jar_path}',
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=java_project_path,
             text=True
         )
 
@@ -94,18 +120,12 @@ def build_and_run_java():
                     'message': line
                 })
 
-        # Start threads to monitor output
-        threading.Thread(target=log_output, args=(java_process.stdout, 'application')).start()
-        threading.Thread(target=log_output, args=(java_process.stderr, 'error')).start()
+        threading.Thread(target=log_output, args=(process.stdout, 'application')).start()
+        threading.Thread(target=log_output, args=(process.stderr, 'error')).start()
 
     except Exception as error:
         application_status['current_status'] = 'error'
         application_status['last_error'] = str(error)
-        build_logs.append({
-            'timestamp': datetime.now(),
-            'type': 'error',
-            'message': str(error)
-        })
 
 @app.route('/')
 def index():

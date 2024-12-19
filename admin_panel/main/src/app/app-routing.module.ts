@@ -1,14 +1,13 @@
+// app-routing.module.ts
 import { Routes } from '@angular/router';
 import { BaseComponent } from './views/layout/base/base.component';
-import { ErrorPageComponent } from './views/pages/error-page/error-page.component';
 import { AuthGuard } from './views/pages/auth/services/auth-guard.service';
-import { ProductAddComponent } from './views/pages/products/product-add/product-add.component';
+
 
 export const routes: Routes = [
   {
     path: 'auth',
-    loadChildren: () => import('./views/pages/auth/auth.routes')
-      .then((m) => m.AUTH_ROUTES)
+    loadChildren: () => import('./views/pages/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
     path: '',
@@ -18,33 +17,23 @@ export const routes: Routes = [
       {
         path: 'products',
         loadChildren: () => import('./views/pages/products/products.routes')
-          .then((m) => m.PRODUCT_ROUTES)
+          .then(m => m.PRODUCT_ROUTES)
       },
       {
-        path: 'add',
-        component: ProductAddComponent
+        path: '',
+        redirectTo: 'products',
+        pathMatch: 'full'
       },
       {
-        path: 'checkout',
-        loadChildren: () => import('./views/pages/checkout/checkout.routes')
-          .then((m) => m.CHECKOUT_ROUTES)
-      },
-      {
-        path: 'user',
-        loadChildren: () => import('./views/pages/user/user.routes')
-          .then((m) => m.USER_ROUTES)
-      },
-      { path: '', redirectTo: 'products', pathMatch: 'full' }
+        path: 'orders',
+        loadChildren: () => import('./views/pages/checkout/orders.routes')
+          .then(m => m.ORDER_ROUTES)
+      }
     ]
   },
   {
-    path: 'error',
-    component: ErrorPageComponent,
-    data: {
-      type: 404,
-      title: 'Page Not Found',
-      desc: "Oopps!! The page you were looking for doesn't exist."
-    }
-  },
-  { path: '**', redirectTo: 'auth', pathMatch: 'full' }
+    path: '**',
+    redirectTo: 'auth',
+    pathMatch: 'full'
+  }
 ];

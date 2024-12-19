@@ -4,8 +4,10 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { Router } from '@angular/router';
 import { ProductService } from '../services/product.service';
 import { HotToastService } from '@ngneat/hot-toast';
-import { DeliveryOption, DiscountType, ProductModel } from '../../models/product.model';
+import { CategoryModelRes, DeliveryOption, DiscountType, ProductModel } from '../../models/product.model';
 import { PriceFormatPipe } from '../pipe/price-format.pipe';
+import { CategoryService } from '../services/category.service';
+import { CategoryModelReq } from '../../models/product.model';
 
 @Component({
   selector: 'app-product-add',
@@ -27,14 +29,17 @@ export class ProductAddComponent {
   imageUrls: { url: string, alt: string, isPrimary: boolean, order: number }[] = 
     [{ url: '', alt: '', isPrimary: false, order: 0 }];
   highlights: string[] = [''];
+  categories: CategoryModelRes[] = [];
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
+    private categoryService: CategoryService,
     private router: Router,
     private toast: HotToastService
   ) {
     this.initForm();
+    this.loadCategories();
   }
 
   private generateProductId(): number {
@@ -148,6 +153,17 @@ export class ProductAddComponent {
   private dateToUnixTimestamp(date: string | null): number | null {
     if (!date) return null;
     return new Date(date).getTime();
+  }
+
+  private loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        this.toast.error('Failed to load categories');
+      }
+    });
   }
 
   onSubmit() {

@@ -8,8 +8,11 @@ import { ProductComponent } from '../product/product.component';
 import { FilterPipe } from '../pipe/filter.pipe';
 import { FormsModule } from '@angular/forms';
 import { ApiResponse } from '../../models/api-response';
-import { ProductModel } from '../../models/product.model';
+import { CategoryModelRes, ProductModel } from '../../models/product.model';
 import { PriceFormatPipe } from '../pipe/price-format.pipe';
+import { CategoryService } from '../services/category.service';
+import { CategoryModelReq } from '../../models/product.model';
+
 @Component({
   selector: 'app-all-products',
   templateUrl: './all-products.component.html',
@@ -36,10 +39,12 @@ export class AllProductsComponent implements OnInit {
   totalItems: number = 0;
   totalPages: number = 0;
   Math = Math; // For using Math in template
+  categories: CategoryModelRes[] = [];
 
   constructor(
     private _product: ProductService,
-    private _toast: HotToastService
+    private _toast: HotToastService,
+    private categoryService: CategoryService
   ) {
     console.log('AllProductsComponent constructed');
   }
@@ -87,9 +92,28 @@ export class AllProductsComponent implements OnInit {
     return pages;
   }
 
-
   ngOnInit(): void {
+    this.loadCategories();
     this.getProducts(1);
     console.log('AllProductsComponent initialized');
+  }
+
+  private loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        this._toast.error('Failed to load categories');
+      }
+    });
+  }
+
+  getCategoryName(categoryId: string): string {
+    const category = this.categories.find(c => c.categoryId === categoryId);
+    if (category) {
+      return `${category.categoryName}${category.subCategoryName ? ' - ' + category.subCategoryName : ''}`;
+    }
+    return 'Unknown Category';
   }
 }

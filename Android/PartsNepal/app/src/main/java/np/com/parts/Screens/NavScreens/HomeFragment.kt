@@ -75,6 +75,9 @@ class HomeFragment : Fragment() {
 
 
 
+        Snackbar.make(binding.root, "Please Wait...", Snackbar.LENGTH_LONG)
+        Snackbar.make(binding.root, "The Products Are Being Loaded...", Snackbar.LENGTH_LONG)
+
 
 
         bottomNavigationView.visibility=View.VISIBLE

@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { ApiResponse } from '../../models/api-response';
-import { ProductModel, BasicProductInfo, DetailedProductInfo, PricingInfo } from '../../models/product.model';
+import { ProductModel, BasicProductInfo, DetailedProductInfo, PricingInfo, CategoryModelReq } from '../../models/product.model';
+import { List } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,26 @@ export class ProductService {
       .get<ApiResponse<ProductModel[]>>(`${environment.api}/products?page=${page}&pageSize=${pageSize}`);
   }
 
+  getCategories(): Observable<List<CategoryModelReq>> {
+    return this._HttpClient
+      .get<List<CategoryModelReq>>(`${environment.api}/products/categories`);
+  }
+
+  getCategoryById(id: string): Observable<CategoryModelReq> {
+    return this._HttpClient
+      .get<CategoryModelReq>(`${environment.api}/products/categories/${id}`);
+  }
+
+  addCategory(category: CategoryModelReq): Observable<CategoryModelReq> {
+    return this._HttpClient
+      .post<CategoryModelReq>(`${environment.api}/products/categories`, category);
+  }
+
+  
+  updateCategory(category: CategoryModelReq): Observable<CategoryModelReq> {
+    return this._HttpClient
+      .put<CategoryModelReq>(`${environment.api}/products/categories`, category);
+  }
   getSingleProduct(id: number): Observable<ProductModel> {
     return this._HttpClient
       .get<ApiResponse<ProductModel>>(`${environment.api}/products/${id}`)

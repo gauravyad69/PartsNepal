@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -257,28 +258,28 @@
 
                         <RadioButton
                             android:id="@+id/cashOnDeliveryRadio"
+                            style="@style/textStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Cash on Delivery"
-                            android:checked="true"
-                            style="@style/textStyle"
-                            />
+                            tools:visibility="gone" />
 
                         <RadioButton
                             android:id="@+id/khaltiRadio"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Khalti"
+                            android:checked="true"
                             style="@style/textStyle"
                             />
 
                         <RadioButton
                             android:id="@+id/esewaRadio"
+                            style="@style/textStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="eSewa"
-                            style="@style/textStyle"
-                            />
+                            tools:visibility="gone" />
                     </RadioGroup>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

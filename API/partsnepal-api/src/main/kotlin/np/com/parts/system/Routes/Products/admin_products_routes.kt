@@ -7,6 +7,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import np.com.parts.system.Models.BasicProductInfo
 import np.com.parts.system.Models.PricingInfo
 import np.com.parts.system.Models.ProductModel
 
@@ -47,7 +48,8 @@ fun Route.adminProductRoutes(productService: ProductService) {
                         ErrorResponse("Invalid product ID", "INVALID_PRODUCT_ID")
                     )
 
-                val updates = call.receive<Map<String, Any>>()
+//                val updates = call.receive<Map<String, Any>>()
+                val updates = call.receive<BasicProductInfo>()
                 val updated = productService.updateBasicInfo(productId, updates)
 
                 if (updated) {
@@ -64,7 +66,7 @@ fun Route.adminProductRoutes(productService: ProductService) {
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    ErrorResponse("Error updating product", "UPDATE_ERROR")
+                    ErrorResponse("Error updating product", "UPDATE_ERROR", debug="$e")
                 )
             }
         }

@@ -75,12 +75,28 @@
                                            name="sku">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">Category ID</label>
-                                    <input type="number" class="form-control" 
-                                           [ngModel]="product?.basic?.categoryId"
-                                           (ngModelChange)="updateField('basic.categoryId', $event)"
-                                           [readonly]="!isEditing"
-                                           name="categoryId">
+                                    <label class="form-label">Category</label>
+                                    @if (isEditing) {
+                                        <select class="form-select" 
+                                                [ngModel]="product?.basic?.categoryId"
+                                                (ngModelChange)="updateField('basic.categoryId', $event)"
+                                                name="categoryId">
+                                            <option value="">Select Category</option>
+                                            @for (category of categories; track category.categoryId) {
+                                                <option [value]="category.categoryId">
+                                                    {{category.categoryName}}
+                                                    @if (category.subCategoryName) {
+                                                        - {{category.subCategoryName}}
+                                                    }
+                                                </option>
+                                            }
+                                        </select>
+                                    } @else {
+                                        <input type="text" 
+                                               class="form-control" 
+                                               [value]="getCategoryName(product?.basic?.categoryId ?? '')"
+                                               readonly>
+                                    }
                                 </div>
                             </div>
 

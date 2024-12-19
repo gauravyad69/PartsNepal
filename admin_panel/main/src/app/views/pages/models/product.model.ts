@@ -124,3 +124,18 @@ export interface WarrantyInfo {
 export interface BasicProductView extends BaseModel {
     basic: BasicProductInfo;
 } 
+
+
+export interface CategoryModelRes {
+    categoryId: string;
+    categoryName: string;
+    subCategoryName: string;
+    createdAt: number | null;
+    updatedAt: number | null;
+    version: number | null;
+}
+
+export interface CategoryModelReq {
+    categoryName: string;
+    subCategoryName: string;
+}

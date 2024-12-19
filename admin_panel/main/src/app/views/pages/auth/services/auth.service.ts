@@ -1,13 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LocalstorageService } from './localstorage.service';
-import { map } from 'rxjs/operators';
 import { AuthResponse, LoginRequest, RegisterRequest, AccountType } from '../../models/auth.model';
 
-environment.api
 @Injectable({
   providedIn: 'root'
 })
@@ -22,30 +20,41 @@ export class AuthService {
   ) { }
 
   login(identifier: string, password: string, isPhoneLogin: boolean): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.api}/auth/login`, { identifier, password, isPhoneLogin });
+    return this.http.post<AuthResponse>(`${environment.api}/auth/login`, { identifier, password, isPhoneLogin }).pipe(
+      tap(response => {
+        if (response.token) {
+          this._token.setToken(response.token);
+          this.startRefreshTokenTimer();
+        }
+      })
+    );
   }
 
   register(name: string, email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.api}/users/`, { name, email, password, accountType: AccountType.PERSONAL });
   }
 
-  loggedIn() {
-    const token = localStorage.getItem('jwtToken');
-    if (token) {
+  loggedIn(): boolean {
+    const token = this._token.getToken();
+    if (!token) return false;
+
+    try {
       const tokenDecode = JSON.parse(atob(token.split('.')[1]));
-      if (Math.floor(new Date().getTime() / 1000) >= tokenDecode.exp) {
-        return false;
-      }
-      else {
-        return true;
-      }
+      return !this._tokenExpired(tokenDecode.exp);
+    } catch {
+      return false;
     }
-    return false;
+  }
+
+  private _tokenExpired(expiration: number): boolean {
+    if (!expiration) return true;
+    return Math.floor(new Date().getTime() / 1000) >= expiration;
   }
 
   logout() {
     this._token.removeToken();
-    this.router.navigate(['/auth']);
+    this.stopRefreshTokenTimer();
+    this.router.navigate(['/auth/login']);
   }
 
   refreshToken(): Observable<any> {

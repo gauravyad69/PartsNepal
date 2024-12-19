@@ -40,7 +40,30 @@
                         </a>
                     </div>
                 </div>
-             
+
+                <div class="col-lg-4 d-none d-lg-block">
+                    <nav class="main-navigation">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link" routerLink="/products" routerLinkActive="active">
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" routerLink="/products/categories" routerLinkActive="active">
+                                    Categories
+                                </a>
+                            </li>
+                            @if (loggedIn) {
+                                <li class="nav-item">
+                                    <a class="nav-link" routerLink="/products/add" routerLinkActive="active">
+                                        Add Product
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
 
                 <div class="col-lg-6  order-12 order-xs-12 order-lg-2 mt-10 mb-10">
                     <div class="">
@@ -60,9 +83,32 @@
                         </form>
                     </div>
                 </div>
-                <div class="mobile-menu order-12 d-block d-lg-none col"></div>
+                <div class="mobile-menu order-12 d-block d-lg-none col">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div class="collapse navbar-collapse d-lg-none" id="mobileNav">
+        <ul class="nav flex-column p-3">
+            <li class="nav-item">
+                <a class="nav-link" routerLink="/products">Products</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" routerLink="/products/categories">Categories</a>
+            </li>
+            @if (loggedIn) {
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/products/add">Add Product</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/orders">Orders</a>
+                </li>
+            }
+        </ul>
     </div>
 </header>
 
