@@ -39,13 +39,15 @@ def run_command(command, cwd=None):
 def get_latest_release():
     """Get latest release from GitHub"""
     try:
-        # You'll need to create a GitHub token with repo access
+        # Hardcoded token (not recommended but works)
+        github_token = "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" #token expiration date 2025-12-19
         headers = {
-            'Authorization': f'token {os.getenv("GITHUB_TOKEN")}',
-            'Accept': 'application/vnd.github.v3+json'
+            'Authorization': f'Bearer {github_token}',
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
         }
         
-        # Replace with your repo details
+        # Get latest release using the documented endpoint
         repo_url = "https://api.github.com/repos/gauravyad69/PartsNepal/releases/latest"
         response = requests.get(repo_url, headers=headers)
         response.raise_for_status()
@@ -150,8 +152,28 @@ def status():
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    check_git_changes()
-    return '', 200
+    try:
+        # Verify webhook payload if needed
+        payload = request.json
+        
+        # Check if this is a release event
+        if request.headers.get('X-GitHub-Event') == 'release':
+            if payload.get('action') == 'published':
+                check_git_changes()
+                return jsonify({'status': 'success', 'message': 'Deployment started'}), 200
+        
+        # For other push events
+        elif request.headers.get('X-GitHub-Event') == 'push':
+            if payload.get('ref') == 'refs/heads/main':  # Only deploy on main branch pushes
+                check_git_changes()
+                return jsonify({'status': 'success', 'message': 'Deployment started'}), 200
+        
+        return jsonify({'status': 'skipped', 'message': 'Event not processed'}), 200
+
+    except Exception as error:
+        application_status['current_status'] = 'error'
+        application_status['last_error'] = str(error)
+        return jsonify({'status': 'error', 'message': str(error)}), 500
 
 def periodic_git_check():
     """Function to periodically check for git changes"""
