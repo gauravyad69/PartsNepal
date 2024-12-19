@@ -74,7 +74,7 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
                             height: 100vh;
                             background-color: #f0f0f0;
                             font-family: Arial, sans-serif;
-                            padding: 100px;
+                            padding: 80px;
                         }
                         h1 {
                             color: #c1c400;
