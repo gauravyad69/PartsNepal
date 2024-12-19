@@ -7,7 +7,6 @@ import {
     PaymentStatus 
 } from './order.types';
 import { Money, Discount, BaseModel } from './common.model';
-
 export interface LineItem {
     id?: string;
     productId: number;
@@ -97,4 +96,10 @@ export interface CreateOrderRequest {
     shippingDetails: ShippingDetails;
     notes?: string;
     source: OrderSource;
+}
+
+export interface UpdateOrderStatusRequest {
+    status: OrderStatus;
+    updatedBy: string;
+    note?: string;
 }

@@ -366,7 +366,6 @@ class OrderService(
             } else {
                 Filters.and(filters)
             }
-
             val orders = collection.find(combinedFilter)
                 .sort(Sorts.descending("orderDate"))
                 .skip(skip)

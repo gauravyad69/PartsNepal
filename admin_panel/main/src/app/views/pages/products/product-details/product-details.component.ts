@@ -2,16 +2,18 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnInit, ViewChild } from
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../services/product.service';
-import { CartService } from '../../services/cart.service';
-import { WishlistService } from '../../services/wishlist.service';
 import { HotToastService } from '@ngneat/hot-toast';
-import { ProductModel } from '../../models/product.model';
+import { CategoryModelRes, ProductModel } from '../../models/product.model';
 import { CartItem } from '../../models/cart';
 import { WishItem } from '../../models/wishlist';
-import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.service';
-import { ProductComponent } from '../product/product.component';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { get, set, cloneDeep } from 'lodash';
+import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.service';
+import { PriceFormatPipe } from '../pipe/price-format.pipe';
+import { CategoryService } from '../services/category.service';
+import { CategoryModelReq } from '../../models/product.model';
 
 @Component({ 
   selector: 'app-product-details',
@@ -23,7 +25,9 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
     CommonModule,
     RouterModule,
     CarouselModule,
-    NgxSkeletonLoaderModule
+    NgxSkeletonLoaderModule,
+    FormsModule,
+    PriceFormatPipe
   ] 
 })
 export class ProductDetailsComponent implements OnInit {
@@ -121,8 +125,10 @@ export class ProductDetailsComponent implements OnInit {
     nav: true,
   }
 
-  product!: ProductModel
-  productId!: number
+  product?: ProductModel;
+  editedProduct?: ProductModel;
+  isEditing: boolean = false;
+  productId!: number;
   categoryId!: number
   imgNotFounded: boolean = false;
   cartList!: CartItem[];
@@ -133,22 +139,24 @@ export class ProductDetailsComponent implements OnInit {
   isProductInWishList: boolean = false;
   productInCartList: any;
   isLoading: boolean = true;
+  categories: CategoryModelRes[] = [];
 
 
 
   constructor(
     private _productService: ProductService,
-    private _cartService: CartService,
     private _route: ActivatedRoute,
     private _toast: HotToastService,
-    private _wishlistService: WishlistService,
+    private categoryService: CategoryService
   ) { }
 
 
-  ZoomImage(event: any) {
-    const { left, top, width, height } = event.target.getBoundingClientRect();
-    const x = ((event.pageX - left) / width) * 100;
-    const y = ((event.pageY - top) / height) * 100;
+  ZoomImage(e: MouseEvent) {
+    const zoomer = e.currentTarget as HTMLElement;
+    const offsetX = e.offsetX;
+    const offsetY = e.offsetY;
+    const x = (offsetX / zoomer.offsetWidth) * 100;
+    const y = (offsetY / zoomer.offsetHeight) * 100;
     this.backgroundPos = `${x}% ${y}%`;
   }
 
@@ -163,112 +171,113 @@ export class ProductDetailsComponent implements OnInit {
   }
 
 
-  getproduct() {
-    this._productService.getSingleProduct(this.productId).subscribe((data) => {
-      this.product = data;
-      this.categoryId = data.basic.categoryId;
-      this.getProductsByCategory(this.categoryId);
-      this.productInCartList = this.checkProductInCartList(data);
-      this.isProductInWishList = this.productInWishList(data);
-      if (data.details.features.images.length == 1) {
-        this.imgNotFounded = true
-      }
-    })
-  }
-
-  getCartList() {
-    this._cartService.cart$.subscribe((cart) => {
-      this.cartList = cart.items!;
-      if(this.product){
-        this.productInCartList = this.checkProductInCartList(this.product);
-      }
-    });
-  }
-
-  getWishList() {
-    this._wishlistService.wishList$.subscribe((cart) => {
-      this.WishItems = cart.items!;
-      if(this.product){
-        this.isProductInWishList = this.productInWishList(this.product);
-      }
-    });
-  }
-
-  checkProductInCartList(product: ProductModel) {
-    const cartItemExist = this.cartList.find((item) => item.product?.basic?.productId === product.basic?.productId);
-    this.quantity = cartItemExist?.quantity || 0
-    return cartItemExist;
-  }
-
-  productInWishList(product: ProductModel) {
-    const WishItemExist = this.WishItems.some((item) => item.product?.basic?.productId === product.basic?.productId);
-    return WishItemExist;
-  }
-
-  updateCartItemQuantity(value: number, product: any, operation: string) {
-    if (operation == "+") {
-      value++;
-    } else {
-      value--;
-    }
-    this._cartService.setCartItem(
-      {
-        product: product,
-        quantity: value,
-      },
-      true
-    );
-  }
-
-  addProductToCart(item: any) {
-    const cartItem: CartItem = {
-      product: item,
-      quantity: 1
-    };
-    this._cartService.setCartItem(cartItem);
-    this._toast.success('Product added to cart successfully',
-      {
-        position: 'top-left'
-      });
-  }
-
-  addProductToWishList(item: any) {
-    const WishItem: WishItem = {
-      product: item
-    };
-    if (this.isProductInWishList) {
-      this._wishlistService.deleteWishItem(WishItem.product?.basic?.productId!);
-      this._toast.error('Product removed from wishlist',
-        {
-          position: 'top-left'
-        });
-    }
-    else {
-      this._wishlistService.setWishItem(WishItem);
-      this._toast.success('Product added to wishlist successfully',
-        {
-          position: 'top-left'
-        });
-    }
-  }
-
-
   getProductsByCategory(categoryId: number) {
     this._productService.getProductsByCategory(categoryId).subscribe((data) => {
       this.categoryProducts = data;
     })
   }
 
+  startEditing() {
+    this.editedProduct = cloneDeep(this.product);
+    this.isEditing = true;
+  }
+
+  cancelEditing() {
+    this.editedProduct = undefined;
+    this.isEditing = false;
+  }
+
+  updateField(path: string, value: any) {
+    if (!this.editedProduct) return;
+    set(this.editedProduct, path, value);
+  }
+
+  saveChanges() {
+    if (!this.editedProduct || !this.product) return;
+
+    const updates: Promise<any>[] = [];
+
+    // Check if basic info changed
+    if (JSON.stringify(this.product.basic) !== JSON.stringify(this.editedProduct.basic)) {
+      updates.push(
+        this._productService.updateBasicInfo(this.productId, this.editedProduct.basic).toPromise()
+      );
+    }
+
+    // Check if inventory changed
+    if (this.product.basic.inventory.stock !== this.editedProduct.basic.inventory.stock) {
+      updates.push(
+        this._productService.updateInventory(this.productId, this.editedProduct.basic.inventory.stock).toPromise()
+      );
+    }
+
+    // Check if pricing changed
+    if (JSON.stringify(this.product.basic.pricing) !== JSON.stringify(this.editedProduct.basic.pricing)) {
+      updates.push(
+        this._productService.updatePricing(this.productId, this.editedProduct.basic.pricing).toPromise()
+      );
+    }
+
+    // Check if details changed
+    if (JSON.stringify(this.product.details) !== JSON.stringify(this.editedProduct.details)) {
+      updates.push(
+        this._productService.updateDetailedInfo(this.productId, this.editedProduct.details).toPromise()
+      );
+    }
+
+    Promise.all(updates)
+      .then(() => {
+        this._toast.success('Product updated successfully');
+        this.product = cloneDeep(this.editedProduct);
+        this.isEditing = false;
+      })
+      .catch(error => {
+        this._toast.error('Failed to update product');
+        console.error('Update error:', error);
+      });
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/ImageNotFound.png';
+  }
+
   ngOnInit(): void {
+    this.loadCategories();
     this._route.params.subscribe((params: any) => {
       const id = params['id'];
       if (id) {
         this.productId = id;
-        this.getproduct();
-        this.getCartList();
-        this.getWishList();
+        this._productService.getSingleProduct(id).subscribe({
+          next: (data) => {
+            this.product = data;
+          },
+          error: (error) => {
+            this._toast.error('Failed to load product');
+            console.error('Load error:', error);
+          }
+        });
       }
     });
+  }
+
+  private loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        this._toast.error('Failed to load categories');
+      }
+    });
+  }
+
+  getCategoryName(categoryId: string): string {
+    const category = this.categories.find(c => c.categoryId === categoryId);
+    if (category) {
+      return `${category.categoryName}${category.subCategoryName ? ' - ' + category.subCategoryName : ''}`;
+    }
+    return 'Unknown Category';
   }
 
 }

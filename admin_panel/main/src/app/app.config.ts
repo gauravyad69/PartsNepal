@@ -6,8 +6,6 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { importProvidersFrom } from '@angular/core';
 import { HotToastModule } from '@ngneat/hot-toast';
 import { jwtInterceptor } from './views/pages/auth/services/jwt.interceptor';
-import { CartService } from './views/pages/services/cart.service';
-import { WishlistService } from './views/pages/services/wishlist.service';
 import { AuthService } from './views/pages/auth/services/auth.service';
 import { LocalstorageService } from './views/pages/auth/services/localstorage.service';
 
@@ -17,8 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideHttpClient(withInterceptors([jwtInterceptor])),
     importProvidersFrom(HotToastModule.forRoot()),
-    CartService,
-    WishlistService,
     AuthService,
     LocalstorageService
   ]

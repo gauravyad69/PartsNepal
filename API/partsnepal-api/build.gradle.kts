@@ -20,6 +20,7 @@ application {
 }
 
 repositories {
+    maven { url = uri("https://jitpack.io") }
     mavenCentral()
 }
 
@@ -50,6 +51,10 @@ dependencies {
     implementation("io.ktor:ktor-server-resources-jvm")
 
     implementation("io.ktor:ktor-server-sessions-jvm")
+
+    implementation ("dev.hayden:khealth:2.1.1")
+    implementation ("io.ktor:ktor-server-metrics-jvm")
+    implementation("io.dropwizard.metrics:metrics-core:4.2.0") // version may vary
 
 //    ktor-client-serialization = { group = "io.ktor", name = "ktor-client-serialization", version.ref = "ktor-version" }
 //    ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor-version" }

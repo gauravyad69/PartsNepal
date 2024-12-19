@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  api: 'https://api.escuelajs.co/api/',
+  api: 'https://partsapi.auracoin.tech',
 } as const;

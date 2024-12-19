@@ -435,3 +435,18 @@ a:focus, a:active, .btn.active.focus,
     color: #fff;
     right: 0.71em;
 }
+
+.category-info {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+    
+    .text-muted {
+        font-weight: 500;
+    }
+}
+
+.product-category {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}

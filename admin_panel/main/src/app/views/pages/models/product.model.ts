@@ -4,27 +4,24 @@ export interface BaseModel {
     version: number;
 }
 
-export interface ProductModel extends BaseModel {
+export interface ProductModel {
     basic: BasicProductInfo;
     details: DetailedProductInfo;
 }
 
-export interface BasicProductInfo extends IProductInfo {
-    inventory: InventoryInfo;
-    pricing: PricingInfo;
-}
-
-export interface IProductInfo {
+export interface BasicProductInfo {
     productId: number;
     productSKU: string;
     productName: string;
-    categoryId: number;
+    categoryId: string;
+    inventory: InventoryInfo;
+    pricing: PricingInfo;
 }
 
 export interface DetailedProductInfo {
     productId: number;
     description: string;
-    addDate: number;
+    // addDate: number;
     features: Features;
     delivery: DeliveryInfo;
     warranty: WarrantyInfo;
@@ -38,9 +35,8 @@ export interface InventoryInfo {
 
 export interface PricingInfo {
     regularPrice: Money;
-    salePrice?: Money;
-    discount?: Discount;
-    isOnSale: boolean;
+    salePrice: Money | null;
+    discount: Discount | null;
 }
 
 export interface Money {
@@ -48,9 +44,31 @@ export interface Money {
     currency?: string;
 }
 
+export enum DiscountType {
+    PERCENTAGE = 'PERCENTAGE',
+    FIXED_AMOUNT = 'FIXED_AMOUNT'
+}
+
 export interface Discount {
-    percentage?: number;
-    amount?: number;
+    amount: Money;
+    type: DiscountType;
+    description: string;
+    startDate: number | null;
+    endDate: number | null;
+}
+
+export enum CustomerType {
+    INDIVIDUAL = 'INDIVIDUAL',
+    BUSINESS = 'BUSINESS'
+}
+
+export enum PaymentStatus {
+    PENDING = 'PENDING',
+    INITIATED = 'INITIATED',
+    COMPLETED = 'COMPLETED',
+    FAILED = 'FAILED',
+    REFUNDED = 'REFUNDED',
+    ON_HOLD = 'ON_HOLD'
 }
 
 export interface Features {
@@ -67,9 +85,8 @@ export interface ProductImage {
 }
 
 export interface Reviews {
-    items: Review[];
-    summary: ReviewSummary;
-    averageRating: number;
+    items: Review[] | null;
+    summary: ReviewSummary | null;
 }
 
 export interface Review extends BaseModel {
@@ -81,7 +98,7 @@ export interface Review extends BaseModel {
 export interface ReviewSummary {
     averageRating: number;
     totalCount: number;
-    distribution: { [key: number]: number };
+    distribution: Record<number, number>;
 }
 
 export interface DeliveryInfo {
@@ -107,3 +124,18 @@ export interface WarrantyInfo {
 export interface BasicProductView extends BaseModel {
     basic: BasicProductInfo;
 } 
+
+
+export interface CategoryModelRes {
+    categoryId: string;
+    categoryName: string;
+    subCategoryName: string;
+    createdAt: number | null;
+    updatedAt: number | null;
+    version: number | null;
+}
+
+export interface CategoryModelReq {
+    categoryName: string;
+    subCategoryName: string;
+}

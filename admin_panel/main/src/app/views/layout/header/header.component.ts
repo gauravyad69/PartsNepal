@@ -1,11 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '../../pages/auth/services/auth.service';
-import { CartService } from '../../pages/services/cart.service';
-import { WishlistService } from '../../pages/services/wishlist.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CartComponent } from '../../shared/cart/cart.component';
-import { WishlistComponent } from '../../shared/wishlist/wishlist.component';
 
 @Component({
   selector: 'app-header',
@@ -13,20 +9,16 @@ import { WishlistComponent } from '../../shared/wishlist/wishlist.component';
   styleUrls: ['./header.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   standalone: true,
-  imports: [CommonModule, RouterModule, CartComponent, WishlistComponent]
+  imports: [CommonModule, RouterModule]
 })
 
 export class HeaderComponent implements OnInit {
-
-  cartCount = 0;
-  wishCount = 0;
+   
   sticky: boolean = false;
   loggedIn: boolean = false;
   constructor
     (
-      private _cartService: CartService,
       private _auth: AuthService,
-      private _wishlistService: WishlistService,
     ) { }
 
   @HostListener('window:scroll', ['$event'])
@@ -40,12 +32,6 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._cartService.cart$.subscribe((cart) => {
-      this.cartCount = cart?.items?.length ?? 0;
-    });
-    this._wishlistService.wishList$.subscribe((wishList) => {
-      this.wishCount = wishList?.items?.length ?? 0;
-    });
     this.loggedIn = this._auth.loggedIn();
     console.log(this.loggedIn)
   }

@@ -1,6 +1,5 @@
 <section class="bg-warning padding-y-sm rounded">
     <div class="container">
-
         <ol class="breadcrumb ondark mb-0">
             <li class="breadcrumb-item">
                 <a routerLink="/products">Home</a>
@@ -9,7 +8,7 @@
                 <a routerLink="/products">Product</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
-                Richtan Hero
+                {{product?.basic?.productName}}
             </li>
         </ol>
     </div>
@@ -18,142 +17,166 @@
 <section class="padding-y">
     <div class="container">
         <div class="row">
-            @defer (on viewport) {
-                <aside class="col-lg-4">
-                    <owl-carousel-o [options]="slider1Settings" #myCarousel>
-                        @for (slide of product?.details?.features?.images ?? []; track slide?.url) {
-                            <ng-template carouselSlide [id]="slide?.toString() ?? ''">
-                                <figure class="zoom-image" style="background-image: url({{slide?.url}});"
-                                    [style.backgroundPosition]="backgroundPos" (mousemove)="ZoomImage($event)">
-                                    <img class="rounded" src="{{slide?.url}}" alt="clothes"
-                                        onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'; imgNotFounded=true">
-                                </figure>
-                            </ng-template>
-                        }
-                    </owl-carousel-o>
-                    <owl-carousel-o id="controll" [options]="slider2Settings" (dragging)="nextSlide($event)"
-                        *ngIf="!imgNotFounded">
-                        <ng-container *ngFor="let slide of product?.details?.features?.images">
-                            <ng-template carouselSlide [id]="slide?.toString()||''">
-                                <img class="rounded" width="97" src="{{slide?.url}}" alt="clothes"
-                                    onerror="this.onerror = null;this.src='assets/images/ImageNotFound.png'">
-                            </ng-template>
-                        </ng-container>
-                    </owl-carousel-o>
-                </aside>
-            } @placeholder {
-                <div class="col-lg-4">
-                    <ngx-skeleton-loader [theme]="{ 'border-radius': '0', height: '350px' }">
-                    </ngx-skeleton-loader>
+            <aside class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Product Images</h5>
+                        <owl-carousel-o [options]="slider1Settings" #myCarousel>
+                            @for (slide of product?.details?.features?.images ?? []; track slide?.url) {
+                                <ng-template carouselSlide [id]="slide?.toString() ?? ''">
+                                    <figure class="zoom-image" style="background-image: url({{slide?.url}});"
+                                        [style.backgroundPosition]="backgroundPos" (mousemove)="ZoomImage($event)">
+                                        <img class="rounded" src="{{slide?.url}}" alt="Product image"
+                                            (error)="onImageError($event)">
+                                    </figure>
+                                </ng-template>
+                            }
+                        </owl-carousel-o>
+                    </div>
                 </div>
-            }
+            </aside>
 
-            <main class="col-lg-6">
-                <article class="ps-lg-3">
-                    <h4 class="title text-dark">
-                        {{product?.basic?.productName }}
-
-                    </h4>
-                    <div class="rating-wrap my-3">
-                        <ul class="rating-stars">
-                            <li style="width:80%" class="stars-active">
-                                <img src="assets/images/stars-active.svg" alt="">
-                            </li>
-                            <li>
-                                <img src="assets/images/starts-disable.svg" alt="">
-                            </li>
-                        </ul>
-                        <b class="label-rating text-warning"> {{product?.details?.features?.reviews?.averageRating}}</b>
-                        <i class="dot"></i>
-                        <span class="label-rating text-muted">
-                            <i class="fa fa-shopping-basket"></i> 154 orders
-                        </span>
-                        <i class="dot"></i>
-                        <span class="label-rating text-success">In Stock: {{product?.basic?.inventory?.stock}}</span>
-                    </div>
-
-
-                    <div class="mb-3">
-                        <span class="price h5">{{product?.basic?.pricing?.regularPrice?.currency}}{{product?.basic?.pricing?.regularPrice?.amount}}</span>
-                        <span class="text-muted">/per box</span>
-                    </div>
-
-                    <p>
-                        {{product?.details?.description || loremText }}
-                    </p>
-
-                    <dl class="row">
-                        <ng-container *ngFor="let highlight of product?.details?.features?.highlights | keyvalue">
-                            <dd class="col-9">{{highlight }}</dd>
-                        </ng-container>
-                    </dl>
-
-                    <hr>
-
-                    <div class="row mb-4">
-                        <div class="col-md-4 col-6 mb-2">
-                            <label class="form-label">Size</label>
-                            <select class="form-select">
-                                <option>Small</option>
-                                <option>Medium</option>
-                                <option>Large</option>
-                            </select>
+            <main class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title">Product Details</h4>
+                            <div class="btn-group">
+                                <button *ngIf="!isEditing" class="btn btn-primary" (click)="startEditing()">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button *ngIf="isEditing" class="btn btn-success" (click)="saveChanges()">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button *ngIf="isEditing" class="btn btn-danger" (click)="cancelEditing()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-md-4 col-6 mb-3" *ngIf="productInCartList">
-                            <label class="form-label d-block">Quantity</label>
-                            <div class="input-group input-spinner">
-                                <div class="quantity-selector">
-                                    <button type="button" class="btn  btn-quantity"
-                                        (click)="updateCartItemQuantity(quantity , product  , '-')"
-                                        [disabled]=" quantity == 1">
-                                        <span>-</span>
-                                    </button>
-                                    <div class="quantity-number">{{quantity}}</div>
-                                    <button type="button" class="btn btn-quantity"
-                                        (click)="updateCartItemQuantity(quantity! , product  , '+')">
-                                        <span>+</span>
-                                    </button>
+
+                        <form #productForm="ngForm">
+                            <!-- Basic Information -->
+                            <h5 class="mt-4">Basic Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Product Name</label>
+                                    <input type="text" class="form-control" 
+                                           [ngModel]="product?.basic?.productName"
+                                           (ngModelChange)="updateField('basic.productName', $event)"
+                                           [readonly]="!isEditing"
+                                           name="productName">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">SKU</label>
+                                    <input type="text" class="form-control" 
+                                           [ngModel]="product?.basic?.productSKU"
+                                           (ngModelChange)="updateField('basic.productSKU', $event)"
+                                           [readonly]="!isEditing"
+                                           name="sku">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Category</label>
+                                    @if (isEditing) {
+                                        <select class="form-select" 
+                                                [ngModel]="product?.basic?.categoryId"
+                                                (ngModelChange)="updateField('basic.categoryId', $event)"
+                                                name="categoryId">
+                                            <option value="">Select Category</option>
+                                            @for (category of categories; track category.categoryId) {
+                                                <option [value]="category.categoryId">
+                                                    {{category.categoryName}}
+                                                    @if (category.subCategoryName) {
+                                                        - {{category.subCategoryName}}
+                                                    }
+                                                </option>
+                                            }
+                                        </select>
+                                    } @else {
+                                        <input type="text" 
+                                               class="form-control" 
+                                               [value]="getCategoryName(product?.basic?.categoryId ?? '')"
+                                               readonly>
+                                    }
                                 </div>
                             </div>
-                        </div> 
+
+                            <!-- Inventory -->
+                            <h5 class="mt-4">Inventory</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Stock</label>
+                                    <input type="number" class="form-control" 
+                                           [ngModel]="product?.basic?.inventory?.stock"
+                                           (ngModelChange)="updateField('basic.inventory.stock', $event)"
+                                           [readonly]="!isEditing"
+                                           name="stock">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Status</label>
+                                    <div class="form-control">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   [ngModel]="product?.basic?.inventory?.isAvailable"
+                                                   (ngModelChange)="updateField('basic.inventory.isAvailable', $event)"
+                                                   [disabled]="!isEditing"
+                                                   name="isAvailable">
+                                            <label class="form-check-label">Available</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing -->
+                            <h5 class="mt-4">Pricing</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Regular Price</label>
+                                    <input type="number" class="form-control" 
+                                           [ngModel]="product?.basic?.pricing?.regularPrice?.amount | priceFormat"
+                                           (ngModelChange)="updateField('basic.pricing.regularPrice.amount', $event)"
+                                           [readonly]="!isEditing"
+                                           name="regularPrice">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Sale Price</label>
+                                    <input type="number" class="form-control" 
+                                           [ngModel]="product?.basic?.pricing?.salePrice?.amount | priceFormat"
+                                           (ngModelChange)="updateField('basic.pricing.salePrice.amount', $event)"
+                                           [readonly]="!isEditing"
+                                           name="salePrice">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Discount Percentage</label>
+                                    <input type="number" class="form-control" 
+                                           [ngModel]="product?.basic?.pricing?.discount?.amount?.amount | priceFormat"
+                                           (ngModelChange)="updateField('basic.pricing.discount.amount.amount', $event)"
+                                           [readonly]="!isEditing"
+                                           name="discountPercentage">
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <h5 class="mt-4">Description</h5>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <textarea class="form-control" rows="4" 
+                                              [ngModel]="product?.details?.description"
+                                              (ngModelChange)="updateField('details.description', $event)"
+                                              [readonly]="!isEditing"
+                                              name="description"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <!-- Last Updated: {{product?.lastUpdated | date:'medium'}} 
+                                    | Version: {{product?.version}} -->
+                                </small>
+                            </div>
+                        </form>
                     </div>
-
-                    <a href="#" class="btn  btn-warning me-2"
-                        (click)="$event.preventDefault(); addProductToCart(product)">
-                        <i class="me-1 fa fa-shopping-basket"></i>
-                        {{productInCartList ? 'Added to cart':'Add to cart'}}
-                    </a>
-                    <a href="#" (click)="$event.preventDefault(); addProductToWishList(product)" *ngIf="!isProductInWishList" class="btn  btn-light me-2">
-                        <i class="fa-regular fa-heart text-danger"></i>
-                        Save
-                    </a>
-                    <a href="#" (click)="$event.preventDefault(); addProductToWishList(product)" *ngIf="isProductInWishList" class="btn  btn-light me-2">
-                        <i  class="me-1 fa fa-heart text-danger"></i> Saved
-                    </a>
-
-                </article>
+                </div>
             </main>
         </div>
-
-        @defer (on viewport) {
-            <div class="row my-5 position-relative">
-                <div class="title text-md-center mb-2">
-                    <span>best match</span>
-                    <h4 class="text-dark">Related products</h4>
-                </div>
-                <owl-carousel-o [options]="slider3Settings" #myCarousel>
-                    @for (item of categoryProducts ?? []; track item.id) {
-                        <ng-template carouselSlide [id]="item.id">
-                            <app-product [product]="item"></app-product>
-                        </ng-template>
-                    }
-                </owl-carousel-o>
-            </div>
-        } @placeholder {
-            <div class="row my-5">
-                <ngx-skeleton-loader count="4" [theme]="{ 'border-radius': '0', height: '200px' }">
-                </ngx-skeleton-loader>
-            </div>
-        }
     </div>
 </section> 

@@ -1,3 +1,4 @@
+
 /* Define CSS Custom Properties for reusable values */
 :root {
     --product-primary-color: #fb5231;
@@ -21,33 +22,9 @@
     a {
       display: block;
       height: 100%;
-  
-      img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        transition: transform var(--product-transition);
-        transform: scale(1.05);
-        will-change: transform;
-  
-        &:last-child {
-          position: absolute;
-          inset: 0;
-          opacity: 0;
-          transition: opacity var(--product-transition);
-        }
-      }
     }
   
     &:hover {
-      a img {
-        transform: scale(1);
-  
-        &:last-child {
-          opacity: 1;
-        }
-      }
-  
       .btn-favourite {
         inset-inline-end: var(--product-spacing-sm);
       }
@@ -145,25 +122,36 @@
     transition: all var(--product-transition);
   }
   
-  /* Media Queries using modern practices */
-  @media (max-width: 48rem) { /* 768px */
-    .product-name span.item-title {
-      max-width: 110px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-  
-    .btn-favourite {
-      inset-inline-end: var(--product-spacing-sm);
+/* Media Queries using modern practices */
+@media (max-width: 48rem) { /* 768px */
+  .product-name span.item-title {
+    max-width: 110px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .btn-favourite {
+    inset-inline-end: var(--product-spacing-sm);
+  }
+}
+
+@media (max-width: 30rem) { /* 480px */
+  .product-content {
+    .price-wrap {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .price,
+      .price-old {
+        font-size: 0.875rem;
+      }
     }
   }
-  
-  @media (min-width: 62.5rem) and (max-width: 68.75rem) { /* 1000px to 1100px */
-    .product-name span.item-title {
-      max-width: 115px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
+
+  .btn-favourite {
+    font-size: 0.75rem;
+    min-width: 1.5rem;
+    padding: 0.3125rem;
   }
+}

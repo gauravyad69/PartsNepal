@@ -46,14 +46,13 @@ fun Route.adminOrderRoutes(orderService: OrderService) {
                     status = call.parameters["status"]?.let { OrderStatus.valueOf(it.uppercase()) },
                     fromDate = call.parameters["fromDate"]?.toLongOrNull(),
                     toDate = call.parameters["toDate"]?.toLongOrNull(),
-                    customerId = call.parameters["customerId"]?.toIntOrNull()
                 )
 
                 val skip = call.parameters["skip"]?.toIntOrNull() ?: 0
                 val limit = call.parameters["limit"]?.toIntOrNull() ?: 50
 
                 val mongoFilters = buildMongoFilters(filters)
-                val orders = orderService.getFilteredOrders(mongoFilters, skip, limit)
+                val orders = orderService.getFilteredOrders(mongoFilters, skip, limit).getOrThrow()
                 call.respond(HttpStatusCode.OK, orders)
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid filter parameters: ${e.message}")

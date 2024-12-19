@@ -125,15 +125,16 @@ class ProductService(private val database: MongoDatabase) {
         getAllProductsFlow(batchSize).map { it.toBasicView() }
 
     // Update operations
-    suspend fun updateBasicInfo(productId: Int, updates: Map<String, Any>): Boolean = withContext(Dispatchers.IO) {
+    suspend fun updateBasicInfo(productId: Int, basic: BasicProductInfo): Boolean = withContext(Dispatchers.IO) {
         val updateResult = productCollection.updateOne(
             Filters.eq("basic.productId", productId),
             Updates.combine(
-                updates.map { (field, value) -> Updates.set("basic.$field", value) } +
-                        listOf(
-                            Updates.set("lastUpdated", System.currentTimeMillis()),
-                            Updates.inc("version", 1)
-                        )
+                Updates.set("basic.productName", basic.productName),
+                Updates.set("basic.categoryId", basic.categoryId),
+                Updates.set("basic.inventory", basic.inventory),
+                Updates.set("basic.pricing", basic.pricing),
+                Updates.set("lastUpdated", System.currentTimeMillis()),
+                Updates.inc("version", 1)
             )
         )
         if (updateResult.modifiedCount > 0) {

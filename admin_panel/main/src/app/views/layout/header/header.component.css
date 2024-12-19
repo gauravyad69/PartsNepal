@@ -332,3 +332,55 @@
     }
 }
 
+.main-navigation {
+    .nav {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .nav-link {
+        color: #333;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: color 0.3s ease;
+
+        &:hover {
+            color: #ff8100;
+        }
+
+        &.active {
+            color: #ff8100;
+            font-weight: 600;
+        }
+    }
+}
+
+/* Mobile menu styles */
+#mobileNav {
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    .nav-link {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #eee;
+        
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .navbar-toggler {
+        border: none;
+        padding: 0.5rem;
+        color: #333;
+        
+        &:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
+

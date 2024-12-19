@@ -18,7 +18,7 @@ sealed interface ProductRelated {
 sealed interface IProductInfo : ProductRelated {
     val productSKU: String
     val productName: String
-    val categoryId: Int
+    val categoryId: String
 }
 
 @Serializable
@@ -39,7 +39,7 @@ data class BasicProductInfo(
     override val productId: Int,
     override val productSKU: String,
     override val productName: String,
-    override val categoryId: Int,
+    override val categoryId: String,
     val inventory: InventoryInfo,
     val pricing: PricingInfo
 ) : IProductInfo
@@ -155,7 +155,7 @@ data class BasicProductView(
 ) : BaseModel
 
 // Utility extension functions for timestamp handling
-fun Long.toFormattedDate(): String {
+fun Long.toFormattedDate(): String{
     return java.time.format.DateTimeFormatter
         .ISO_INSTANT
         .format(java.time.Instant.ofEpochMilli(this))

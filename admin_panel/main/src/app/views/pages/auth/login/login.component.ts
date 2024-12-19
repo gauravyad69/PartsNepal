@@ -47,7 +47,6 @@ export class LoginComponent  {
   }
   onSubmit() {
     this.isPhoneLogin = /^\d+$/.test(this.loginForm.email.value);
-
     this.isSubmitted = true;
 
     if (this.loginFormGroup.invalid) return;
@@ -65,7 +64,7 @@ export class LoginComponent  {
         this.authError = false;
         this._localstorageService.setToken(user.token);
         this._auth.startRefreshTokenTimer();
-        this._router.navigate(['/']);
+        this._router.navigate(['/products']);
       },
       (error: HttpErrorResponse) => {
         this.authError = true;

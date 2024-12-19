@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { CartItem } from '../../models/cart';
-import { WishItem } from '../../models/wishlist';
-import { CartService } from '../../services/cart.service';
-import { WishlistService } from '../../services/wishlist.service';
 import { ProductService } from '../services/product.service';
 import { HotToastService } from '@ngneat/hot-toast';
 import { ProductComponent } from '../product/product.component';
 import { FilterPipe } from '../pipe/filter.pipe';
 import { FormsModule } from '@angular/forms';
+import { ApiResponse } from '../../models/api-response';
+import { CategoryModelRes, ProductModel } from '../../models/product.model';
+import { PriceFormatPipe } from '../pipe/price-format.pipe';
+import { CategoryService } from '../services/category.service';
+import { CategoryModelReq } from '../../models/product.model';
 
 @Component({
   selector: 'app-all-products',
@@ -21,143 +21,99 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     RouterModule,
-    InfiniteScrollModule,
     NgxSkeletonLoaderModule,
     ProductComponent,
     FilterPipe,
+    PriceFormatPipe,
     FormsModule
   ]
 })
 export class AllProductsComponent implements OnInit {
   Loading: boolean = true;
-  products: any[] = [];
-  PageNumber: number = 1;
-  numberOfPages: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  isFavourite: boolean = false;
-  WishItems!: WishItem[];
+  products: ProductModel[] = [];
   fliterValue: string = "Default";
-  items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20]
-
-  throttle = 300;
-  scrollDistance = 1;
-  scrollUpDistance = 2;
-  limit: number = 20;
+  
+  // Pagination
+  currentPage: number = 1;
+  itemsPerPage: number = 20;
+  totalItems: number = 0;
+  totalPages: number = 0;
+  Math = Math; // For using Math in template
+  categories: CategoryModelRes[] = [];
 
   constructor(
     private _product: ProductService,
-    private _cartService: CartService,
-    private _wishlistService: WishlistService,
-    private _toast: HotToastService
-    
-  ) {    console.log('AllProductsComponent constructed');
+    private _toast: HotToastService,
+    private categoryService: CategoryService
+  ) {
+    console.log('AllProductsComponent constructed');
   }
 
-
-  getAllProducts(offset: number, limit: number) {
+  getProducts(page: number) {
     this.Loading = true;
-    this._product.getProduct(offset, limit).subscribe((data) => {
-
-      setTimeout(() => {
-        this.products = [...this.products, ...data]
+    
+    this._product.getProduct(page - 1, this.itemsPerPage).subscribe({
+      next: (response: ApiResponse<ProductModel[]>) => {
+        console.log('API Response:', response);
+        this.products = response.data;
+        console.log('Products array:', this.products);
+        this.totalItems = response.metadata?.totalItems || 0;
+        this.totalPages = response.metadata?.totalPages || 0;
+        this.currentPage = (response.metadata?.page || 0) + 1;
+        this.itemsPerPage = response.metadata?.itemsPerPage || this.itemsPerPage;
         this.Loading = false;
-      }, 4000);
-    })
-
-    // if (number == 1) {
-    //   this._product.getProduct(0).subscribe((data) => {
-    //     this.products = data
-    //   })
-    // } else {
-    //   this._product.getProduct(number * 20).subscribe((data) => {
-    //     this.products = data
-    //   })
-    // }
-    // window.scroll(0, 500);
-    // this.PageNumber = number;
-  }
-
-  // nextPage() {
-  //   if (this.PageNumber == 9) {
-  //     this.PageNumber = 1;
-  //   } else {
-  //     this.PageNumber++;
-  //   }
-  //   this.getAllProducts(this.PageNumber);
-
-  // }
-
-
-  // provPage() {
-  //   if (this.PageNumber == 1) {
-  //     this.PageNumber = 9;
-  //   } else {
-  //     this.PageNumber--;
-  //   }
-  //   this.getAllProducts(this.PageNumber);
-
-  // }
-
-
-  addProductToCart(item: any) {
-    const cartItem: CartItem = {
-      product: item,
-      quantity: 1
-    };
-    this._cartService.setCartItem(cartItem);
-    this._toast.success('Product added to cart successfully',
-      {
-        position: 'top-left'
-      });
-
-  }
-
-  addProductToWishList(item: any, event: any) {
-    const WishItem: WishItem = {
-      product: item
-    };
-    if (event.currentTarget.classList.contains("is-favourite")) {
-      event.currentTarget.classList.remove("is-favourite")
-      this._wishlistService.deleteWishItem(WishItem.product?.basic?.productId!);
-      this._toast.error('Product removed from wishlist',
-        {
-          position: 'top-left'
-        });
-    }
-    else {
-      event.currentTarget.classList.add("is-favourite")
-      this._wishlistService.setWishItem(WishItem);
-      this._toast.success('Product added to wishlist successfully',
-        {
-          position: 'top-left'
-        });
-    }
-
-  }
-
-  productInWishList(itm: any) {
-    const cartItemExist = this.WishItems.find((item) => item.product?.basic?.productId === itm.id);
-    return cartItemExist;
-  }
-
-  getWishList() {
-    this._wishlistService.wishList$.subscribe((cart) => {
-      this.WishItems = cart.items!;
+      },
+      error: (error) => {
+        console.error('Error loading products:', error);
+        this._toast.error('Failed to load products');
+        this.Loading = false;
+      }
     });
   }
 
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.getProducts(page);
+    }
+  }
 
-  onScroll() {
-    const offset = this.limit;
-    this.limit = (this.limit + 20) == 178 || (this.limit + 20) > 178 ? 178 : this.limit + 20;
-    if(this.limit !== 178 ) this.getAllProducts(Math.floor(offset), Math.floor(this.limit));
+  onItemsPerPageChange() {
+    this.currentPage = 1;
+    this.getProducts(1);
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    for (let i = Math.max(1, this.currentPage - 2); 
+         i <= Math.min(this.totalPages, this.currentPage + 2); i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   ngOnInit(): void {
-    this.getAllProducts(0, this.limit);
-    this.getWishList();
+    this.loadCategories();
+    this.getProducts(1);
     console.log('AllProductsComponent initialized');
-
   }
 
+  private loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        this._toast.error('Failed to load categories');
+      }
+    });
+  }
 
+  getCategoryName(categoryId: string): string {
+    const category = this.categories.find(c => c.categoryId === categoryId);
+    if (category) {
+      return `${category.categoryName}${category.subCategoryName ? ' - ' + category.subCategoryName : ''}`;
+    }
+    return 'Unknown Category';
+  }
 }

@@ -1,9 +1,11 @@
 package np.com.parts.plugins
 
+import dev.hayden.KHealth
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cachingheaders.*
+import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.conditionalheaders.*
 import io.ktor.server.plugins.cors.routing.*
@@ -13,6 +15,18 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureHTTP() {
+
+
+    install(KHealth) {
+        readyChecks {
+            check("check my database is up") {
+                true
+            }
+        }
+        healthChecks {
+            check("another check") { true }
+        }
+    }
     install(DefaultHeaders) {
         header("X-Engine", "Ktor") // will send this header with each response
     }

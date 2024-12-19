@@ -12,6 +12,13 @@ jwt:
   audience: "*"
   realm: "Access to 'hello'"
 
+admin-jwt:
+  secret: "ADMINJWT20109@19"
+  issuer: "parts.com.np"
+  audience: "*"
+  realm: "Access to admin"
+
+
 db:
   mongo:
     user: "gauravmongo"

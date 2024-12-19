@@ -75,7 +75,7 @@ class PasteService(private val database: MongoDatabase) {
         return if (paste != null) {
             val updates=  Updates.combine(
                 Updates.set("title", newTitle),
-                Updates.set("title", newContent),
+                Updates.set("content", newContent),
                 Updates.set("updatedAt", System.currentTimeMillis()),
                 Updates.inc("version", 1),
             )
