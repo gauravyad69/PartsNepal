@@ -40,7 +40,7 @@ def get_latest_release():
     """Get latest release from GitHub"""
     try:
         # Hardcoded token (not recommended but works)
-        github_token = "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" #token expiration date 2025-12-19
+        github_token = "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" #token expiration date 2025-12-19
         headers = {
             'Authorization': f'Bearer {github_token}',
             'Accept': 'application/vnd.github+json',
