@@ -1,9 +1,13 @@
 name: Run Gradle Build
 on:
   push:
+    branches:
+      - main
     paths:
       - 'API/partsnepal-api/**'
   pull_request:
+    branches:
+      - main
     paths:
       - 'API/partsnepal-api/**'
 
