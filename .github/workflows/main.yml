@@ -1,54 +1,51 @@
 name: Gradle Build and Deploy
-on:
- push:
-   branches:
-     - main
-   paths:
-     - 'API/partsnepal-api/**'
- pull_request:
-   branches:
-     - main
-   paths:
-     - 'API/partsnepal-api/**'
-jobs:
- build:
-   runs-on: ubuntu-latest
-   steps:
-   - uses: actions/checkout@v3
-   
-   - name: Set up JDK
-     uses: actions/setup-java@v3
-     with:
-       java-version: '17'
-       distribution: 'temurin'
-   
-   - name: Build with Gradle
-     uses: gradle/gradle-build-action@v2
-     with:
-       build-root-directory: API/partsnepal-api
-       arguments: build
-   
-   - name: Get current date
-     id: date
-     run: echo "date=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
-   
-   - name: Create Release
-     id: create_release
-     uses: actions/create-release@v1
-     env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-     with:
-       tag_name: release-${{ steps.date.outputs.date }}
-       release_name: Release ${{ steps.date.outputs.date }}
-       draft: false
-       prerelease: false
-   
-   - name: Upload Release Asset
-     uses: actions/upload-release-asset@v1
-     env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-     with:
-       upload_url: ${{ steps.create_release.outputs.upload_url }}
-       asset_path: ${{ github.workspace }}/API/partsnepal-api/build/libs/np.com.parts.api-all.jar
-       asset_name: np.com.parts.api-all.jar
-       asset_content_type: application/java-archive
+'on':
+  push:
+    branches:
+      - main
+    paths:
+      - API/partsnepal-api/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - API/partsnepal-api/**
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Set up JDK
+          uses: actions/setup-java@v3
+          with:
+            java-version: '17'
+            distribution: temurin
+        - name: Build with Gradle
+          uses: gradle/gradle-build-action@v2
+          with:
+            build-root-directory: API/partsnepal-api
+            arguments: build
+        - name: Get current date
+          id: date
+          run: echo "date=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
+        - name: Create Release
+          id: create_release
+          uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          with:
+            tag_name: 'release-${{ steps.date.outputs.date }}'
+            release_name: 'Release ${{ steps.date.outputs.date }}'
+            draft: false
+            prerelease: false
+        - name: Upload Release Asset
+          uses: actions/upload-release-asset@v1
+          env:
+            GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          with:
+            upload_url: '${{ steps.create_release.outputs.upload_url }}'
+            asset_path: >-
+              ${{ github.workspace
+              }}/API/partsnepal-api/build/libs/np.com.parts.api-all.jar
+            asset_name: np.com.parts.api-all.jar
+            asset_content_type: application/java-archive
