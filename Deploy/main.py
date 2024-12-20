@@ -47,23 +47,53 @@ def get_latest_release():
             'X-GitHub-Api-Version': '2022-11-28'
         }
         
+        application_status['current_status'] = 'checking_github_release'
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'info',
+            'message': 'Checking for latest GitHub release'
+        })
+        
         # Get latest release using the documented endpoint
         repo_url = "https://api.github.com/repos/gauravyad69/PartsNepal/releases/latest"
         response = requests.get(repo_url, headers=headers)
         response.raise_for_status()
         
         release_data = response.json()
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'info',
+            'message': f"Found release: {release_data.get('tag_name', 'unknown')}"
+        })
+        
         for asset in release_data['assets']:
             if asset['name'] == 'np.com.parts.api-all.jar':
+                build_logs.append({
+                    'timestamp': datetime.now(),
+                    'type': 'success',
+                    'message': f"Found JAR file in release: {asset['name']}"
+                })
                 return asset['browser_download_url']
+                
         raise Exception("JAR file not found in latest release")
     except Exception as e:
-        raise Exception(f"Failed to get latest release: {str(e)}")
+        error_msg = f"Failed to get latest release: {str(e)}"
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'error',
+            'message': error_msg
+        })
+        raise Exception(error_msg)
 
 def check_git_changes():
     """Function to check Git changes"""
     try:
         application_status['current_status'] = 'checking_git'
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'info',
+            'message': 'Starting deployment process'
+        })
         
         # Get the download URL for the latest release
         download_url = get_latest_release()
@@ -72,6 +102,12 @@ def check_git_changes():
         # Ensure directory exists
         os.makedirs(os.path.dirname(target_path), exist_ok=True)
         
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'info',
+            'message': 'Downloading JAR file'
+        })
+        
         # Download the file
         response = requests.get(download_url)
         response.raise_for_status()
@@ -79,18 +115,40 @@ def check_git_changes():
         with open(target_path, 'wb') as f:
             f.write(response.content)
             
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'success',
+            'message': 'JAR file downloaded successfully'
+        })
+            
         application_status['last_build_time'] = datetime.now()
         
         # Stop existing Java process if running
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'info',
+            'message': 'Stopping existing Java process'
+        })
         stop_java_process()
         
         # Run the new version
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'info',
+            'message': 'Starting new Java process'
+        })
         run_java_application(target_path)
         return True
 
     except Exception as error:
+        error_msg = str(error)
         application_status['current_status'] = 'error'
-        application_status['last_error'] = str(error)
+        application_status['last_error'] = error_msg
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'error',
+            'message': f'Deployment failed: {error_msg}'
+        })
         return False
 
 def stop_java_process():
@@ -105,9 +163,9 @@ def run_java_application(jar_path):
     try:
         application_status['current_status'] = 'running'
         
-        # Start Java process
+        # Start Java process with specific host and port
         process = subprocess.Popen(
-            f'java -jar {jar_path}',
+            f'java -jar {jar_path} --server.address=0.0.0.0 --server.port=9090',
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -121,6 +179,14 @@ def run_java_application(jar_path):
                     'type': log_type,
                     'message': line
                 })
+                # Check for successful startup
+                if "Started PartsNepalApplication" in line:
+                    build_logs.append({
+                        'timestamp': datetime.now(),
+                        'type': 'success',
+                        'message': 'Application started successfully at http://0.0.0.0:9090'
+                    })
+                    application_status['application_url'] = 'http://0.0.0.0:9090'
 
         threading.Thread(target=log_output, args=(process.stdout, 'application')).start()
         threading.Thread(target=log_output, args=(process.stderr, 'error')).start()
@@ -148,7 +214,9 @@ def index():
 
 @app.route('/status')
 def status():
-    return render_template('status.html', status=application_status)
+    return render_template('status.html', 
+                         status=application_status,
+                         build_logs=build_logs)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
