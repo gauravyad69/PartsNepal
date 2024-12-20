@@ -32,6 +32,36 @@
         .status-error {
             color: #dc3545;
         }
+        .logs-container {
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        .log-entry {
+            padding: 5px;
+            margin: 5px 0;
+            border-left: 4px solid #ccc;
+        }
+        .log-time {
+            color: #666;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+        .log-error {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+        .log-success {
+            border-left-color: #28a745;
+            background: #f4fff4;
+        }
+        .log-info {
+            border-left-color: #17a2b8;
+            background: #f5fcff;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +101,17 @@
             <span class="status-value status-error">{{ status.last_error }}</span>
         </div>
         {% endif %}
+
+        <div class="status-item">
+            <span class="status-label">Application URL:</span>
+            <span class="status-value">
+                {% if status.application_url %}
+                    <a href="{{ status.application_url }}" target="_blank">{{ status.application_url }}</a>
+                {% else %}
+                    Not running
+                {% endif %}
+            </span>
+        </div>
     </div>
 </body>
 </html>
