@@ -163,15 +163,14 @@
     <div class="control-panel">
         <h2>Control Panel</h2>
         <div class="button-group">
-            <button onclick="controlService('start')" class="btn btn-success">Start Service</button>
-            <button onclick="controlService('stop')" class="btn btn-danger">Stop Service</button>
+            <button onclick="controlJava('stop-java')" class="btn btn-danger">Stop Java App</button>
             <button onclick="fetchLatest()" class="btn btn-primary">Fetch Latest Release</button>
         </div>
         <div id="control-message" class="alert" style="display: none;"></div>
     </div>
 
     <script>
-    async function controlService(action) {
+    async function controlJava(action) {
         try {
             const response = await fetch(`/control/${action}`, {
                 method: 'POST',

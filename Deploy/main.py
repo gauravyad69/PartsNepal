@@ -165,11 +165,27 @@ def check_git_changes():
         return False
 
 def stop_java_process():
-    """Stop existing Java process if running"""
+    """Stop Java application"""
     try:
-        run_command("pkill -f 'java -jar.*np.com.parts.api-all.jar'")
-    except:
-        pass  # Process might not exist
+        result = subprocess.run(['pgrep', '-f', 'np.com.parts.api-all.jar'], 
+                              capture_output=True, text=True)
+        if result.stdout:
+            pid = result.stdout.strip()
+            subprocess.run(['kill', pid], check=True)
+            build_logs.append({
+                'timestamp': datetime.now(),
+                'type': 'info',
+                'message': f'Stopped Java process (PID: {pid})'
+            })
+            return True
+        return False
+    except Exception as e:
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'error',
+            'message': f'Failed to stop Java process: {str(e)}'
+        })
+        return False
 
 def run_java_application(jar_path):
     """Run Java application"""
@@ -289,8 +305,49 @@ def stop_service():
 @app.route('/control/fetch-latest', methods=['POST'])
 def fetch_latest():
     try:
-        check_git_changes()
-        return jsonify({'status': 'success', 'message': 'Latest release fetched and deployed'})
+        # Use the token when fetching the release
+        github_token = "your_token_here"
+        headers = {
+            'Authorization': f'Bearer {github_token}',
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+        
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'info',
+            'message': 'Fetching latest release'
+        })
+        
+        response = requests.get(
+            "https://api.github.com/repos/gauravyad69/PartsNepal/releases/latest",
+            headers=headers
+        )
+        response.raise_for_status()
+        
+        release_data = response.json()
+        for asset in release_data['assets']:
+            if asset['name'] == 'np.com.parts.api-all.jar':
+                download_url = asset['browser_download_url']
+                check_git_changes()
+                return jsonify({'status': 'success', 'message': 'Latest release fetched and deployed'})
+                
+        raise Exception("JAR file not found in latest release")
+    except Exception as e:
+        error_msg = f'Failed to fetch latest release: {str(e)}'
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'error',
+            'message': error_msg
+        })
+        return jsonify({'status': 'error', 'message': error_msg}), 500
+
+@app.route('/control/stop-java', methods=['POST'])
+def stop_java():
+    try:
+        if stop_java_process():
+            return jsonify({'status': 'success', 'message': 'Java application stopped'})
+        return jsonify({'status': 'warning', 'message': 'No Java process found'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
