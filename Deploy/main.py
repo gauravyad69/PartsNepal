@@ -192,16 +192,26 @@ def check_git_changes():
 def stop_java_process():
     """Stop Java application"""
     try:
+        # Get all Java processes running our JAR
         result = subprocess.run(['pgrep', '-f', 'np.com.parts.api-all.jar'], 
                               capture_output=True, text=True)
         if result.stdout:
-            pid = result.stdout.strip()
-            subprocess.run(['kill', pid], check=True)
-            build_logs.append({
-                'timestamp': datetime.now(),
-                'type': 'info',
-                'message': f'Stopped Java process (PID: {pid})'
-            })
+            # Split PIDs and kill each one
+            pids = result.stdout.strip().split('\n')
+            for pid in pids:
+                try:
+                    subprocess.run(['kill', pid.strip()], check=True)
+                    build_logs.append({
+                        'timestamp': datetime.now(),
+                        'type': 'info',
+                        'message': f'Stopped Java process (PID: {pid.strip()})'
+                    })
+                except subprocess.CalledProcessError:
+                    build_logs.append({
+                        'timestamp': datetime.now(),
+                        'type': 'warning',
+                        'message': f'Failed to stop Java process (PID: {pid.strip()})'
+                    })
             return True
         return False
     except Exception as e:
@@ -217,13 +227,14 @@ def run_java_application(jar_path):
     try:
         application_status['current_status'] = 'running'
         
-        # Start Java process with 1GB max heap
         command = f'''
         java \
         -Xmx1024m \
         -Xms512m \
         -XX:MaxMetaspaceSize=256m \
-        -jar {jar_path}
+        -jar {jar_path} \
+        --server.address=0.0.0.0 \
+        --server.port=9090
         '''
         
         process = subprocess.Popen(
@@ -246,9 +257,10 @@ def run_java_application(jar_path):
                     build_logs.append({
                         'timestamp': datetime.now(),
                         'type': 'success',
-                        'message': 'Application started successfully at http://0.0.0.0:9090'
+                        'message': 'Application started successfully'
                     })
                     application_status['application_url'] = 'http://0.0.0.0:9090'
+                    application_status['current_status'] = 'running'
 
         threading.Thread(target=log_output, args=(process.stdout, 'application')).start()
         threading.Thread(target=log_output, args=(process.stderr, 'error')).start()
