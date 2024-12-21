@@ -108,27 +108,46 @@ def check_git_changes():
             'message': 'Starting deployment process'
         })
         
-        # Get the download URL for the latest release
-        download_url = get_latest_release()
+        # Get the asset ID and download URL from the API
+        github_token = "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"
+        headers = {
+            'Authorization': f'Bearer {github_token}',
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+        
+        # Get latest release info
+        response = requests.get(
+            "https://api.github.com/repos/gauravyad69/PartsNepal/releases/latest",
+            headers=headers
+        )
+        response.raise_for_status()
+        release_data = response.json()
+        
+        # Get asset ID
+        asset_id = None
+        for asset in release_data['assets']:
+            if asset['name'] == 'np.com.parts.api-all.jar':
+                asset_id = asset['id']
+                break
+                
+        if not asset_id:
+            raise Exception("JAR file not found in latest release")
+            
         target_path = os.path.expanduser('~/app/np.com.parts.api-all.jar')
         
         # Ensure directory exists
         os.makedirs(os.path.dirname(target_path), exist_ok=True)
         
-        build_logs.append({
-            'timestamp': datetime.now(),
-            'type': 'info',
-            'message': 'Downloading JAR file'
-        })
-        
-        # Download the file using the correct headers
-        github_token = "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"
-        headers = {
-            'Authorization': f'token {github_token}',  # Changed from 'Bearer' to 'token'
-            'Accept': 'application/octet-stream'       # Changed to handle binary file download
+        # Download using asset ID
+        download_headers = {
+            'Authorization': f'Bearer {github_token}',
+            'Accept': 'application/octet-stream',
+            'X-GitHub-Api-Version': '2022-11-28'
         }
         
-        response = requests.get(download_url, headers=headers, allow_redirects=True)
+        download_url = f"https://api.github.com/repos/gauravyad69/PartsNepal/releases/assets/{asset_id}"
+        response = requests.get(download_url, headers=download_headers, allow_redirects=True)
         response.raise_for_status()
         
         with open(target_path, 'wb') as f:
