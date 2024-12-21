@@ -270,6 +270,30 @@ def periodic_git_check():
         check_git_changes()
         time.sleep(5 * 60)  # Sleep for 5 minutes
 
+@app.route('/control/start', methods=['POST'])
+def start_service():
+    try:
+        subprocess.run(['systemctl', 'start', 'autovio'], check=True)
+        return jsonify({'status': 'success', 'message': 'Service started'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/control/stop', methods=['POST'])
+def stop_service():
+    try:
+        subprocess.run(['systemctl', 'stop', 'autovio'], check=True)
+        return jsonify({'status': 'success', 'message': 'Service stopped'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/control/fetch-latest', methods=['POST'])
+def fetch_latest():
+    try:
+        check_git_changes()
+        return jsonify({'status': 'success', 'message': 'Latest release fetched and deployed'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 if __name__ == '__main__':
     try:
         logger.info("Starting Autovio service...")
