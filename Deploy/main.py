@@ -6,6 +6,19 @@ from datetime import datetime
 import threading
 import time
 import requests
+import logging
+import sys
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('/var/log/autovio.log')
+    ]
+)
+logger = logging.getLogger('autovio')
 
 app = Flask(__name__)
 
@@ -163,9 +176,17 @@ def run_java_application(jar_path):
     try:
         application_status['current_status'] = 'running'
         
-        # Start Java process with specific host and port
+        # Start Java process with 1GB max heap
+        command = f'''
+        java \
+        -Xmx1024m \
+        -Xms512m \
+        -XX:MaxMetaspaceSize=256m \
+        -jar {jar_path}
+        '''
+        
         process = subprocess.Popen(
-            f'java -jar {jar_path} --server.address=0.0.0.0 --server.port=9090',
+            command,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -177,7 +198,7 @@ def run_java_application(jar_path):
                 build_logs.append({
                     'timestamp': datetime.now(),
                     'type': log_type,
-                    'message': line
+                    'message': line.strip()
                 })
                 # Check for successful startup
                 if "Started PartsNepalApplication" in line:
@@ -250,8 +271,18 @@ def periodic_git_check():
         time.sleep(5 * 60)  # Sleep for 5 minutes
 
 if __name__ == '__main__':
-    # Start the periodic git check in a separate thread
-    threading.Thread(target=periodic_git_check, daemon=True).start()
-    
-    # For cPanel, we just need this:
-    application = app
+    try:
+        logger.info("Starting Autovio service...")
+        logger.info("Current working directory: %s", os.getcwd())
+        logger.info("Python path: %s", sys.executable)
+        
+        # Run Flask app
+        app.run(
+            host='0.0.0.0',
+            port=5000,
+            debug=False,
+            use_reloader=False  # Important: disable reloader in production
+        )
+    except Exception as e:
+        logger.error("Fatal error in main loop", exc_info=True)
+        sys.exit(1)  # Exit with error status
