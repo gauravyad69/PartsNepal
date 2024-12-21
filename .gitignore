@@ -56,3 +56,5 @@ out/
 /Android/PartsNepal/.kotlin
 /admin_panel/main/.angular
 admin_panel/main/package-lock.json
+Deploy/image-compression-app/node_modules/.bin/mime
+/Deploy/image-compression-app/node_modules
