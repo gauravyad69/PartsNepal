@@ -121,8 +121,13 @@ def check_git_changes():
             'message': 'Downloading JAR file'
         })
         
-        # Download the file
-        response = requests.get(download_url)
+        # Download the file using the same token
+        github_token = "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"
+        headers = {
+            'Authorization': f'Bearer {github_token}',
+            'Accept': 'application/vnd.github+json'
+        }
+        response = requests.get(download_url, headers=headers)
         response.raise_for_status()
         
         with open(target_path, 'wb') as f:
@@ -305,34 +310,8 @@ def stop_service():
 @app.route('/control/fetch-latest', methods=['POST'])
 def fetch_latest():
     try:
-        # Use the token when fetching the release
-        github_token = "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"
-        headers = {
-            'Authorization': f'Bearer {github_token}',
-            'Accept': 'application/vnd.github+json',
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
-        
-        build_logs.append({
-            'timestamp': datetime.now(),
-            'type': 'info',
-            'message': 'Fetching latest release'
-        })
-        
-        response = requests.get(
-            "https://api.github.com/repos/gauravyad69/PartsNepal/releases/latest",
-            headers=headers
-        )
-        response.raise_for_status()
-        
-        release_data = response.json()
-        for asset in release_data['assets']:
-            if asset['name'] == 'np.com.parts.api-all.jar':
-                download_url = asset['browser_download_url']
-                check_git_changes()
-                return jsonify({'status': 'success', 'message': 'Latest release fetched and deployed'})
-                
-        raise Exception("JAR file not found in latest release")
+        check_git_changes()
+        return jsonify({'status': 'success', 'message': 'Latest release fetched and deployed'})
     except Exception as e:
         error_msg = f'Failed to fetch latest release: {str(e)}'
         build_logs.append({
