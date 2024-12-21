@@ -306,7 +306,7 @@ def stop_service():
 def fetch_latest():
     try:
         # Use the token when fetching the release
-        github_token = "your_token_here"
+        github_token = "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"
         headers = {
             'Authorization': f'Bearer {github_token}',
             'Accept': 'application/vnd.github+json',
