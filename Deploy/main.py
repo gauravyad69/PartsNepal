@@ -121,13 +121,14 @@ def check_git_changes():
             'message': 'Downloading JAR file'
         })
         
-        # Download the file using the same token
+        # Download the file using the correct headers
         github_token = "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"
         headers = {
-            'Authorization': f'Bearer {github_token}',
-            'Accept': 'application/vnd.github+json'
+            'Authorization': f'token {github_token}',  # Changed from 'Bearer' to 'token'
+            'Accept': 'application/octet-stream'       # Changed to handle binary file download
         }
-        response = requests.get(download_url, headers=headers)
+        
+        response = requests.get(download_url, headers=headers, allow_redirects=True)
         response.raise_for_status()
         
         with open(target_path, 'wb') as f:
