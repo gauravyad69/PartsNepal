@@ -100,7 +100,6 @@ dependencies {
     implementation ("com.github.parniyan7:DotLoading:4.0.0")
 
     //for showing terms and conditions
-    implementation("com.github.mukeshsolanki:MarkdownView-Android:2.0.0")
 
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
