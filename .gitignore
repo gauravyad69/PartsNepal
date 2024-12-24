@@ -56,3 +56,4 @@ out/
 /Android/PartsNepal/.kotlin
 /admin_panel/main/.angular
 admin_panel/main/package-lock.json
+/Deploy/.venv
