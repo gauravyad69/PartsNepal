@@ -3,7 +3,7 @@ package np.com.parts.app_utils
 import android.content.Context
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import np.com.parts.repository.CartRepository
+import np.com.parts.API.Repository.CartRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

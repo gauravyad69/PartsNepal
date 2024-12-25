@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     style="@style/background"
-    tools:context=".Screens.NavScreens.HomeFragment">
+    tools:context=".Presentation.Screens.Fragments.NavScreens.HomeFragment">
 
     <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
