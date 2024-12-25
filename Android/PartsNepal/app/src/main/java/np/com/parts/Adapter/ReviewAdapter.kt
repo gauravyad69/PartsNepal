@@ -35,7 +35,7 @@ class ReviewAdapter : ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(Review
         private val reviewComment: TextView = itemView.findViewById(R.id.reviewComment)
 
         fun bind(review: Review) {
-            userName.text = "User ${review.userId.takeLast(4)}" // Simplified user display
+            userName.text = "User ${review.userId.value.toString().takeLast(4)}" // Simplified user display
             ratingBar.rating = review.rating.toFloat()
             reviewComment.text = review.comment
             reviewDate.text = formatDate(review.lastUpdated)
@@ -49,14 +49,22 @@ class ReviewAdapter : ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(Review
             val diffInMillis = now - timestamp
 
             return when {
-                diffInMillis < 24 * 60 * 60 * 1000 -> "Today"
-                diffInMillis < 48 * 60 * 60 * 1000 -> "Yesterday"
-                else -> {
+                diffInMillis < 60 * 60 * 1000 -> { // Less than 1 hour
+                    val minutes = diffInMillis / (60 * 1000)
+                    "$minutes ${if (minutes == 1L) "minute ago" else "minutes ago"}"
+                }
+                diffInMillis < 24 * 60 * 60 * 1000 -> { // Less than 24 hours
+                    val hours = diffInMillis / (60 * 60 * 1000)
+                    "$hours ${if (hours == 1L) "hour ago" else "hours ago"}"
+                }
+                diffInMillis < 48 * 60 * 60 * 1000 -> "Yesterday" // Yesterday
+                else -> { // More than 2 days
                     val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                     sdf.format(Date(timestamp))
                 }
             }
         }
+
     }
 
     class ReviewDiffCallback : DiffUtil.ItemCallback<Review>() {

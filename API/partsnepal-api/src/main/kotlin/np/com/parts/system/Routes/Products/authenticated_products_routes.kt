@@ -9,25 +9,44 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import np.com.parts.system.Models.Review
+import np.com.parts.system.Models.UserId
+
+private val log = org.slf4j.LoggerFactory.getLogger("Products")
 
 // Authenticated Routes
 fun Route.authenticatedProductRoutes(productService: ProductService) {
     route("/products") {
         // POST - Add product review
+
+        // POST - Add product review
         post("/{productId}/review") {
             try {
                 val principal = call.principal<JWTPrincipal>()
-                val userId = principal!!.payload.getClaim("userId").asString()
+                val userId = principal!!.payload.getClaim("userId").asInt() ?: return@post call.respond(HttpStatusCode.Unauthorized)
+
+
                 val productId = call.parameters["productId"]?.toIntOrNull()
-                    ?: return@post call.respond(
+                if (productId == null) {
+                    log.warn("Invalid or missing product ID in request")
+                    return@post call.respond(
                         HttpStatusCode.BadRequest,
                         ErrorResponse("Invalid product ID", "INVALID_PRODUCT_ID")
                     )
+                }
 
-                val reviewRequest = call.receive<ReviewRequest>()
+                val reviewRequest = try {
+                    call.receive<ReviewRequest>()
+                } catch (e: Exception) {
+                    log.error("Error parsing review request: ${e.message}", e)
+                    return@post call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid review request payload", "INVALID_PAYLOAD")
+                    )
+                }
 
                 // Validate rating
                 if (reviewRequest.rating !in 1..5) {
+                    log.warn("Invalid rating: ${reviewRequest.rating}")
                     return@post call.respond(
                         HttpStatusCode.BadRequest,
                         ErrorResponse("Rating must be between 1 and 5", "INVALID_RATING")
@@ -35,7 +54,7 @@ fun Route.authenticatedProductRoutes(productService: ProductService) {
                 }
 
                 val review = Review(
-                    userId = userId,
+                    userId = UserId(userId),
                     rating = reviewRequest.rating,
                     comment = reviewRequest.comment
                 )
@@ -43,20 +62,20 @@ fun Route.authenticatedProductRoutes(productService: ProductService) {
                 val added = productService.addReview(productId, review)
 
                 if (added) {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        ProductResponse(data = true, message = "Review added successfully")
-                    )
+                    log.info("Successfully added review for product ID: $productId by user ID: $userId")
+                    call.respond(HttpStatusCode.OK, true)
                 } else {
+                    log.warn("Product not found for ID: $productId")
                     call.respond(
                         HttpStatusCode.NotFound,
                         ErrorResponse("Product not found", "PRODUCT_NOT_FOUND")
                     )
                 }
             } catch (e: Exception) {
+                log.error("Unhandled exception while adding review: ${e.message}", e)
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    ErrorResponse("Error adding review", "REVIEW_ERROR")
+                    ErrorResponse("Error adding review", "REVIEW_ERROR", e.localizedMessage)
                 )
             }
         }

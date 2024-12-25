@@ -1,6 +1,7 @@
 package np.com.parts.Screens
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +31,9 @@ import np.com.parts.API.Models.AccountStatus
 import np.com.parts.API.Repository.AuthRepository
 import np.com.parts.API.TokenManager
 import np.com.parts.Screens.StartingScreens.VerifyEmailFragment
+import np.com.parts.ui.statusbar.StatusBarColors
+import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
+import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
 import javax.inject.Inject
 
 @SuppressLint("StaticFieldLeak")
@@ -37,9 +41,7 @@ private lateinit var navController: NavController
 private lateinit var binding: ActivitySuperBinding
 @AndroidEntryPoint
 class SuperActivity : AppCompatActivity() {
-
     private val cartViewModel: CartViewModel by viewModels()
-
     @Inject
     lateinit var tokenManager: TokenManager
 
@@ -51,21 +53,15 @@ class SuperActivity : AppCompatActivity() {
         binding = ActivitySuperBinding.inflate(layoutInflater)
         setContentView(binding.root)
         enableEdgeToEdge()
-
-        setupStatusBar()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets }
 
 
-
-
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-
-
 
         // Initialize NavController using the correct ID
         val navHostFragment = supportFragmentManager
@@ -73,12 +69,14 @@ class SuperActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
 // Set up SmoothBottomBar
-
         setupBottomNavigation()
         observeCartBadge()
+        setupMisc()
+        setupStatusBar()
+        setupUI()
+    }
 
-
-
+    private fun setupMisc() {
         if (tokenManager.hasToken()){
             lifecycleScope.launch{
                 val accountStatus = authRepository.getAccountStatus()
@@ -93,9 +91,42 @@ class SuperActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupUI() {
+
+        // No Internet Dialog: Signal
+        NoInternetDialogSignal.Builder(
+            this,
+            lifecycle
+        ).apply {
+            dialogProperties.apply {
+                connectionCallback = object : ConnectionCallback { // Optional
+                    override fun hasActiveConnection(hasActiveConnection: Boolean) {
+                        // ...
+                    }
+                }
+
+                cancelable = false // Optional
+                noInternetConnectionTitle = "No Internet" // Optional
+                noInternetConnectionMessage =
+                    "Check your Internet connection and try again." // Optional
+                showInternetOnButtons = true // Optional
+                pleaseTurnOnText = "Please turn on" // Optional
+                wifiOnButtonText = "Wifi" // Optional
+                mobileDataOnButtonText = "Mobile data" // Optional
+
+                onAirplaneModeTitle = "No Internet" // Optional
+                onAirplaneModeMessage = "You have turned on the airplane mode." // Optional
+                pleaseTurnOffText = "Please turn off" // Optional
+                airplaneModeOffButtonText = "Airplane mode" // Optional
+                showAirplaneModeOffButtons = true // Optional
+            }
+        }.build()
+
+    }
 
 
     private fun setupStatusBar() {
+/*
         val isDark=false
         window.statusBarColor = ContextCompat.getColor(
             this,
@@ -103,6 +134,11 @@ class SuperActivity : AppCompatActivity() {
         )
         WindowInsetsControllerCompat(window, window.decorView)
             .isAppearanceLightStatusBars = !isDark
+*/
+        val color = ContextCompat.getColor(this, R.color.background)
+        StatusBarColors.setStatusBarColor(this, color)
+
+
     }
 
     private fun setupBottomNavigation() {

@@ -36,6 +36,7 @@ import java.text.NumberFormat
 import kotlin.math.roundToInt
 import dagger.hilt.android.AndroidEntryPoint
 import np.com.parts.API.Models.formatPrice
+import np.com.parts.ui.dialog.ReviewBottomSheetDialog
 
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
@@ -143,6 +144,10 @@ class ProductFragment : Fragment() {
         }
 
         binding.reviewsSection.writeReviewButton.setOnClickListener {
+            // Launch the dialog
+            val reviewDialog = ReviewBottomSheetDialog(viewModel)
+            reviewDialog.show(childFragmentManager, "AddReview")
+
             // Handle write review click
         }
     }

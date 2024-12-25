@@ -98,6 +98,7 @@ dependencies {
     implementation ("com.github.skydoves:powerspinner:1.2.7")
     implementation ("com.github.yusufonderd:BasketLayout:1.0")
     implementation ("com.github.parniyan7:DotLoading:4.0.0")
+    implementation ("org.imaginativeworld.oopsnointernet:oopsnointernet:2.0.0")
 
     //for showing terms and conditions
 
