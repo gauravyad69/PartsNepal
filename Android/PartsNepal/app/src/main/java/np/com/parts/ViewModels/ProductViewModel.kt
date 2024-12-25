@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import np.com.parts.API.Repository.ProductRepository
 import np.com.parts.API.Models.BasicProductView
 import np.com.parts.API.Models.ProductModel
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -170,5 +171,25 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
         }
     }
 
+
+
+    fun sendReview(rating: Int, review: String) {
+        viewModelScope.launch {
+            _loading.value = true
+            _error.value = null
+
+            val productId = productById.value!!.productId
+            productRepository.sendReview(productId, rating, review)
+                .onSuccess { response ->
+                    Timber.log(1,"Successfully added review")
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message
+                    Timber.log(1,"Failed ${exception.message}")
+                }
+
+            _loading.value = false
+        }
+    }
     // Similar functions for other API calls...
 }

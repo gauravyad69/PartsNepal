@@ -112,7 +112,8 @@ enum class AccountStatus {
 data class ProductResponse<T>(
     val data: T,
     val message: String? = null,
-    val metadata: ResponseMetadata? = null
+    val metadata: ResponseMetadata? = null,
+    val error: ErrorResponse? = null  // Add this to handle error responses
 )
 
 @Serializable

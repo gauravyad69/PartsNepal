@@ -1,14 +1,21 @@
+@file:SuppressLint("UnsafeOptInUsageError")
+
 package np.com.parts.API.Repository
 
+import android.annotation.SuppressLint
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.bodyAsText
 import np.com.parts.API.Models.ProductModel
 import np.com.parts.API.Models.BasicProductView
 import kotlinx.serialization.Serializable
+import np.com.parts.API.Models.ProductResponse
 import np.com.parts.API.PRODUCTS_PATH
+import timber.log.Timber
 import javax.inject.Inject
 
+/*
 
 @Serializable
 data class ProductResponse<T>(
@@ -32,10 +39,17 @@ data class ErrorResponse(
     val code: String? = null,
     val debug: String? = null
 )
+*/
+
+@Serializable
+data class ReviewRequest(
+    val rating: Int,
+    val comment: String
+)
+
 
 class ProductRepository @Inject constructor(
     private val client: HttpClient
-
 ) {
 
     // Get all products
@@ -130,5 +144,36 @@ class ProductRepository @Inject constructor(
         Result.success(response)
     } catch (e: Exception) {
         Result.failure(e)
+    }
+
+
+    // Get product by ID
+    suspend fun sendReview(
+        productId: Int,
+        rating: Int,
+        review: String
+    ): Result<Boolean> {
+        return try {
+            println("Making request to /review")
+            val requestBody = ReviewRequest(
+                rating = rating,
+                comment = review
+            )
+            val response = client.post("$PRODUCTS_PATH/$productId/review"){
+                setBody(requestBody)
+            }
+
+            val responseBody = response.body<Boolean>()
+
+            return if (responseBody==true){
+                Result.success(responseBody)
+            } else {
+                Result.failure(Exception("The returned data is false, dictating failure, /review"))
+            }
+        } catch (e: Exception) {
+            println("Error in /review: ${e.message}")  // Add error logging
+            e.printStackTrace()
+            Result.failure(e)
+        }
     }
 }

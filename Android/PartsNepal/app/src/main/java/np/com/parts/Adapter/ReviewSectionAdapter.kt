@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import np.com.parts.R
 import np.com.parts.API.Models.Reviews
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 class ReviewSectionAdapter(
@@ -48,8 +49,14 @@ class ReviewSectionAdapter(
         // Rating distribution views
         private val fiveStarProgress: ProgressBar = itemView.findViewById(R.id.fiveStarProgress)
         private val fourStarProgress: ProgressBar = itemView.findViewById(R.id.fourStarProgress)
+        private val threeStarProgress: ProgressBar = itemView.findViewById(R.id.threeStarProgress)
+        private val twoStarProgress: ProgressBar = itemView.findViewById(R.id.twoStarProgress)
+        private val oneStarProgress: ProgressBar = itemView.findViewById(R.id.oneStarProgress)
         private val fiveStarCount: TextView = itemView.findViewById(R.id.fiveStarCount)
         private val fourStarCount: TextView = itemView.findViewById(R.id.fourStarCount)
+        private val threeStarCount: TextView = itemView.findViewById(R.id.threeStarCount)
+        private val twoStarCount: TextView = itemView.findViewById(R.id.twoStarCount)
+        private val oneStarCount: TextView = itemView.findViewById(R.id.oneStarCount)
 
         private val reviewAdapter = ReviewAdapter()
 
@@ -71,12 +78,31 @@ class ReviewSectionAdapter(
             summary.distribution[5]?.let { count ->
                 fiveStarProgress.progress = (count * 100 / maxCount).toDouble().roundToInt()
                 fiveStarCount.text = count.toString()
+                Timber.log(1, "Dis 5 $count")
             }
             summary.distribution[4]?.let { count ->
                 fourStarProgress.progress = (count * 100 / maxCount).toDouble().roundToInt()
                 fourStarCount.text = count.toString()
+                Timber.log(1, "Dis 4 $count")
+            }
+            summary.distribution[3]?.let { count ->
+                threeStarProgress.progress = (count * 100 / maxCount).toDouble().roundToInt()
+                threeStarCount.text = count.toString()
+                Timber.log(1, "Dis 3 $count")
             }
 
+            summary.distribution[2]?.let { count ->
+                twoStarProgress.progress = (count * 100 / maxCount).toDouble().roundToInt()
+                twoStarCount.text = count.toString()
+                Timber.log(1, "Dis 2 $count")
+
+            }
+
+            summary.distribution[1]?.let { count ->
+                oneStarProgress.progress = (count * 100 / maxCount).toDouble().roundToInt()
+                oneStarCount.text = count.toString()
+                Timber.log(1, "Dis 1 $count")
+            }
             // Submit reviews to the nested adapter
             reviewAdapter.submitList(reviews.items)
         }

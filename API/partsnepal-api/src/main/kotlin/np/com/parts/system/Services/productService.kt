@@ -195,36 +195,81 @@ class ProductService(private val database: MongoDatabase) {
 
     // Review operations
     suspend fun addReview(productId: Int, review: Review): Boolean = withContext(Dispatchers.IO) {
-        val product = getProductWithCache(productId) ?: return@withContext false
+        try {
+            val product = getProductWithCache(productId)
+            if (product == null) {
+                println("addReview: Product with ID $productId not found in cache.")
+                return@withContext false
+            }
+            println("addReview: Retrieved product with ID ${product.productId}.")
 
-        // Calculate new review summary
-        val currentReviews = product.details.features.reviews
-        val newTotalCount = currentReviews.summary.totalCount + 1
-        val newDistribution = currentReviews.summary.distribution.toMutableMap()
-        newDistribution[review.rating] = (newDistribution[review.rating] ?: 0) + 1
+            // Validate and log the current review details
+            val currentReviews = product.details.features.reviews
+            if (currentReviews == null) {
+                println("addReview: Reviews are null for product ID ${product.productId}.")
+                return@withContext false
+            }
 
-        val newAverageRating = (currentReviews.summary.averageRating * currentReviews.summary.totalCount + review.rating) / newTotalCount
+            val currentSummary = currentReviews.summary
+            if (currentSummary == null) {
+                println("addReview: Review summary is null for product ID ${product.productId}.")
+                return@withContext false
+            }
 
-        val newSummary = ReviewSummary(
-            averageRating = newAverageRating,
-            totalCount = newTotalCount,
-            distribution = newDistribution
-        )
+            val currentDistribution = currentSummary.distribution ?: emptyMap()
+            println("addReview: Current summary for product ID ${product.productId} - " +
+                    "Total Count: ${currentSummary.totalCount}, " +
+                    "Average Rating: ${currentSummary.averageRating}, " +
+                    "Distribution: $currentDistribution.")
 
-        val updateResult = productCollection.updateOne(
-            Filters.eq("basic.productId", productId),
-            Updates.combine(
-                Updates.push("details.features.reviews.items", review),
-                Updates.set("details.features.reviews.summary", newSummary),
-                Updates.set("lastUpdated", System.currentTimeMillis()),
-                Updates.inc("version", 1)
+            // Calculate new review summary
+            val newTotalCount = currentSummary.totalCount + 1
+            val newDistribution = currentDistribution.toMutableMap()
+            newDistribution[review.rating] = (newDistribution[review.rating] ?: 0) + 1
+
+            val newAverageRating = (currentSummary.averageRating * currentSummary.totalCount + review.rating) / newTotalCount
+            println("addReview: Calculated new summary - " +
+                    "Total Count: $newTotalCount, " +
+                    "Average Rating: $newAverageRating, " +
+                    "Updated Distribution: $newDistribution.")
+
+            val newSummary = ReviewSummary(
+                averageRating = newAverageRating,
+                totalCount = newTotalCount,
+                distribution = newDistribution
             )
-        )
 
-        if (updateResult.modifiedCount > 0) {
-            productCache.remove(productId)
-            true
-        } else false
+            // Attempt to update the product in the database
+            println("addReview: Attempting to update product with ID $productId in database.")
+            val updateResult = productCollection?.updateOne(
+                Filters.eq("basic.productId", productId),
+                Updates.combine(
+                    Updates.push("details.features.reviews.items", review),
+                    Updates.set("details.features.reviews.summary", newSummary),
+                    Updates.set("lastUpdated", System.currentTimeMillis()),
+                    Updates.inc("version", 1)
+                )
+            )
+
+            if (updateResult == null) {
+                println("addReview: Database update failed due to null productCollection.")
+                return@withContext false
+            }
+
+            println("addReview: Update result for product ID $productId - Modified Count: ${updateResult.modifiedCount}.")
+            if (updateResult.modifiedCount > 0) {
+                productCache?.remove(productId)
+                println("addReview: Product cache cleared for ID $productId.")
+                return@withContext true
+            } else {
+                println("addReview: No records were updated for product ID $productId.")
+                return@withContext false
+            }
+        } catch (e: Exception) {
+            println("addReview: Exception occurred for product ID $productId - ${e.message}")
+            e.printStackTrace()
+            return@withContext false
+        }
     }
 
     // Search operations with pagination
