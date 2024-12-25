@@ -38,6 +38,8 @@ class BasicProductItem(val product: BasicProductView) : AbstractBindingItem<Item
                     product.basic.pricing.salePrice?.currency ?: "NPR"
                 )
                 saleChip.visibility = View.VISIBLE
+                val salePercentage = ((product.basic.pricing.salePrice!!.amount / product.basic.pricing.regularPrice.amount) * 100).toInt()
+                saleChip.text = "-$salePercentage%"
                 regularPrice.apply {
                     paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                     setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))

@@ -1,11 +1,10 @@
-package np.com.parts.API.Models
+package np.com.parts.API
 
 
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.cio.CIOEngineConfig
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
-import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.util.concurrent.TimeUnit
 

@@ -1,7 +1,10 @@
 package np.com.parts.Presentation.Screens
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -120,18 +123,11 @@ class SuperActivity : AppCompatActivity() {
 
 
     private fun setupStatusBar() {
-/*
-        val isDark=false
-        window.statusBarColor = ContextCompat.getColor(
-            this,
-            if (isDark) R.color.black else R.color.white
-        )
-        WindowInsetsControllerCompat(window, window.decorView)
-            .isAppearanceLightStatusBars = !isDark
-*/
+
+
         val color = ContextCompat.getColor(this, R.color.background)
         StatusBarColors.setStatusBarColor(this, color)
-
+        StatusBarColors.setDarkStatusBarIcons(this)
 
     }
 

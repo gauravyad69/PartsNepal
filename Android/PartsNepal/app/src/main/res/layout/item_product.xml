@@ -22,17 +22,21 @@
             tools:src="@tools:sample/backgrounds/scenic" />
 
         <!-- Discount Chip -->
+
+        <!-- Favorite Icon -->
         <com.google.android.material.chip.Chip
             android:id="@+id/saleChip"
+            style="@style/textStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="Sale"
-            style="@style/product_list_chip"
+            android:textColor="@color/background"
+            app:chipBackgroundColor="@color/sale"
+            app:chipStrokeWidth="0dp"
             app:layout_constraintStart_toStartOf="@id/productImage"
             app:layout_constraintTop_toTopOf="@id/productImage" />
 
-        <!-- Favorite Icon -->
         <ImageView
             android:id="@+id/favoriteIcon"
             android:layout_width="32dp"
@@ -42,6 +46,7 @@
             android:padding="4dp"
             android:src="@drawable/ic_heart"
             app:tint="@color/primary"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/productImage"
             app:layout_constraintTop_toTopOf="@id/productImage" />
 

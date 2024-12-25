@@ -18,19 +18,13 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.network.tls.TLSConfigBuilder
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import np.com.parts.API.BASE_URL
-import np.com.parts.API.Models.configureSslValidation
 import np.com.parts.API.MyTrustManager
 import np.com.parts.API.TokenManager
 import timber.log.Timber
-import java.security.KeyStore
 import javax.inject.Singleton
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.TrustManagerFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
