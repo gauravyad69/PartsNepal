@@ -2,6 +2,8 @@ package np.com.parts.Presentation.Screens.Fragments.NavScreens
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -24,15 +28,29 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import np.com.parts.Domain.Items.BasicProductItem
 import np.com.parts.Domain.Items.ProgressItem
 import np.com.parts.Domain.ViewModels.MiscViewModel
+import np.com.parts.Presentation.Adapter.CarouselAdapter
+import np.com.parts.Presentation.Adapter.Deal
+import np.com.parts.Presentation.Adapter.DealsAdapter
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
 
+    private val carouselHandler = Handler(Looper.getMainLooper())
+    private val carouselRunnable = object : Runnable {
+        override fun run() {
+            binding.viewPager.currentItem =
+                (binding.viewPager.currentItem + 1) % (carouselAdapter.itemCount)
+            carouselHandler.postDelayed(this, 3000)
+        }
+    }
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -45,7 +63,12 @@ class HomeFragment : Fragment() {
     private lateinit var fastAdapter: FastAdapter<AbstractBindingItem<*>>
     private lateinit var itemAdapter: ItemAdapter<BasicProductItem>
     private lateinit var footerAdapter: ItemAdapter<ProgressItem>
+    private lateinit var dealsAdapter: DealsAdapter
+    private lateinit var carouselAdapter: CarouselAdapter
     private lateinit var shimmerAdapter: ShimmerAdapter
+    private var carouselJob: Job? = null
+
+
 
     private val miscViewModel: MiscViewModel by viewModels()
 
@@ -68,13 +91,21 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomBar)
         retainInstance = true
-
+        initializeDealsAndCarousel()
 
 
 
         Snackbar.make(binding.root, "Please Wait...", Snackbar.LENGTH_LONG)
         Snackbar.make(binding.root, "The Products Are Being Loaded...", Snackbar.LENGTH_LONG)
 
+
+
+        // Test data to verify adapter
+        val testDeals = listOf(
+            Deal("1", "Test Item 1", 999.0, 15, "https://example.com/1.jpg"),
+            Deal("2", "Test Item 2", 1999.0, 20, "https://example.com/2.jpg")
+        )
+        dealsAdapter.setDeals(testDeals)
 
 
         bottomNavigationView.visibility=View.VISIBLE
@@ -175,6 +206,21 @@ class HomeFragment : Fragment() {
             }
         }
 
+     viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    // Observe carousel images
+                    viewModel.carouselImages.collect { images ->
+                        carouselAdapter.setImages(images.map { it.imageUrl })
+                    }
+
+                    // Observe deals
+                    viewModel.deals.collect { deals ->
+                        dealsAdapter.setDeals(deals)
+                    }
+                }
+            }
+
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isLoadingMore.collect { isLoading ->
@@ -256,13 +302,81 @@ class HomeFragment : Fragment() {
 
     }
 
+    private fun initializeDealsAndCarousel() {
+        startCarousel()
+        // Initialize Carousel
+        carouselAdapter = CarouselAdapter()
+        dealsAdapter = DealsAdapter()
+        binding.viewPager.apply {
+            adapter = carouselAdapter
+            orientation = ViewPager2.ORIENTATION_HORIZONTAL
+
+            // Reduce sensitivity for smoother scrolling
+            val recyclerViewField = ViewPager2::class.java.getDeclaredField("mRecyclerView")
+            recyclerViewField.isAccessible = true
+            val recyclerView = recyclerViewField.get(this) as RecyclerView
+            recyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        }
+
+        // Connect dots indicator
+        binding.dotsIndicator.attachTo(binding.viewPager)
+
+        // Initialize Deals
+//        dealsAdapter = DealsAdapter().apply {
+//            onDealClick = { deal ->
+//                navigateToDealDetails(deal)
+//            }
+//        }
+
+        binding.dealsRecyclerView.apply {
+            adapter = dealsAdapter
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            // Add padding for better visibility of next items
+            setPadding(16, 0, 16, 0)
+            clipToPadding = false
+        }
+    }
+
+    private fun startCarouselAutoScroll() {
+        carouselJob = lifecycleScope.launch {
+            while(isActive) {
+                delay(3000)
+                binding.viewPager.let { viewPager ->
+                    val nextItem = (viewPager.currentItem + 1) % carouselAdapter.itemCount
+                    viewPager.setCurrentItem(nextItem, true)
+                }
+            }
+        }
+    }
+   /* private fun navigateToDealDetails(deal: Deal) {
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeFragmentToDealDetails(deal.id)
+        )
+    }
+*/
 
     private fun setupListeners() {
         // Remove the old listener setup and use the one in setupRecyclerView()
     }
+    private fun startCarousel() {
+        carouselHandler.postDelayed(carouselRunnable, 3000)
+    }
+    override fun onPause() {
+        super.onPause()
+        carouselHandler.removeCallbacks(carouselRunnable)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        startCarousel()
+    }
     override fun onDestroyView() {
         super.onDestroyView()
+        carouselHandler.removeCallbacks(carouselRunnable)
         _binding = null
     }
 

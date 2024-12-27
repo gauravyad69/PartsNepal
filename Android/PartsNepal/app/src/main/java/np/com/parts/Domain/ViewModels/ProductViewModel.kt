@@ -13,6 +13,8 @@ import kotlinx.coroutines.withContext
 import np.com.parts.API.Repository.ProductRepository
 import np.com.parts.API.Models.BasicProductView
 import np.com.parts.API.Models.ProductModel
+import np.com.parts.Presentation.Adapter.CarouselImage
+import np.com.parts.Presentation.Adapter.Deal
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -37,6 +39,13 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
     private val _basicProducts = MutableStateFlow<List<BasicProductView>>(emptyList())
     val basicProducts = _basicProducts.asStateFlow()
 
+    private val _carouselImages = MutableStateFlow<List<CarouselImage>>(emptyList())
+    val carouselImages = _carouselImages.asStateFlow()
+
+    private val _deals = MutableStateFlow<List<Deal>>(emptyList())
+    val deals = _deals.asStateFlow()
+
+
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
@@ -54,6 +63,10 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
     }
 
     fun getScrollState(): Parcelable? = recyclerViewState
+
+    init {
+        loadBasicProducts()
+    }
 
     fun loadProducts(page: Int = 0) {
         viewModelScope.launch {
@@ -101,6 +114,18 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
                         _isLoadingMore.value = true
                     }
                 }
+
+                // Load carousel images
+                productRepository.getCarouselImages()
+                    .onSuccess { _carouselImages.value = it }
+                    .onFailure { /* Handle error */ _error.value = "FAILURE AT CAROUSEL IMAGE"}
+
+                // Load deals
+                productRepository.getDeals()
+                    .onSuccess { _deals.value = it }
+                    .onFailure { /* Handle error */ _error.value = "FAILURE AT DEALS REPOSITORY" }
+
+
 
                 // Make API call on IO dispatcher
                 withContext(Dispatchers.IO) {

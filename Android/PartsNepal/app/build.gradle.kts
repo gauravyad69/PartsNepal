@@ -99,6 +99,8 @@ dependencies {
     implementation ("com.github.yusufonderd:BasketLayout:1.0")
     implementation ("com.github.parniyan7:DotLoading:4.0.0")
     implementation ("org.imaginativeworld.oopsnointernet:oopsnointernet:2.0.0")
+    implementation ("com.tbuonomo:dotsindicator:4.3")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
 
     //for showing terms and conditions
 

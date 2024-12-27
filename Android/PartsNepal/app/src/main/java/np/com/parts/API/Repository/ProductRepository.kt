@@ -12,6 +12,8 @@ import np.com.parts.API.Models.BasicProductView
 import kotlinx.serialization.Serializable
 import np.com.parts.API.Models.ProductResponse
 import np.com.parts.API.PRODUCTS_PATH
+import np.com.parts.Presentation.Adapter.CarouselImage
+import np.com.parts.Presentation.Adapter.Deal
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -175,5 +177,34 @@ class ProductRepository @Inject constructor(
             e.printStackTrace()
             Result.failure(e)
         }
+    }
+
+
+    suspend fun getDeals(): Result<List<Deal>> = try {
+
+        val response = listOf(
+            Deal("1", "Gaming Mouse", 2999.0, 20, "https://example.com/mouse.jpg"),
+            Deal("2", "Mechanical Keyboard", 5999.0, 15, "https://example.com/keyboard.jpg"),
+            Deal("3", "Gaming Headset", 3999.0, 25, "https://example.com/headset.jpg")
+        )
+//        val response = api.getDeals()
+        Result.success(response)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun getCarouselImages(): Result<List<CarouselImage>> = try {
+
+        val response = listOf(
+            CarouselImage("1", "https://example.com/image1.jpg"),
+            CarouselImage("2", "https://example.com/image2.jpg"),
+            CarouselImage("3", "https://example.com/image3.jpg")
+        )
+
+
+//        val response = api.getCarouselImages()
+        Result.success(response)
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 }
