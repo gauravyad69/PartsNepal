@@ -1,169 +1,100 @@
-/* Define CSS Custom Properties for reusable values */
-:root {
-    --product-primary-color: #fb5231;
-    --product-text-dark: #0d0d0d;
-    --product-text-light: #888;
-    --product-bg-light: #fff;
-    --product-bg-hover: #f2f4f5;
-    --product-spacing-sm: 0.71rem;
-    --product-spacing-md: 1.25rem;
-    --product-transition: 200ms ease-in-out;
-  }
-  
-  /* Product Image Container */
-  .product-image {
-    margin-block-end: var(--product-spacing-md);
-    position: relative;
-    background-color: #ebebeb;
-    overflow: hidden;
-    aspect-ratio: 4/3;
-  
-    a {
-      display: block;
+/* Product Image Container */
+.product-image {
+  margin-bottom: 1rem;
+  position: relative;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1/1;
+
+  a {
+    display: block;
+    height: 100%;
+
+    img {
       height: 100%;
-  
-      img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        transition: transform var(--product-transition);
-        transform: scale(1.05);
-        will-change: transform;
-  
-        &:last-child {
-          position: absolute;
-          inset: 0;
-          opacity: 0;
-          transition: opacity var(--product-transition);
-        }
-      }
+      width: 100%;
+      object-fit: contain;
+      padding: 0.5rem;
     }
-  
+  }
+}
+
+/* Sale Badge */
+.product-sale {
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
+  background-color: #fb5231;
+  padding: 0.4em 0.8em;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Favorite Button */
+.btn-favourite {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #fff;
+  font-size: 0.875rem;
+  border-radius: 50%;
+  padding: 0.4rem;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+
+  &.is-favourite {
+    background-color: #fb5231;
+    color: #fff;
+  }
+
+  &:hover {
+    background-color: #fb5231;
+    color: #fff;
+  }
+}
+
+/* Product Content */
+.product-content {
+  padding: 0.5rem;
+
+  .product-name {
+    color: #0d0d0d;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-decoration: none;
+
     &:hover {
-      a img {
-        transform: scale(1);
-  
-        &:last-child {
-          opacity: 1;
-        }
-      }
-  
-      .btn-favourite {
-        inset-inline-end: var(--product-spacing-sm);
-      }
-  
-      .btn-product-quickview {
-        opacity: 1;
-        visibility: visible;
-      }
+      color: #fb5231;
     }
   }
-  
-  /* Sale Badge */
-  .product-sale {
-    position: absolute;
-    inset-block-start: var(--product-spacing-sm);
-    inset-inline-start: 0;
-    color: var(--product-bg-light);
-    font-size: clamp(0.75rem, 2vw, 0.875rem);
-    font-weight: normal;
-    line-height: 1;
-    text-transform: uppercase;
-    background-color: var(--product-primary-color);
-    padding: 0.41em 0.83em;
-  }
-  
-  /* Favorite Button */
-  .btn-favourite {
-    position: absolute;
-    inset-block-start: var(--product-spacing-sm);
-    inset-inline-end: -100px;
-    background-color: var(--product-bg-light);
-    font-size: 0.875rem;
-    transition: all var(--product-transition);
-  
-    &.is-favourite {
-      background-color: var(--product-primary-color);
-      color: var(--product-bg-light);
-      inset-inline-end: var(--product-spacing-sm);
+
+  .price-wrap {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    .price {
+      color: #0d0d0d;
+      font-size: 1rem;
+      font-weight: 600;
     }
-  
-    &:hover {
-      background-color: var(--product-primary-color);
-      color: var(--product-bg-light);
+
+    .price-old {
+      color: #888;
+      text-decoration: line-through;
+      font-size: 0.875rem;
     }
   }
-  
-  /* Product Content */
-  .product-content {
-    .product-name {
-      color: var(--product-text-dark);
-      font-size: 0.9375rem;
-      font-weight: 500;
-      line-height: 1.2;
-      transition: color var(--product-transition);
-      cursor: pointer;
-      text-transform: capitalize;
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      margin-block-end: 0.625rem;
-      text-decoration: none;
-  
-      &:hover {
-        color: var(--product-primary-color);
-      }
-    }
-  
-    .price-wrap {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-  
-      .price {
-        color: var(--product-text-dark);
-        font-size: 1.06rem;
-        font-weight: 500;
-      }
-  
-      .price-old {
-        color: var(--product-text-light);
-        text-decoration: line-through;
-        font-size: 0.9rem;
-      }
-    }
-  }
-  
-  /* Utility Classes */
-  .btn-circle {
-    min-width: 2rem;
-    padding: 0.4375rem;
-    text-align: center;
-    border-radius: 50%;
-    border: none;
-    transition: all var(--product-transition);
-  }
-  
-  /* Media Queries using modern practices */
-  @media (max-width: 48rem) { /* 768px */
-    .product-name span.item-title {
-      max-width: 110px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-  
-    .btn-favourite {
-      inset-inline-end: var(--product-spacing-sm);
-    }
-  }
-  
-  @media (min-width: 62.5rem) and (max-width: 68.75rem) { /* 1000px to 1100px */
-    .product-name span.item-title {
-      max-width: 115px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-  }
+}
