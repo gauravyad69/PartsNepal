@@ -98,9 +98,11 @@ dependencies {
     implementation ("com.github.skydoves:powerspinner:1.2.7")
     implementation ("com.github.yusufonderd:BasketLayout:1.0")
     implementation ("com.github.parniyan7:DotLoading:4.0.0")
+    implementation ("org.imaginativeworld.oopsnointernet:oopsnointernet:2.0.0")
+    implementation ("com.tbuonomo:dotsindicator:4.3")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
 
     //for showing terms and conditions
-    implementation("com.github.mukeshsolanki:MarkdownView-Android:2.0.0")
 
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)

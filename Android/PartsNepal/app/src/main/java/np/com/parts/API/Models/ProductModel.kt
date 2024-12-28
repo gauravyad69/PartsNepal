@@ -100,7 +100,7 @@ data class Reviews(
 data class Review(
     @SerialName("id")
     override val id: String,
-    val userId: String,
+    val userId: UserId,
     val rating: Int,
     val comment: String,
     override val lastUpdated: Long = System.currentTimeMillis(),

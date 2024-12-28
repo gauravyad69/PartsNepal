@@ -101,7 +101,7 @@ data class Reviews(
 data class Review(
     @BsonId
     override val id: String = ObjectId().toString(),
-    val userId: String,
+    val userId: UserId,
     val rating: Int,
     val comment: String,
     override val lastUpdated: Long = System.currentTimeMillis(),

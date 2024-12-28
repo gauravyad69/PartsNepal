@@ -1,0 +1,99 @@
+AUTOVIO DEPLOYMENT GUIDE
+=======================
+
+1. SYSTEM REQUIREMENTS
+---------------------
+- Python 3.x
+- Java 21
+- System packages: pip3, systemd
+
+2. INSTALLATION
+--------------
+# Install required Python packages
+pip3 install flask requests python-dotenv
+
+3. SERVICE SETUP
+---------------
+# Create systemd service file
+Location: /etc/systemd/system/autovio.service
+
+[Unit]
+Description=Autovio API Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/cache/PartsNepal/Deploy
+ExecStart=/usr/bin/python3 /root/cache/PartsNepal/Deploy/main.py
+StandardOutput=append:/var/log/autovio.log
+StandardError=append:/var/log/autovio.error.log
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+4. LOG FILES
+-----------
+- Main log: /var/log/autovio.log
+- Error log: /var/log/autovio.error.log
+
+5. USEFUL COMMANDS
+-----------------
+# Service management
+systemctl start autovio      # Start service
+systemctl stop autovio       # Stop service
+systemctl restart autovio    # Restart service
+systemctl status autovio     # Check service status
+
+# View logs
+tail -f /var/log/autovio.log
+tail -f /var/log/autovio.error.log
+
+# Java application command (if needed to run manually)
+java \
+  -Xmx1024m \
+  -Xms512m \
+  -XX:MaxMetaspaceSize=256m \
+  -jar ~/app/np.com.parts.api-all.jar \
+  --server.address=0.0.0.0 \
+  --server.port=9090
+
+6. PORTS
+--------
+- Python app: 5000 (default Flask port)
+- Java API: 9090
+
+7. TROUBLESHOOTING
+-----------------
+If service fails to start:
+1. Check logs: tail -f /var/log/autovio.log
+2. Verify Python packages: pip3 list
+3. Check file permissions
+4. Verify paths in service file
+5. Check systemd status: systemctl status autovio
+
+8. UPDATING
+----------
+To update the application:
+1. Stop service: systemctl stop autovio
+2. Update files in /root/cache/PartsNepal/Deploy
+3. Start service: systemctl restart autovio
+
+9. MONITORING
+------------
+- Service status: http://your-ip:5000/status
+- Application logs: http://your-ip:5000/logs
+- API endpoint: http://your-ip:9090
+
+10. FILE STRUCTURE
+----------------
+/root/cache/PartsNepal/Deploy/
+├── main.py
+├── templates/
+│   ├── status.html
+│   └── logs.html
+└── deployment_guide.txt
+
+Note: Keep this guide updated with any changes made to the deployment process. 

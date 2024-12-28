@@ -1,10 +1,8 @@
 package np.com.parts.di
 
-import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import np.com.parts.API.Repository.AuthRepository
@@ -14,7 +12,7 @@ import np.com.parts.API.Repository.ProductRepository
 import np.com.parts.API.Repository.UserRepository
 import np.com.parts.API.TokenManager
 import np.com.parts.database.AppDatabase
-import np.com.parts.repository.CartRepository
+import np.com.parts.API.Repository.CartRepository
 import np.com.parts.app_utils.SyncManager
 import javax.inject.Singleton
 

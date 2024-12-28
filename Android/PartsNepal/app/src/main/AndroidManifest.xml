@@ -19,12 +19,12 @@
         android:theme="@style/Base.Theme.PartsNepal.Light"
         tools:targetApi="31">
         <activity
-            android:name=".Screens.MainActivity"
+            android:name=".Presentation.Screens.MainActivity"
             android:exported="true">
 
         </activity>
         <activity
-            android:name=".Screens.SuperActivity"
+            android:name=".Presentation.Screens.SuperActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

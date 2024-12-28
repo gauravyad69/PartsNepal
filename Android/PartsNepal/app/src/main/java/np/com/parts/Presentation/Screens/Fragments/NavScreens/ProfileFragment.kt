@@ -1,0 +1,231 @@
+package np.com.parts.Presentation.Screens.Fragments.NavScreens
+
+import android.app.AlertDialog
+import np.com.parts.Domain.ViewModels.UserProfileViewModel
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Button
+import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import np.com.parts.API.Models.AccountType
+import np.com.parts.API.Models.UpdateProfileRequest
+import np.com.parts.API.Models.UserModel
+import np.com.parts.API.TokenManager
+import np.com.parts.R
+import np.com.parts.databinding.FragmentProfileBinding
+import javax.inject.Inject
+
+
+/**
+ * An example full-screen fragment that shows and hides the system UI (i.e.
+ * status bar and navigation/system bar) with user interaction.
+ */
+@AndroidEntryPoint
+class ProfileFragment : Fragment() {
+
+    private var _binding: FragmentProfileBinding? = null
+
+
+    @Inject
+    lateinit var tokenManager: TokenManager
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
+
+    private val viewModel: UserProfileViewModel by viewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        return binding.root
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.helpButton.setOnClickListener{
+            Toast.makeText(requireContext(), "Whatsapp-+977 9852034331", Toast.LENGTH_SHORT).show()
+        }
+        binding.privacyPolicyButton.setOnClickListener{
+            showLibraryDialog(true)
+        }
+
+        binding.termsAndConditionsButton.setOnClickListener{
+            showLibraryDialog(false)
+        }
+
+        binding.logoutButton.setOnClickListener{
+        tokenManager.clearToken()
+            Toast.makeText(requireContext(), "Logged Out", Toast.LENGTH_SHORT).show()
+            requireActivity().finishAffinity()
+        }
+        binding.editProfileButton.setOnClickListener {
+            binding.editProfileCard.visibility = View.VISIBLE
+            // Optionally animate the card appearance
+            binding.editProfileCard.alpha = 0f
+            binding.editProfileCard.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .start()
+        }
+        binding.ordersButton.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_ordersFragment)
+        }
+        binding.cancelButton.setOnClickListener {
+            binding.editProfileCard.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    binding.editProfileCard.visibility = View.GONE
+                }
+                .start()
+        }
+        if (tokenManager.hasToken()){
+            viewModel.loadUserProfile()
+        }else{
+            findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
+        }
+
+        setupUpdateButton()
+        setupObserversForUpdate()
+
+
+
+
+    }
+
+    private fun setupObserversForUpdate() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.profileUpdateState.collect { state ->
+                when (state) {
+                    is UserProfileViewModel.ProfileUpdateState.Loading -> {
+                        binding.progressBar.isVisible = true
+                        binding.updateButton.isEnabled = false
+                    }
+                    is UserProfileViewModel.ProfileUpdateState.Success -> {
+                        binding.progressBar.isVisible = false
+                        binding.updateButton.isEnabled = true
+//                        showSuccess(state.message)
+                        // Optionally navigate or show success UI
+                    }
+                    is UserProfileViewModel.ProfileUpdateState.Error -> {
+                        binding.progressBar.isVisible = false
+                        binding.updateButton.isEnabled = true
+                        showError(state.message)
+                    }
+                    is UserProfileViewModel.ProfileUpdateState.Idle -> {
+                        binding.progressBar.isVisible = false
+                        binding.updateButton.isEnabled = true
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.userProfile.collect { profile ->
+                profile?.let { updateUI(it) }
+            }
+        }
+
+    }
+
+    private fun setupUpdateButton() {
+        binding.updateButton.setOnClickListener {
+            val request = UpdateProfileRequest(
+                firstName = binding.firstNameInput.text?.toString()?.takeIf { it.isNotBlank() },
+                lastName = binding.lastNameInput.text?.toString()?.takeIf { it.isNotBlank() },
+                email = binding.emailInput.text?.toString()?.takeIf { it.isNotBlank() },
+                accountType = try {
+                    binding.accountTypeDropdown.text?.toString()?.uppercase()?.let {
+                        AccountType.valueOf(it.toString())
+                    }
+                } catch (e: IllegalArgumentException) {
+                    null
+                }
+            )
+            viewModel.updateProfile(request)
+        }
+    }
+
+
+
+    private fun updateUI(profile: UserModel) {
+        binding.apply {
+            userName.text = profile.fullName
+            if (profile.email!=null){
+                userEmail.visibility=View.VISIBLE
+                userEmail.text= profile.email.value
+            }
+            userPhoneNumber.text= profile.phoneNumber.value
+            firstNameInput.setText(profile.firstName)
+            lastNameInput.setText(profile.lastName)
+//            emailInput.setText(profile.email)
+            accountTypeDropdown.setText(profile.accountType.toString())
+        }
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    fun showLibraryDialog(privacypolicy: Boolean) {
+        var url = ""
+        if (privacypolicy==true){
+            url="https://gauravyad69.github.io/misc/partsnepal/privacy.html"
+        }else{
+            url="https://gauravyad69.github.io/misc/partsnepal/terms.html"
+        }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_terms_conditions, null)
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        val stayButton = dialogView.findViewById<Button>(R.id.button_stay)
+        val quitButton = dialogView.findViewById<Button>(R.id.button_quit)
+        val webviewByTerms = dialogView.findViewById<WebView>(R.id.webviewForTerms)
+        stayButton.setOnClickListener {
+            // Close the dialog and stay in the app
+            alertDialog.dismiss()
+        }
+
+        quitButton.setOnClickListener {
+            // Quit the app or handle the quit logic
+            requireActivity().finishAffinity()
+        }
+
+        webviewByTerms.settings.javaScriptEnabled = false
+
+        // Load a URL
+        webviewByTerms.loadUrl(url)
+
+        // Handle navigation within the WebView
+        webviewByTerms.webViewClient = WebViewClient()
+        alertDialog.show()
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

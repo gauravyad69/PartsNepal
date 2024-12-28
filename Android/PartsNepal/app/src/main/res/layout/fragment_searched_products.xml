@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     style="@style/background"
-    tools:context=".Screens.ProductScreen.SearchedProductsFragment">
+    tools:context=".Presentation.Screens.Fragments.ProductScreen.SearchedProductsFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"

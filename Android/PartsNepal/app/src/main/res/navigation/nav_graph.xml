@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="np.com.parts.Screens.NavScreens.HomeFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.NavScreens.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
 
@@ -36,7 +36,7 @@
 <!--    leave this fragment alone nigga, its independent from others -->
     <fragment
         android:id="@+id/verifyEmailFragment"
-        android:name="np.com.parts.Screens.StartingScreens.VerifyEmailFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.StartingScreens.VerifyEmailFragment"
         android:label="VerifyEmailFragment"
         tools:layout="@layout/fragment_verify_email">
         <action
@@ -50,7 +50,7 @@
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="np.com.parts.Screens.NavScreens.ProfileFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.NavScreens.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile">
         <action
@@ -69,7 +69,7 @@
 
     <fragment
         android:id="@+id/productFragment"
-        android:name="np.com.parts.Screens.ProductScreen.ProductFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.ProductScreen.ProductFragment"
         android:label="ProductFragment"
         tools:layout="@layout/fragment_product">
         <argument
@@ -92,7 +92,7 @@
 
 <fragment
     android:id="@+id/searchedProductsFragment"
-    android:name="np.com.parts.Screens.ProductScreen.SearchedProductsFragment"
+    android:name="np.com.parts.Presentation.Screens.Fragments.ProductScreen.SearchedProductsFragment"
     android:label="Search Results">
     <argument
         android:name="query"
@@ -117,7 +117,7 @@
 </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="np.com.parts.Screens.ProductScreen.SearchFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.ProductScreen.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search">
         <action
@@ -141,7 +141,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="np.com.parts.Screens.StartingScreens.SplashFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.StartingScreens.SplashFragment"
         android:label="SplashFragment"
         tools:layout="@layout/fragment_splash">
         <action
@@ -150,7 +150,7 @@
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
-        android:name="np.com.parts.Screens.StartingScreens.WelcomeFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.StartingScreens.WelcomeFragment"
         android:label="WelcomeFragment"
         tools:layout="@layout/fragment_welcome">
         <action
@@ -159,7 +159,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="np.com.parts.Screens.StartingScreens.RegisterFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.StartingScreens.RegisterFragment"
         android:label="RegisterFragment"
         tools:layout="@layout/fragment_register">
         <action
@@ -171,7 +171,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="np.com.parts.Screens.StartingScreens.LoginFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.StartingScreens.LoginFragment"
         android:label="LoginFragment"
         tools:layout="@layout/fragment_login">
         <action
@@ -186,7 +186,7 @@
     </fragment>
     <fragment
         android:id="@+id/otherFragment"
-        android:name="np.com.parts.Screens.NavScreens.OtherFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.NavScreens.OtherFragment"
         android:label="fragment_other"
         tools:layout="@layout/fragment_other" >
         <action
@@ -195,7 +195,7 @@
     </fragment>
     <fragment
         android:id="@+id/cartFragment"
-        android:name="np.com.parts.Screens.MainScreens.CartFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.MainScreens.CartFragment"
         android:label="Cart"
         tools:layout="@layout/fragment_cart">
         <action
@@ -211,7 +211,7 @@
     </fragment>
     <fragment
         android:id="@+id/checkoutFragment"
-        android:name="np.com.parts.Screens.OrderScreens.CheckoutFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.OrderScreens.CheckoutFragment"
         android:label="Checkout"
         tools:layout="@layout/fragment_checkout">
         <action
@@ -230,9 +230,9 @@
     </fragment>
     <fragment
         android:id="@+id/ordersFragment"
-        android:name="np.com.parts.Screens.OrderScreens.OrdersFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.OrderScreens.OrdersFragment"
         android:label="Orders">
-        
+
         <argument
             android:name="orderId"
             app:argType="string"
@@ -252,10 +252,10 @@
     </fragment>
     <fragment
         android:id="@+id/orderConfirmationFragment"
-        android:name="np.com.parts.Screens.OrderScreens.OrderConfirmationFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.OrderScreens.OrderConfirmationFragment"
         android:label="Order Confirmation">
 
-            
+
         <argument
             android:name="orderNumber"
             app:argType="string" />
@@ -278,7 +278,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderDetailsFragment"
-        android:name="np.com.parts.Screens.OrderScreens.OrderDetailsFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.OrderScreens.OrderDetailsFragment"
         android:label="fragment_order_details"
         tools:layout="@layout/fragment_order_details">
 
@@ -304,7 +304,7 @@
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
-        android:name="np.com.parts.Screens.MainScreens.PaymentFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.MainScreens.PaymentFragment"
         android:label="fragment_payment"
         tools:layout="@layout/fragment_payment">
 

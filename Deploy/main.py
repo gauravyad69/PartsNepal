@@ -6,6 +6,19 @@ from datetime import datetime
 import threading
 import time
 import requests
+import logging
+import sys
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('/var/log/autovio.log')
+    ]
+)
+logger = logging.getLogger('autovio')
 
 app = Flask(__name__)
 
@@ -95,21 +108,46 @@ def check_git_changes():
             'message': 'Starting deployment process'
         })
         
-        # Get the download URL for the latest release
-        download_url = get_latest_release()
+        # Get the asset ID and download URL from the API
+        github_token = "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"
+        headers = {
+            'Authorization': f'Bearer {github_token}',
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+        
+        # Get latest release info
+        response = requests.get(
+            "https://api.github.com/repos/gauravyad69/PartsNepal/releases/latest",
+            headers=headers
+        )
+        response.raise_for_status()
+        release_data = response.json()
+        
+        # Get asset ID
+        asset_id = None
+        for asset in release_data['assets']:
+            if asset['name'] == 'np.com.parts.api-all.jar':
+                asset_id = asset['id']
+                break
+                
+        if not asset_id:
+            raise Exception("JAR file not found in latest release")
+            
         target_path = os.path.expanduser('~/app/np.com.parts.api-all.jar')
         
         # Ensure directory exists
         os.makedirs(os.path.dirname(target_path), exist_ok=True)
         
-        build_logs.append({
-            'timestamp': datetime.now(),
-            'type': 'info',
-            'message': 'Downloading JAR file'
-        })
+        # Download using asset ID
+        download_headers = {
+            'Authorization': f'Bearer {github_token}',
+            'Accept': 'application/octet-stream',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
         
-        # Download the file
-        response = requests.get(download_url)
+        download_url = f"https://api.github.com/repos/gauravyad69/PartsNepal/releases/assets/{asset_id}"
+        response = requests.get(download_url, headers=download_headers, allow_redirects=True)
         response.raise_for_status()
         
         with open(target_path, 'wb') as f:
@@ -152,20 +190,55 @@ def check_git_changes():
         return False
 
 def stop_java_process():
-    """Stop existing Java process if running"""
+    """Stop Java application"""
     try:
-        run_command("pkill -f 'java -jar.*np.com.parts.api-all.jar'")
-    except:
-        pass  # Process might not exist
+        # Get all Java processes running our JAR
+        result = subprocess.run(['pgrep', '-f', 'np.com.parts.api-all.jar'], 
+                              capture_output=True, text=True)
+        if result.stdout:
+            # Split PIDs and kill each one
+            pids = result.stdout.strip().split('\n')
+            for pid in pids:
+                try:
+                    subprocess.run(['kill', pid.strip()], check=True)
+                    build_logs.append({
+                        'timestamp': datetime.now(),
+                        'type': 'info',
+                        'message': f'Stopped Java process (PID: {pid.strip()})'
+                    })
+                except subprocess.CalledProcessError:
+                    build_logs.append({
+                        'timestamp': datetime.now(),
+                        'type': 'warning',
+                        'message': f'Failed to stop Java process (PID: {pid.strip()})'
+                    })
+            return True
+        return False
+    except Exception as e:
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'error',
+            'message': f'Failed to stop Java process: {str(e)}'
+        })
+        return False
 
 def run_java_application(jar_path):
     """Run Java application"""
     try:
         application_status['current_status'] = 'running'
         
-        # Start Java process with specific host and port
+        command = f'''
+        java \
+        -Xmx1024m \
+        -Xms512m \
+        -XX:MaxMetaspaceSize=256m \
+        -jar {jar_path} \
+        --server.address=0.0.0.0 \
+        --server.port=9090
+        '''
+        
         process = subprocess.Popen(
-            f'java -jar {jar_path} --server.address=0.0.0.0 --server.port=9090',
+            command,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -177,16 +250,17 @@ def run_java_application(jar_path):
                 build_logs.append({
                     'timestamp': datetime.now(),
                     'type': log_type,
-                    'message': line
+                    'message': line.strip()
                 })
                 # Check for successful startup
                 if "Started PartsNepalApplication" in line:
                     build_logs.append({
                         'timestamp': datetime.now(),
                         'type': 'success',
-                        'message': 'Application started successfully at http://0.0.0.0:9090'
+                        'message': 'Application started successfully'
                     })
                     application_status['application_url'] = 'http://0.0.0.0:9090'
+                    application_status['current_status'] = 'running'
 
         threading.Thread(target=log_output, args=(process.stdout, 'application')).start()
         threading.Thread(target=log_output, args=(process.stderr, 'error')).start()
@@ -249,9 +323,58 @@ def periodic_git_check():
         check_git_changes()
         time.sleep(5 * 60)  # Sleep for 5 minutes
 
+@app.route('/control/start', methods=['POST'])
+def start_service():
+    try:
+        subprocess.run(['systemctl', 'start', 'autovio'], check=True)
+        return jsonify({'status': 'success', 'message': 'Service started'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/control/stop', methods=['POST'])
+def stop_service():
+    try:
+        subprocess.run(['systemctl', 'stop', 'autovio'], check=True)
+        return jsonify({'status': 'success', 'message': 'Service stopped'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/control/fetch-latest', methods=['POST'])
+def fetch_latest():
+    try:
+        check_git_changes()
+        return jsonify({'status': 'success', 'message': 'Latest release fetched and deployed'})
+    except Exception as e:
+        error_msg = f'Failed to fetch latest release: {str(e)}'
+        build_logs.append({
+            'timestamp': datetime.now(),
+            'type': 'error',
+            'message': error_msg
+        })
+        return jsonify({'status': 'error', 'message': error_msg}), 500
+
+@app.route('/control/stop-java', methods=['POST'])
+def stop_java():
+    try:
+        if stop_java_process():
+            return jsonify({'status': 'success', 'message': 'Java application stopped'})
+        return jsonify({'status': 'warning', 'message': 'No Java process found'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 if __name__ == '__main__':
-    # Start the periodic git check in a separate thread
-    threading.Thread(target=periodic_git_check, daemon=True).start()
-    
-    # For cPanel, we just need this:
-    application = app
+    try:
+        logger.info("Starting Autovio service...")
+        logger.info("Current working directory: %s", os.getcwd())
+        logger.info("Python path: %s", sys.executable)
+        
+        # Run Flask app
+        app.run(
+            host='0.0.0.0',
+            port=5000,
+            debug=False,
+            use_reloader=False  # Important: disable reloader in production
+        )
+    except Exception as e:
+        logger.error("Fatal error in main loop", exc_info=True)
+        sys.exit(1)  # Exit with error status
