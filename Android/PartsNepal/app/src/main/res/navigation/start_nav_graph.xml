@@ -6,7 +6,7 @@
     app:startDestination="@id/splashFragment">
     <fragment
         android:id="@+id/splashFragment"
-        android:name="np.com.parts.Screens.StartingScreens.SplashFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.StartingScreens.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash" >
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
-        android:name="np.com.parts.Screens.StartingScreens.WelcomeFragment"
+        android:name="np.com.parts.Presentation.Screens.Fragments.StartingScreens.WelcomeFragment"
         android:label="fragment_welcome"
         tools:layout="@layout/fragment_welcome" />
 </navigation>

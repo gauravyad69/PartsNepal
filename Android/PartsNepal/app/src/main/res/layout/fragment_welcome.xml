@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     style="@style/background"
-    tools:context=".Screens.StartingScreens.WelcomeFragment">
+    tools:context=".Presentation.Screens.Fragments.StartingScreens.WelcomeFragment">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,

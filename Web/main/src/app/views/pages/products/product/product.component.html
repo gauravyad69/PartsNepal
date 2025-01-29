@@ -1,40 +1,39 @@
 <div class="product">
     <div class="product-image">
-        <!-- Using string interpolation with nullish coalescing -->
-        <a [style.height.px]="227" [routerLink]="['/products', product?.basic?.productId ?? '']">
-            <!-- Using ngOptimizedImage directive for better image loading -->
+        <a [routerLink]="['/products', product?.basic?.productId ?? '']">
             <img [ngSrc]="product?.details?.features!!.images[0]?.url ?? 'assets/images/ImageNotFound.png'"
-                 [alt]="'Product image'"
-                 width="300" height="200"
+                 [alt]="product?.basic?.productName ?? 'Product image'"
+                 width="300" height="300"
                  priority
                  (error)="onImageError($event)">
-            <img [ngSrc]="product?.details?.features!!.images[1]?.url ?? product?.details?.features!!.images[0]?.url ?? 'assets/images/ImageNotFound.png'"
-                 [alt]="'Product image'"
-                 width="300" height="200"
-                 (error)="onImageError($event)">
         </a>
-        <!-- Using @if instead of *ngIf -->
+        
         @if (product?.basic?.pricing?.isOnSale) {
             <p class="product-sale">Sale</p>
         }
-        <button type="button" class="btn-favourite btn-circle"
+        
+        <button type="button" class="btn-favourite"
                 [class.is-favourite]="productInWishList(product)"
                 (click)="addProductToWishList(product, $event)">
             <i class="fa-solid fa-heart"></i>
         </button>
     </div>
+    
     <div class="product-content">
-        <a class="product-name d-flex justify-content-between align-items-center"
-           [routerLink]="['/products', product.basic.productId ?? '']">
-            <span class="item-title">{{product.basic.productName}}</span>
-            <span class="badge badge-pill bg-warning p-1">{{product.basic.categoryId}}</span>
+        <a class="product-name" [routerLink]="['/products', product?.basic?.productId ?? '']">
+            {{ product?.basic?.productName }}
+            @if (product?.basic?.categoryId) {
+                <span class="badge bg-warning">{{ product.basic.categoryId }}</span>
+            }
         </a>
+        
         <div class="price-wrap">
-            <!-- Using built-in number pipe with currency -->
-            <span class="price">{{product.basic.pricing.regularPrice.amount | number:'1.2-2':'en-US' | currency:"NPR"}}</span>
-            @if (product.basic.pricing.salePrice) {
+            <span class="price">
+                {{ product?.basic?.pricing?.regularPrice?.amount | currency:"NPR" }}
+            </span>
+            @if (product?.basic?.pricing?.salePrice) {
                 <span class="price-old">
-                    {{product.basic.pricing.salePrice.amount | number:'1.2-2':'en-US' | currency:"NPR"}}
+                    {{ product?.basic?.pricing?.salePrice?.amount | currency:"NPR" }}
                 </span>
             }
         </div>

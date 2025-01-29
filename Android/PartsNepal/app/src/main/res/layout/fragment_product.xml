@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     style="@style/background"
-    tools:context=".Screens.ProductScreen.ProductFragment">
+    tools:context=".Presentation.Screens.Fragments.ProductScreen.ProductFragment">
 
     <ScrollView
         android:id="@+id/scrollView3"
