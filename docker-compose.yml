@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  partsnepal-api:
+    image: ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest
+    container_name: partsnepal-api
+    ports:
+      - "9090:9090"  # Expose port 9090 from container to host
+    environment:
+      - JAVA_OPTS=-Xmx512m  # Optional: Adjust Java memory settings if needed
+    restart: unless-stopped  # Automatically restart the container if it stops
+    networks:
+      - partsnepal-network
+
+networks:
+  partsnepal-network:
+    driver: bridge
+
