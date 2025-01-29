@@ -2,4 +2,6 @@
 <resources>
     <item name="fastadapter_product_item_id" type="id"/>
     <item name="fastadapter_progress_item_id" type="id"/>
+    <item name="fastadapter_banner_item_id" type="id"/>
+    <item name="fastadapter_hot_deals_item_id" type="id"/>
 </resources> 

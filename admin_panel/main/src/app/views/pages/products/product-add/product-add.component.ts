@@ -8,6 +8,18 @@ import { CategoryModelRes, DeliveryOption, DiscountType, ProductModel } from '..
 import { PriceFormatPipe } from '../pipe/price-format.pipe';
 import { CategoryService } from '../services/category.service';
 import { CategoryModelReq } from '../../models/product.model';
+import { UploadService } from '../services/upload.service';
+
+interface ImageUpload {
+  url: string;
+  alt: string;
+  isPrimary: boolean;
+  order: number;
+  file?: File;
+  preview?: string;
+  uploading?: boolean;
+  progress?: number;
+}
 
 @Component({
   selector: 'app-product-add',
@@ -26,17 +38,19 @@ export class ProductAddComponent {
   deliveryOptions = Object.values(DeliveryOption);
   discountTypes = Object.values(DiscountType);
   isSubmitting = false;
-  imageUrls: { url: string, alt: string, isPrimary: boolean, order: number }[] = 
-    [{ url: '', alt: '', isPrimary: false, order: 0 }];
+  imageUrls: ImageUpload[] = [{ url: '', alt: '', isPrimary: false, order: 0 }];
   highlights: string[] = [''];
   categories: CategoryModelRes[] = [];
+  mainImageUploading = false;
+  mainImagePreview: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
     private categoryService: CategoryService,
     private router: Router,
-    private toast: HotToastService
+    private toast: HotToastService,
+    private uploadService: UploadService
   ) {
     this.initForm();
     this.loadCategories();
@@ -263,5 +277,74 @@ export class ProductAddComponent {
           this.isSubmitting = false;
         }
       });
+  }
+
+  // Main image upload
+  async onMainImageSelect(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    if (!this.validateFile(file)) {
+      this.toast.error('Invalid file type. Please upload an image file (jpg, png, gif)');
+      return;
+    }
+
+    // Show preview
+    this.mainImagePreview = URL.createObjectURL(file);
+    this.mainImageUploading = true;
+
+    try {
+      const fileUrl = await this.uploadService.uploadFile(file).toPromise();
+      this.productForm.get('basic.inventory.mainImage')?.setValue(fileUrl);
+      this.toast.success('Main image uploaded successfully');
+    } catch (error) {
+      this.toast.error('Failed to upload main image');
+      this.mainImagePreview = null;
+    } finally {
+      this.mainImageUploading = false;
+    }
+  }
+
+  // Additional images upload
+  async onAdditionalImageSelect(event: Event, index: number) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    if (!this.validateFile(file)) {
+      this.toast.error('Invalid file type. Please upload an image file (jpg, png, gif)');
+      return;
+    }
+
+    // Show preview
+    this.imageUrls[index].preview = URL.createObjectURL(file);
+    this.imageUrls[index].uploading = true;
+
+    try {
+      const fileUrl = await this.uploadService.uploadFile(file).toPromise();
+      this.imageUrls[index].url = fileUrl || '';
+      this.updateImages();
+      this.toast.success('Image uploaded successfully');
+    } catch (error) {
+      this.toast.error('Failed to upload image');
+      this.imageUrls[index].preview = undefined;
+    } finally {
+      this.imageUrls[index].uploading = false;
+    }
+  }
+
+  private validateFile(file: File): boolean {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!allowedTypes.includes(file.type)) {
+      return false;
+    }
+
+    if (file.size > maxSize) {
+      this.toast.error('File size should be less than 5MB');
+      return false;
+    }
+
+    return true;
   }
 } 

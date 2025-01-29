@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import np.com.parts.API.Models.Money
 import np.com.parts.databinding.ItemHomeDealsBinding
 
 
@@ -54,7 +55,7 @@ class DealsAdapter : RecyclerView.Adapter<DealsAdapter.DealViewHolder>() {
 data class Deal(
     val id: String,
     val title: String,
-    val price: Double,
-    val discount: Int,
+    val price: Money,
+    val discount: Money,
     val imageUrl: String
 )

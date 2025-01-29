@@ -1,4 +1,4 @@
-package np.com.parts.Domain.Items
+package np.com.parts.Presentation.Adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

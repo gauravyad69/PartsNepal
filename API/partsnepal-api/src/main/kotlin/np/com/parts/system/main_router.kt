@@ -26,6 +26,8 @@ import np.com.parts.system.Services.*
 import np.com.parts.system.auth.AuthenticationService
 
 
+
+
 fun Route.applicationRoutes(productService: ProductService, orderService: OrderService, userService: UserService, cartService: CartService, paymentService: PaymentService, pasteService: PasteService, categoryService: CategoryService) {
     val jwtConfig = AuthenticationService.JWTConfig(
         secret = environment?.config!!.property("jwt.secret").getString(),
