@@ -1,6 +1,7 @@
 name: Build and Push Docker Image
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -34,7 +35,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -f API/partsnepal-api/Dockerfile -t ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest API/partsnepal-api/
+          docker build -f API/partsnepal-api/Dockerfile -t ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest .
           docker push ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest
 
       - name: Get current date
