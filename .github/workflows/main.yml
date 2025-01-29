@@ -34,7 +34,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -f API/partsnepal-api/Dockerfile -t ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest .
+          docker build -f API/partsnepal-api/Dockerfile -t ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest API/partsnepal-api/
           docker push ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest
 
       - name: Get current date
