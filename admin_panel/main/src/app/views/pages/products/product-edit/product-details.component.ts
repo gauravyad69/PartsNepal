@@ -14,6 +14,7 @@ import { CarouselService } from 'ngx-owl-carousel-o/lib/services/carousel.servic
 import { PriceFormatPipe } from '../pipe/price-format.pipe';
 import { CategoryService } from '../services/category.service';
 import { CategoryModelReq } from '../../models/product.model';
+import { UploadService } from '../services/upload.service';
 
 @Component({ 
   selector: 'app-product-details',
@@ -126,7 +127,7 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   product?: ProductModel;
-  editedProduct?: ProductModel;
+  editedProduct!: ProductModel;
   isEditing: boolean = false;
   productId!: number;
   categoryId!: number
@@ -140,16 +141,15 @@ export class ProductDetailsComponent implements OnInit {
   productInCartList: any;
   isLoading: boolean = true;
   categories: CategoryModelRes[] = [];
-
-
+  imageUploading: boolean = false;
 
   constructor(
     private _productService: ProductService,
     private _route: ActivatedRoute,
     private _toast: HotToastService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private uploadService: UploadService
   ) { }
-
 
   ZoomImage(e: MouseEvent) {
     const zoomer = e.currentTarget as HTMLElement;
@@ -160,7 +160,6 @@ export class ProductDetailsComponent implements OnInit {
     this.backgroundPos = `${x}% ${y}%`;
   }
 
-
   nextSlide(event: any) {
     if (event.dragging == false) {
       this.startPosition = event.data.startPosition;
@@ -170,7 +169,6 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
 
-
   getProductsByCategory(categoryId: number) {
     this._productService.getProductsByCategory(categoryId).subscribe((data) => {
       this.categoryProducts = data;
@@ -178,12 +176,12 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   startEditing() {
-    this.editedProduct = cloneDeep(this.product);
+    this.editedProduct = this.product ? cloneDeep(this.product) : {} as ProductModel;
     this.isEditing = true;
   }
 
   cancelEditing() {
-    this.editedProduct = undefined;
+    this.editedProduct = {} as ProductModel;
     this.isEditing = false;
   }
 
@@ -280,5 +278,81 @@ export class ProductDetailsComponent implements OnInit {
     return 'Unknown Category';
   }
 
+  async onImageUpload(event: Event, index: number) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    if (!this.validateFile(file)) {
+      this._toast.error('Invalid file type. Please upload an image file (jpg, png, gif)');
+      return;
+    }
+
+    this.imageUploading = true;
+    
+    try {
+      this._toast.info('Compressing and uploading image...');
+      const fileUrl = await this.uploadService.uploadFile(file);
+      
+      if (!this.editedProduct) {
+        this.editedProduct = this.product ? cloneDeep(this.product) : {} as ProductModel;
+      }
+
+      // Update the image URL in the images array
+      if (!this.editedProduct?.details?.features?.images) {
+        this.editedProduct.details.features.images = [];
+      }
+      
+      if (index === -1) {
+        // Adding new image
+        this.editedProduct.details.features.images.push({
+          url: fileUrl || '',
+          alt: file.name,
+          isPrimary: false,
+          order: this.editedProduct.details.features.images.length
+        });
+      } else {
+        // Updating existing image
+        this.editedProduct.details.features.images[index].url = fileUrl || '';
+      }
+
+      this._toast.success('Image uploaded successfully');
+      this.isEditing = true; // Enable editing mode to show save changes button
+    } catch (error) {
+      this._toast.error('Failed to upload image');
+      console.error('Upload error:', error);
+    } finally {
+      this.imageUploading = false;
+    }
+  }
+
+  validateFile(file: File): boolean {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!allowedTypes.includes(file.type)) {
+      this._toast.error('Invalid file type. Please upload a JPG, PNG, or GIF file');
+      return false;
+    }
+
+    if (file.size > maxSize) {
+      this._toast.error('File size should be less than 5MB');
+      return false;
+    }
+
+    return true;
+  }
+
+  removeImage(index: number) {
+    if (!this.editedProduct?.details?.features?.images) return;
+    
+    this.editedProduct.details.features.images.splice(index, 1);
+    this.isEditing = true; // Enable editing mode to show save changes button
+  }
+
+  getAllProductImages() {
+    const mainImages = this.editedProduct?.details?.features.images ?? this.product?.details?.features?.images ?? [];
+    const featureImages = this.editedProduct?.details?.features?.images ?? this.product?.details?.features?.images ?? [];
+    return [...mainImages, ...featureImages];
+  }
 }
  

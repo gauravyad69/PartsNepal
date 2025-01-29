@@ -139,3 +139,8 @@ export interface CategoryModelReq {
     categoryName: string;
     subCategoryName: string;
 }
+
+export interface CarrouselReq {
+    carrouselId: string;
+    imageUrl: string;
+}

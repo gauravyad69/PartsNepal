@@ -5,19 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import np.com.parts.API.Models.BasicProductView
+import np.com.parts.API.Models.ProductModel
 import np.com.parts.API.Models.formatPrice
 import np.com.parts.R
 import np.com.parts.databinding.ItemHomeDealsBinding
 
 class HotDealsAdapter(
-    private var products: List<BasicProductView>,
-    private val onProductClick: (BasicProductView) -> Unit
+    private var products: List<ProductModel>,
+    private val onProductClick: (ProductModel) -> Unit
 ) : RecyclerView.Adapter<HotDealsAdapter.DealViewHolder>() {
 
     inner class DealViewHolder(private val binding: ItemHomeDealsBinding) : 
         RecyclerView.ViewHolder(binding.root) {
         
-        fun bind(product: BasicProductView) {
+        fun bind(product: ProductModel) {
             binding.apply {
                 dealTitle.text = product.basic.productName
                 dealPrice.text = formatPrice(
@@ -60,7 +61,7 @@ class HotDealsAdapter(
 
     override fun getItemCount(): Int = products.size
 
-    fun updateProducts(newProducts: List<BasicProductView>) {
+    fun updateProducts(newProducts: List<ProductModel>) {
         products = newProducts
         notifyDataSetChanged()
     }

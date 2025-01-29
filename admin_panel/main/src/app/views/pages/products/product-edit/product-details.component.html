@@ -20,15 +20,46 @@
             <aside class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Product Images</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title">Product Images</h5>
+                            @if (isEditing) {
+                                <div class="btn-group">
+                                    <label class="btn btn-primary" [class.disabled]="imageUploading">
+                                        <input type="file" class="d-none" accept="image/*" 
+                                               (change)="onImageUpload($event, -1)"
+                                               [disabled]="imageUploading">
+                                        <i class="fas" [class]="imageUploading ? 'fa-spinner fa-spin' : 'fa-plus'"></i>
+                                        Add Image
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                        
                         <owl-carousel-o [options]="slider1Settings" #myCarousel>
-                            @for (slide of product?.details?.features?.images ?? []; track slide?.url) {
+                            @for (slide of getAllProductImages(); track slide?.url; let i = $index) {
                                 <ng-template carouselSlide [id]="slide?.toString() ?? ''">
-                                    <figure class="zoom-image" style="background-image: url({{slide?.url}});"
-                                        [style.backgroundPosition]="backgroundPos" (mousemove)="ZoomImage($event)">
-                                        <img class="rounded" src="{{slide?.url}}" alt="Product image"
-                                            (error)="onImageError($event)">
-                                    </figure>
+                                    <div class="position-relative">
+                                        <figure class="zoom-image" style="background-image: url({{slide?.url}});"
+                                            [style.backgroundPosition]="backgroundPos" (mousemove)="ZoomImage($event)">
+                                            <img class="rounded" [src]="slide?.url" [alt]="slide?.alt"
+                                                (error)="onImageError($event)">
+                                        </figure>
+                                        @if (isEditing) {
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <div class="btn-group">
+                                                    <label class="btn btn-sm btn-primary" [class.disabled]="imageUploading">
+                                                        <input type="file" class="d-none" accept="image/*" 
+                                                               (change)="onImageUpload($event, i)"
+                                                               [disabled]="imageUploading">
+                                                        <i class="fas" [class]="imageUploading ? 'fa-spinner fa-spin' : 'fa-edit'"></i>
+                                                    </label>
+                                                    <button class="btn btn-sm btn-danger" (click)="removeImage(i)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
                                 </ng-template>
                             }
                         </owl-carousel-o>

@@ -6,12 +6,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import np.com.parts.API.Models.BasicProductView
+import np.com.parts.API.Models.ProductModel
 import np.com.parts.R
 import np.com.parts.databinding.ItemHotDealsSectionBinding
 
 class HotDealsItem(
-    private val products: List<BasicProductView>,
-    private val onProductClick: (BasicProductView) -> Unit
+    private val products: List<ProductModel>,
+    private val onProductClick: (ProductModel) -> Unit
 ) : AbstractBindingItem<ItemHotDealsSectionBinding>() {
     override val type: Int = R.id.fastadapter_hot_deals_item_id
 
