@@ -75,20 +75,12 @@ class HomeFragment : Fragment() {
         val bottomNavigationView =
             requireActivity().findViewById<BottomNavigationView>(R.id.bottomBar)
         retainInstance = true
-        initializeDealsAndCarousel()
 
 
 
         Snackbar.make(binding.root, "Please Wait...", Snackbar.LENGTH_LONG)
         Snackbar.make(binding.root, "The Products Are Being Loaded...", Snackbar.LENGTH_LONG)
 
-
-   /*     // Test data to verify adapter
-        val testDeals = listOf(
-            Deal("1", "Test Item 1", 999.0, 15, "https://example.com/1.jpg"),
-            Deal("2", "Test Item 2", 1999.0, 20, "https://example.com/2.jpg")
-        )
-        dealsAdapter.setDeals(testDeals)*/
 
 
         bottomNavigationView.visibility = View.VISIBLE
@@ -284,52 +276,6 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun initializeDealsAndCarousel() {
-        //this is gone startCarousel()
-        // Initialize Carousel
-//        dealsAdapter = DealsAdapter()
-
-        // imageList.add(SlideModel("String Url" or R.drawable)
-// imageList.add(SlideModel("String Url" or R.drawable, "title") You can add title
-
-/*
-        imageList.add(
-            SlideModel(
-                "https://bit.ly/2YoJ77H",
-            )
-        )
-        imageList.add(
-            SlideModel(
-                "https://bit.ly/2BteuF2",
-            )
-        )
-        imageList.add(SlideModel("https://bit.ly/3fLJf72"))
-
-        binding.imageSlider.setImageList(imageList, ScaleTypes.CENTER_CROP)
-*/
-
-
-        // Connect dots indicator
-
-        // Initialize Deals
-//        dealsAdapter = DealsAdapter().apply {
-//            onDealClick = { deal ->
-//                navigateToDealDetails(deal)
-//            }
-//        }
-
-    /*    binding.dealsRecyclerView.apply {
-//            adapter = dealsAdapter
-            layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-            // Add padding for better visibility of next items
-            setPadding(16, 0, 16, 0)
-            clipToPadding = false
-        }*/
-    }
 
 
     /* private fun navigateToDealDetails(deal: Deal) {

@@ -32,9 +32,13 @@
         <domain includeSubdomains="true">partsapi.auracoin.tech</domain>
         <domain includeSubdomains="true">https://auracoin.tech</domain>
         <domain includeSubdomains="true">auracoin.tech</domain>
+        <domain includeSubdomains="true">https://api.parts.com.np</domain>
+        <domain includeSubdomains="true">api.parts.com.np</domain>
+        <domain includeSubdomains="true">https://parts.com.np</domain>
+        <domain includeSubdomains="true">parts.com.np</domain>
         <trust-anchors>
             <certificates src="system" />
             <certificates src="user" />
         </trust-anchors>
-=    </domain-config>
+    </domain-config>
 </network-security-config>

@@ -62,6 +62,12 @@ dependencies {
 //    ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor-version" }
 //    ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor-version" }
 
+
+    //dependency injection
+    implementation("io.insert-koin:koin-ktor:3.2.0")
+    implementation("iio.insert-koin:koin-ktor:3.2.0")
+    implementation("io.insert-koin:koin-ktor:3.2.0")
+
     implementation("io.ktor:ktor-client-serialization-jvm")
     implementation("io.ktor:ktor-client-core-jvm")
     implementation("io.ktor:ktor-client-cio-jvm")

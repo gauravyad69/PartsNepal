@@ -6,9 +6,11 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import np.com.parts.di.appModule
+import org.koin.ktor.plugin.Koin
 
 
-fun Application.configureSerialization() {
+fun Application.configureSerializationAndKoin() {
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
@@ -16,4 +18,8 @@ fun Application.configureSerialization() {
             ignoreUnknownKeys = true
         })
     }
+    install(Koin) {
+        modules(appModule)
+    }
+
 }

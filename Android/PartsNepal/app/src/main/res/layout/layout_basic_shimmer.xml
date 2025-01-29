@@ -1,8 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" >
+<com.facebook.shimmer.ShimmerFrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+     >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <!-- Image placeholder -->
+        <View
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/shimmer_color"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="8dp" />
+
+        <!-- Product name placeholder -->
+        <View
+            android:id="@+id/productNameView"
+            android:layout_width="100dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/shimmer_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageView" />
+
+        <!-- Product type placeholder -->
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:layout_marginTop="10dp"
+           android:orientation="horizontal">
+           <!-- Regular price placeholder -->
+
+           <View
+               android:id="@+id/productTypeView"
+               android:layout_width="120dp"
+               android:layout_height="150dp"
+               android:layout_marginLeft="10dp"
+               android:background="@color/shimmer_color" />
+
+           <View
+               android:id="@+id/productTypeView4"
+               android:layout_width="120dp"
+               android:layout_height="150dp"
+               android:layout_marginLeft="15dp"
+               android:background="@color/shimmer_color" />
+
+
+           <View
+               android:id="@+id/productTypeView3"
+               android:layout_width="100dp"
+               android:layout_height="150dp"
+               android:layout_marginLeft="15dp"
+               android:background="@color/shimmer_color" />
+
+
+       </LinearLayout>
+        <View
+            android:id="@+id/regularPriceView"
+            android:layout_width="100dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/shimmer_color"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent="0.4"
+            app:layout_constraintTop_toBottomOf="@id/productTypeView"/>
+        <!-- Sale chip placeholder -->
+
+    </LinearLayout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/shimmerRecyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    android:padding="8dp"
-    xmlns:android="http://schemas.android.com/apk/res/android" />
+    android:padding="8dp" />
+
+  </LinearLayout>

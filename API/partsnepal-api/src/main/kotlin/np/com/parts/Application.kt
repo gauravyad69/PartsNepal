@@ -15,12 +15,13 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureSerialization()
+    configureSerializationAndKoin()
     configureHTTP()
     configureDatabases()
     configureMonitoring()
     configureSecurity()
     configureRouting()
+
     val connection=connectToMongoDB()
     val productsService = ProductService(connection)
     val userService = UserService(connection)

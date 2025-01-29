@@ -10,6 +10,7 @@ import io.ktor.client.statement.bodyAsText
 import np.com.parts.API.Models.ProductModel
 import np.com.parts.API.Models.BasicProductView
 import kotlinx.serialization.Serializable
+import np.com.parts.API.BASE_URL
 import np.com.parts.API.Models.Money
 import np.com.parts.API.Models.ProductResponse
 import np.com.parts.API.PRODUCTS_PATH
@@ -49,6 +50,13 @@ data class ReviewRequest(
     val rating: Int,
     val comment: String
 )
+
+@Serializable
+data class CarrouselReq(
+    val carrouselId: String?=null,
+    val imageUrl: String?=null,
+)
+
 
 
 class ProductRepository @Inject constructor(
@@ -181,31 +189,16 @@ class ProductRepository @Inject constructor(
     }
 
 
-     fun getDeals(): Result<List<Deal>> = try {
 
-        val response = listOf(
-            Deal("1", "Gaming Mouse", Money(29990), Money(20), "https://example.com/mouse.jpg"),
-            Deal("2", "Mechanical Keyboard", Money(59990), Money(15), "https://example.com/keyboard.jpg"),
-            Deal("3", "Gaming Headset", Money(39990), Money(25), "https://example.com/headset.jpg")
-        )
-//        val response = api.getDeals()
-        Result.success(response)
+    // Get all products
+    suspend fun getAllCarrousel(
+    ): Result<List<CarouselImage>> = try {
+        val response: List<CarrouselReq> = client.get("$BASE_URL/carrousel") {
+        }.body()
+        val carrouselImages = response.map { CarouselImage(it.carrouselId!!, it.imageUrl!!) }
+        Result.success(carrouselImages)
     } catch (e: Exception) {
         Result.failure(e)
     }
 
-     fun getCarouselImages(): Result<List<CarouselImage>> = try {
-
-        val response = listOf(
-            CarouselImage("1", "https://example.com/image1.jpg"),
-            CarouselImage("2", "https://example.com/image2.jpg"),
-            CarouselImage("3", "https://example.com/image3.jpg")
-        )
-
-
-//        val response = api.getCarouselImages()
-        Result.success(response)
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
 }
