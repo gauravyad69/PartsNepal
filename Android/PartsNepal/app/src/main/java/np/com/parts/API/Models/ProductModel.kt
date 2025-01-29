@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import np.com.parts.Presentation.Adapter.Deal
 
 @Serializable
 sealed interface ProductRelated {
@@ -151,7 +152,8 @@ data class BasicProductView(
     val basic: BasicProductInfo,
     override val lastUpdated: Long,
     override val version: Int
-) : BaseModel
+) : BaseModel {
+}
 
 // Utility functions for Android
 object DateUtils {
@@ -167,4 +169,32 @@ object DateUtils {
             System.currentTimeMillis()
         }
     }
+}
+
+fun Deal.toBasicProductView(): BasicProductView {
+    return BasicProductView(
+        id = this.id,
+        basic = BasicProductInfo(
+            productId = this.id.toInt(),
+            productSKU = "", // If you have SKU in Deal, use that
+            productName = this.title,
+            categoryId = "", // If you have category in Deal, use that
+            inventory = InventoryInfo(
+                stock = 1, // Assuming deal items are in stock
+                mainImage = this.imageUrl,
+                isAvailable = true
+            ),
+            pricing = PricingInfo(
+                regularPrice = Money(this.price.amount), // Assuming price is in your default currency
+                salePrice = if (this.discount.amount > 0) {
+                    Money(this.price.amount * (1 - this.discount.amount / 100.0).toLong())
+                } else null,
+                discount = if (this.discount.amount > 0) {
+                    Discount(Money(this.discount.amount), DiscountType.FIXED_AMOUNT)
+                } else null
+            )
+        ),
+        lastUpdated = System.currentTimeMillis(),
+        version = 1
+    )
 }

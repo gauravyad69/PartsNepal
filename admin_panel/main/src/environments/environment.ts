@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  api: 'https://partsapi.auracoin.tech',
+  api: 'http://localhost:9090',
 } as const;
 
 /*

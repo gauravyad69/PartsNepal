@@ -127,7 +127,7 @@ class SuperActivity : AppCompatActivity() {
 
         val color = ContextCompat.getColor(this, R.color.background)
         StatusBarColors.setStatusBarColor(this, color)
-        StatusBarColors.setDarkStatusBarIcons(this)
+        StatusBarColors.setDarkStatusBarIcons(this@SuperActivity)
 
     }
 

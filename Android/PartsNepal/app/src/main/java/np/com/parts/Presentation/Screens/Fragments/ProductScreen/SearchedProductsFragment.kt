@@ -19,8 +19,8 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import np.com.parts.Domain.ViewModels.ProductViewModel
-import np.com.parts.Domain.Items.BasicProductItem
-import np.com.parts.Domain.Items.ProgressItem
+import np.com.parts.Presentation.Adapter.BasicProductItem
+import np.com.parts.Presentation.Adapter.ProgressItem
 import np.com.parts.R
 import np.com.parts.databinding.FragmentSearchedProductsBinding
 import np.com.parts.API.Models.ProductModel

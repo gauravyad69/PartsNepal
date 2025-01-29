@@ -20,7 +20,7 @@ android {
 
 
     namespace = "np.com.parts"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "np.com.parts"
@@ -88,9 +88,9 @@ dependencies {
 
     implementation("com.github.javafaker:javafaker:1.0.2")
     // Replace existing Hilt dependencies with these
-    implementation("com.google.dagger:hilt-android:2.52")
+    implementation("com.google.dagger:hilt-android:2.55")
     implementation(libs.firebase.auth)
-    kapt("com.google.dagger:hilt-android-compiler:2.52")  // Change ksp to kapt
+    kapt("com.google.dagger:hilt-android-compiler:2.55")  // Change ksp to kapt
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0")  // Change ksp to kapt
 
@@ -99,8 +99,9 @@ dependencies {
     implementation ("com.github.yusufonderd:BasketLayout:1.0")
     implementation ("com.github.parniyan7:DotLoading:4.0.0")
     implementation ("org.imaginativeworld.oopsnointernet:oopsnointernet:2.0.0")
-    implementation ("com.tbuonomo:dotsindicator:4.3")
-    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation ("com.github.denzcoskun:ImageSlideshow:0.1.2")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("io.appwrite:sdk-for-android:6.0.02")
 
     //for showing terms and conditions
 

@@ -10,6 +10,7 @@ import io.ktor.client.statement.bodyAsText
 import np.com.parts.API.Models.ProductModel
 import np.com.parts.API.Models.BasicProductView
 import kotlinx.serialization.Serializable
+import np.com.parts.API.Models.Money
 import np.com.parts.API.Models.ProductResponse
 import np.com.parts.API.PRODUCTS_PATH
 import np.com.parts.Presentation.Adapter.CarouselImage
@@ -180,12 +181,12 @@ class ProductRepository @Inject constructor(
     }
 
 
-    suspend fun getDeals(): Result<List<Deal>> = try {
+     fun getDeals(): Result<List<Deal>> = try {
 
         val response = listOf(
-            Deal("1", "Gaming Mouse", 2999.0, 20, "https://example.com/mouse.jpg"),
-            Deal("2", "Mechanical Keyboard", 5999.0, 15, "https://example.com/keyboard.jpg"),
-            Deal("3", "Gaming Headset", 3999.0, 25, "https://example.com/headset.jpg")
+            Deal("1", "Gaming Mouse", Money(29990), Money(20), "https://example.com/mouse.jpg"),
+            Deal("2", "Mechanical Keyboard", Money(59990), Money(15), "https://example.com/keyboard.jpg"),
+            Deal("3", "Gaming Headset", Money(39990), Money(25), "https://example.com/headset.jpg")
         )
 //        val response = api.getDeals()
         Result.success(response)
@@ -193,7 +194,7 @@ class ProductRepository @Inject constructor(
         Result.failure(e)
     }
 
-    suspend fun getCarouselImages(): Result<List<CarouselImage>> = try {
+     fun getCarouselImages(): Result<List<CarouselImage>> = try {
 
         val response = listOf(
             CarouselImage("1", "https://example.com/image1.jpg"),
