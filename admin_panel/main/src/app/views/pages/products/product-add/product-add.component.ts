@@ -18,6 +18,7 @@ interface ImageUpload {
   file?: File;
   preview?: string;
   uploading?: boolean;
+  compressing?: boolean;
   progress?: number;
 }
 
@@ -294,7 +295,8 @@ export class ProductAddComponent {
     this.mainImageUploading = true;
 
     try {
-      const fileUrl = await this.uploadService.uploadFile(file).toPromise();
+      this.toast.info('Compressing image...');
+      const fileUrl = await this.uploadService.uploadFile(file);
       this.productForm.get('basic.inventory.mainImage')?.setValue(fileUrl);
       this.toast.success('Main image uploaded successfully');
     } catch (error) {
@@ -320,7 +322,8 @@ export class ProductAddComponent {
     this.imageUrls[index].uploading = true;
 
     try {
-      const fileUrl = await this.uploadService.uploadFile(file).toPromise();
+      this.toast.info('Compressing image...');
+      const fileUrl = await this.uploadService.uploadFile(file);
       this.imageUrls[index].url = fileUrl || '';
       this.updateImages();
       this.toast.success('Image uploaded successfully');

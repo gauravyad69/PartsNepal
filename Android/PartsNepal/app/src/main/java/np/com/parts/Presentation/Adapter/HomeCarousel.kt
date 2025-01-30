@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.gms.common.util.CollectionUtils.listOf
 import np.com.parts.databinding.ItemHomeCarouselBinding
 
 class CarouselAdapter : RecyclerView.Adapter<CarouselAdapter.CarouselViewHolder>() {

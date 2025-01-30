@@ -14,18 +14,10 @@ import np.com.parts.API.Repository.ProductRepository
 import np.com.parts.API.Models.BasicProductView
 import np.com.parts.API.Models.ProductModel
 import np.com.parts.Presentation.Adapter.CarouselImage
-import np.com.parts.Presentation.Adapter.Deal
 import np.com.parts.Presentation.Models.HomeItem
 import timber.log.Timber
 import javax.inject.Inject
 import kotlinx.coroutines.async
-import np.com.parts.API.Models.BasicProductInfo
-import np.com.parts.API.Models.Discount
-import np.com.parts.API.Models.DiscountType
-import np.com.parts.API.Models.InventoryInfo
-import np.com.parts.API.Models.Money
-import np.com.parts.API.Models.PricingInfo
-import np.com.parts.API.Models.toBasicProductView
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem
 
 @HiltViewModel
@@ -52,7 +44,7 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
     private val _carouselImages = MutableStateFlow<List<CarouselImage>>(emptyList())
     val carouselImages = _carouselImages.asStateFlow()
 
-    private val _deals = MutableStateFlow<List<Deal>>(emptyList())
+    private val _deals = MutableStateFlow<List<ProductModel>>(emptyList())
     val deals = _deals.asStateFlow()
 
 
@@ -92,8 +84,8 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
                 _loading.value = true
                 
                 // Load banner and hot deals in parallel
-                val deferredBanner = async { productRepository.getCarouselImages() }
-                val deferredHotDeals = async { productRepository.getDeals() }
+                val deferredBanner = async { productRepository.getAllCarrousel() }
+                val deferredHotDeals = async { productRepository.getProductsOnSale() }
                 val deferredBasicProducts = async { 
                     productRepository.getBasicProducts(1, pageSize)
                 }
@@ -119,12 +111,8 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
 
                 // Add hot deals if successful
                 hotDealsResult.onSuccess { deals ->
-                    if (deals.isNotEmpty()) {
-                        homeItemsList.add(HomeItem.HotDealsSection(deals.map {
-                            // Convert Deal to BasicProductView if needed
-                            // This depends on your data structure
-                            it.toBasicProductView()
-                        }))
+                    if (deals.data.isNotEmpty()) {
+                        homeItemsList.add(HomeItem.HotDealsSection(deals.data))
                     }
                 }.onFailure {
                     _error.value = "Failed to load hot deals"
@@ -235,13 +223,13 @@ class ProductViewModel @Inject constructor(    private val productRepository: Pr
                 }
 
                 // Load carousel images
-                productRepository.getCarouselImages()
+                productRepository.getAllCarrousel()
                     .onSuccess { _carouselImages.value = it }
                     .onFailure { /* Handle error */ _error.value = "FAILURE AT CAROUSEL IMAGE"}
 
                 // Load deals
-                productRepository.getDeals()
-                    .onSuccess { _deals.value = it }
+                productRepository.getProductsOnSale()
+                    .onSuccess { _deals.value = it.data }
                     .onFailure { /* Handle error */ _error.value = "FAILURE AT DEALS REPOSITORY" }
 
 

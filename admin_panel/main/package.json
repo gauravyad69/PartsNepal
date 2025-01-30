@@ -23,6 +23,7 @@
     "@ngneat/overview": "^5.1.1",
     "appwrite": "^16.1.0",
     "bootstrap": "^5.3.3",
+    "browser-image-compression": "^2.0.2",
     "ngx-infinite-scroll": "^19.0.0",
     "ngx-owl-carousel-o": "^17.0.0",
     "ngx-skeleton-loader": "^8.1.0",

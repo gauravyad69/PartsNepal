@@ -90,6 +90,7 @@ dependencies {
     // Replace existing Hilt dependencies with these
     implementation("com.google.dagger:hilt-android:2.55")
     implementation(libs.firebase.auth)
+    implementation(libs.androidx.recyclerview)
     kapt("com.google.dagger:hilt-android-compiler:2.55")  // Change ksp to kapt
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0")  // Change ksp to kapt
@@ -101,7 +102,6 @@ dependencies {
     implementation ("org.imaginativeworld.oopsnointernet:oopsnointernet:2.0.0")
     implementation ("com.github.denzcoskun:ImageSlideshow:0.1.2")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
-    implementation ("io.appwrite:sdk-for-android:6.0.02")
 
     //for showing terms and conditions
 

@@ -26,6 +26,7 @@ activity-ktx = "1.10.0"
 nav_version = "2.8.5"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.1.0"
+recyclerview = "1.4.0"
 
 
 
@@ -75,6 +76,7 @@ mikepenz-fastadapter-scroll = { group = "com.mikepenz", name = "fastadapter-exte
 mikepenz-fastadapter-util = { group = "com.mikepenz", name = "fastadapter-extensions-utils", version.ref = "fastAdapter" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version = "1.1.0-alpha06" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 
 
 
