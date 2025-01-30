@@ -1,4 +1,3 @@
-
 services:
   partsnepal-api:
     image: ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest
