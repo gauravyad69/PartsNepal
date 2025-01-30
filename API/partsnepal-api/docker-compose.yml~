@@ -1,7 +1,7 @@
 
 services:
   partsnepal-api:
-    build: .
+    image: ghcr.io/gauravyad69/partsnepal/partsnepal-api:latest
     container_name: partsnepal-api
     ports:
       - "9090:9090"  # Expose port 9090 from container to host
