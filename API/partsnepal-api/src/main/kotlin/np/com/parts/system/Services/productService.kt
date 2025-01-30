@@ -322,7 +322,7 @@ class ProductService(private val database: MongoDatabase) {
             productCollection.find(
                 Filters.and(
                     Filters.exists("basic.pricing.salePrice"),
-                    Filters.exists("basic.pricing.discount")
+//                    Filters.exists("basic.pricing.discount")
                 )
             )
                 .skip(page * pageSize)
