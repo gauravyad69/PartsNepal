@@ -11,7 +11,7 @@ export class UploadService {
   private bucketId = '67938113002c3f5c2850';
 
   private compressionOptions = {
-    maxSizeMB: 1,              // Max file size after compression
+    maxSizeMB: 2,              // Max file size after compression
     maxWidthOrHeight: 1920,    // Maintain good quality for modern displays
     useWebWorker: true,        // Better performance
     initialQuality: 0.8,       // 80% initial quality

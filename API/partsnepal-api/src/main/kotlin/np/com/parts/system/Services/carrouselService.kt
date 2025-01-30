@@ -47,7 +47,7 @@ class CarrouselService(private val database: MongoDatabase) {
     }
 
      fun getCarrousel(id: String): Carrousel? {
-        return collection.findOneById(id)
+        return collection.findOne(Carrousel::carrouselId eq id)
     }
 
     fun getAllCarrousel(): List<Carrousel> {
@@ -70,8 +70,8 @@ class CarrouselService(private val database: MongoDatabase) {
             false
         }
     }
-    suspend fun updateCarrousel(id: String, newTitle: String, newContent:String): Boolean{
-        val Carrousel = collection.findOneById(id) // Find the document
+    suspend fun updateCarrousel(carrouselId: String, newTitle: String, newContent:String): Boolean{
+        val Carrousel = collection.findOne(Carrousel::carrouselId eq carrouselId) // Find the document
         return if (Carrousel != null) {
             val updates=  Updates.combine(
                 Updates.set("carrouselId", newTitle),
@@ -79,7 +79,7 @@ class CarrouselService(private val database: MongoDatabase) {
                 Updates.set("updatedAt", System.currentTimeMillis()),
                 Updates.inc("version", 1),
             )
-            collection.updateOneById(id, updates) // Update the document
+            collection.updateOne(Carrousel::carrouselId eq carrouselId, updates) // Update the document
             return true
         } else {
             false
@@ -95,14 +95,14 @@ class CarrouselService(private val database: MongoDatabase) {
                 Updates.set("updatedAt", System.currentTimeMillis()),
                 Updates.inc("version", 1),
             )
-            collection.updateOneById(id, updates) // Update the document
+            collection.updateOne(id, updates) // Update the document
             return true
         } else {
             false
         }
     }
-    suspend fun deleteCarrousel(id: String): Boolean {
-        val result = collection.deleteOneById(id)
+     fun deleteCarrousel(id: String): Boolean {
+        val result = collection.deleteOne(Carrousel::carrouselId eq id)
         return result.deletedCount > 0
     }
 }

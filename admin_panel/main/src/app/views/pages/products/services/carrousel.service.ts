@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class CarrouselService {
-  private apiUrl = `${environment.api}/carrousel`;
+  private apiUrl = `${environment.api}/admin/carrousel`;
 
   constructor(private http: HttpClient) {}
 
