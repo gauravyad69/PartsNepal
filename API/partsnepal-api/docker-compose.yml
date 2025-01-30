@@ -9,6 +9,17 @@ services:
     restart: unless-stopped  # Automatically restart the container if it stops
     networks:
       - partsnepal-network
+    deploy:
+      resources:
+        limits:
+          memory: 750M  # Set memory limit
+          cpus: "0.7"   # Limit to 70% of a CPU core
+        reservations:
+          memory: 512M  # Reserve at least 512MB
+      update_config:
+        parallelism: 1  # Update one container at a time
+        delay: 10s      # Wait 10s between updates
+        order: start-first  # Start a new container before stopping the old one
 
 networks:
   partsnepal-network:
