@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  partsnepal-api:
+    build: .
+    container_name: partsnepal-api
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
