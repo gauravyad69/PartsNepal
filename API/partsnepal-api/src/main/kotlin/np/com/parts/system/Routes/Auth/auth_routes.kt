@@ -12,23 +12,22 @@ import np.com.parts.system.auth.LoginRequest
 import np.com.parts.system.auth.RegisterRequest
 
 
-fun Application.configureAuthRoutes(userService: UserService) {
+fun Route.configureAuthRoutes(userService: UserService) {
     val jwtConfig = AuthenticationService.JWTConfig(
-        secret = environment.config.property("jwt.secret").getString(),
-        issuer = environment.config.property("jwt.issuer").getString(),
-        audience = environment.config.property("jwt.audience").getString(),
-        realm = environment.config.property("jwt.realm").getString()
+        secret = environment!!.config.property("jwt.secret").getString(),
+        issuer = environment!!.config.property("jwt.issuer").getString(),
+        audience = environment!!.config.property("jwt.audience").getString(),
+        realm = environment!!.config.property("jwt.realm").getString()
     )
 
     val adminJwtConfig = AuthenticationService.JWTConfig(
-        secret = environment.config.property("admin-jwt.secret").getString(),
-        issuer = environment.config.property("admin-jwt.issuer").getString(),
-        audience = environment.config.property("admin-jwt.audience").getString(),
-        realm = environment.config.property("admin-jwt.realm").getString()
+        secret = environment!!.config.property("admin-jwt.secret").getString(),
+        issuer = environment!!.config.property("admin-jwt.issuer").getString(),
+        audience = environment!!.config.property("admin-jwt.audience").getString(),
+        realm = environment!!.config.property("admin-jwt.realm").getString()
     )
     val authService = AuthenticationService(userService, jwtConfig)
 
-    routing {
         post("/auth/register") {
             try {
                 val request = call.receive<RegisterRequest>()
@@ -90,4 +89,3 @@ fun Application.configureAuthRoutes(userService: UserService) {
     }
 
 
-}

@@ -64,9 +64,8 @@ dependencies {
 
 
     //dependency injection
-    implementation("io.insert-koin:koin-ktor:3.2.0")
-    implementation("iio.insert-koin:koin-ktor:3.2.0")
-    implementation("io.insert-koin:koin-ktor:3.2.0")
+    implementation("io.insert-koin:koin-ktor:4.0.2")
+    implementation("io.insert-koin:koin-ktor:4.0.2")
 
     implementation("io.ktor:ktor-client-serialization-jvm")
     implementation("io.ktor:ktor-client-core-jvm")

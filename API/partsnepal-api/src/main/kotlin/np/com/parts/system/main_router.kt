@@ -10,6 +10,8 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import np.com.parts.system.Routes.*
+import np.com.parts.system.Routes.Auth.configureAuthRoutes
 import np.com.parts.system.Routes.Orders.adminOrderRoutes
 import np.com.parts.system.Routes.Orders.authenticatedOrderRoutes
 import np.com.parts.system.Routes.Products.adminProductRoutes
@@ -20,8 +22,6 @@ import np.com.parts.system.Routes.Cart.khaltiRoutes
 import np.com.parts.system.Routes.Orders.adminDiscountRoutes
 import np.com.parts.system.Routes.User.adminUserRoutes
 import np.com.parts.system.Routes.User.authenticatedUserRoutes
-import np.com.parts.system.Routes.categoryApi
-import np.com.parts.system.Routes.pastebinApi
 import np.com.parts.system.Services.*
 import np.com.parts.system.auth.AuthenticationService
 
@@ -30,7 +30,16 @@ import np.com.parts.system.auth.AuthenticationService
 
 
 
-fun Route.applicationRoutes(productService: ProductService, orderService: OrderService, userService: UserService, cartService: CartService, paymentService: PaymentService, pasteService: PasteService, categoryService: CategoryService) {
+fun Route.applicationRoutes(
+    productService: ProductService,
+    orderService: OrderService,
+    userService: UserService,
+    cartService: CartService,
+    paymentService: PaymentService,
+    pasteService: PasteService,
+    categoryService: CategoryService,
+    carrouselService: CarrouselService
+) {
     val jwtConfig = AuthenticationService.JWTConfig(
         secret = environment?.config!!.property("jwt.secret").getString(),
         issuer = environment?.config!!.property("jwt.issuer").getString(),
@@ -38,8 +47,11 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
         realm = environment?.config!!.property("jwt.realm").getString()
     )
 
-    unauthenticatedProductRoutes(productService)
+    configureAuthRoutes(userService)
 
+
+    unauthenticatedProductRoutes(productService)
+    unauthenticatedCarrouselRoutes(carrouselService)
 
     authenticate("auth-jwt") {
         pastebinApi(pasteService)
@@ -53,10 +65,12 @@ fun Route.applicationRoutes(productService: ProductService, orderService: OrderS
 
         authenticatedOrderRoutes(orderService)
         adminDiscountRoutes(orderService)
-        adminOrderRoutes(orderService)
 
         authenticatedUserRoutes(userService)
-    adminUserRoutes(userService)
+        adminUserRoutes(userService)
+        adminCarrouselRoutes(carrouselService)
+        adminOrderRoutes(orderService)
+
     }
 
 

@@ -9,8 +9,38 @@ import np.com.parts.system.Services.Carrousel
 import np.com.parts.system.Services.CarrouselService
 import np.com.parts.system.Services.CarrouselReq
 
-fun Route.carrouselRoutes(carrouselService: CarrouselService) {
+fun Route.unauthenticatedCarrouselRoutes(carrouselService: CarrouselService) {
     route("carrousel") {
+        // Retrieve all carrousels
+        get {
+
+            val carrousel = carrouselService.getAllCarrousel()
+            if (carrousel != null) {
+                call.respond(carrousel)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Carrousel not found")
+            }
+        }
+
+
+        // Retrieve a carrousel by ID
+        get("/{id}") {
+            val id = call.parameters["id"]
+                ?: return@get call.respond(HttpStatusCode.BadRequest, "Id is required")
+
+            val carrousel = carrouselService.getCarrousel(id)
+            if (carrousel != null) {
+                call.respond(carrousel)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Carrousel not found")
+            }
+        }
+
+
+    }
+}
+fun Route.adminCarrouselRoutes(carrouselService: CarrouselService) {
+    route("admin/carrousel") {
         // Create a new carrousel
         post {
             val content = call.receive<Carrousel>()
