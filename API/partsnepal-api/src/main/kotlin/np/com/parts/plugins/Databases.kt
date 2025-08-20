@@ -43,8 +43,6 @@ fun connectToMongoDB(environment: ApplicationEnvironment): MongoDatabase {
     val databaseName = environment.config.tryGetString("db.mongo.database.name") ?: "myDatabase"
 
     val credentials = user?.let { userVal -> password?.let { passwordVal -> "$userVal:$passwordVal@" } }.orEmpty()
-    val uri = "mongodb+srv://gauravmongo:gaurav@cluster0.t9kf18u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
     //val uri = "mongodb://$credentials@$host:$port/?maxPoolSize=$maxPoolSize&w=majority"
     // while using self-hosted database use port
 
