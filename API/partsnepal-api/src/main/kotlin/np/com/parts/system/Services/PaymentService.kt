@@ -86,7 +86,7 @@ class PaymentService(
                 )
 
             val response = client.post("https://a.khalti.com/api/v2/epayment/initiate/"){
-//                header("Authorization", "key 0d189d52c15041d781b0907abf346724")
+//                header("Authorization", "key 0d18fd53c1f045dr81b0907abs346f23")
                 setBody(requestBody)
             }
 //            val responseText = response.bodyAsText()
@@ -134,7 +134,7 @@ class PaymentService(
             )
 
             val response = client.post("https://a.khalti.com/api/v2/epayment/lookup/"){
-//                header("Authorization", "key 0d189d52c15041d781b0907abf346724")
+//                header("Authorization", "key 0d18fd53c1f045dr81b0907abs346f20")
                 setBody(requestBody)
             }
 //            val responseText = response.bodyAsText()
